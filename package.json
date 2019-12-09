@@ -1,5 +1,5 @@
 {
-  "name": "oi-account",
+  "name": "account-app",
   "version": "1.0.0",
   "description": "user account app for owninvention",
   "main": "routes.js",

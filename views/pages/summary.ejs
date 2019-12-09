@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <% include ../partials/load-scripts %>
+</head>
+
+<body>
+    <% include ../partials/header %>
+    <section id="summary" class="container-fluid" style="margin-top: 100px;">
+
+        <div class="row">
+            <!-- row1 / col 1: outer columns -->
+            <div class="col-sm-12 col-md-12 col-lg-4 col-xl-4">
+
+                <div class="pad-10" id="account-row1-col1-1">
+                    
+                    <!-- profile information tile -->
+                    <div class="tile white-tile">
+
+                        <div class="info-row mgB-L">
+                            <div class="text-center">
+                                <div class="profile-img">
+                                    <img src="<%=userInfo.profileimg%>">
+                                </div>
+                                <div class="mgT-S"><b class="text-capitalize m-txt"><%=userInfo.fullnameLowerCased%></b>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="info-row info-row-bor-t">
+                            <div class="info-row-icon"><i class="material-icons align-middle">email</i></div>
+                            <div class="info-row-content text-lower">
+                                <div><%=userInfo.emailid%></div>
+                                <div class="text-muted sm-txt">Email</div>
+                            </div>
+                        </div>
+
+                        <div class="info-row info-row info-row-bor-t">
+                            <div class="info-row-icon"><i class="material-icons align-middle">call</i></div>
+                            <div class="info-row-content text-lower">
+                                <div>(937)266-5853</div>
+                                <div class="text-muted sm-txt">Phone</div>
+                            </div>
+                            <a href="/personal-info-update" class="txt-col-dblue">
+                                <div class="info-row-action pull-right ">Update →</div>
+                            </a>
+                        </div>
+
+                        <div class="info-row info-row info-row-bor-t">
+                            <div class="info-row-icon"><i class="material-icons align-middle">fingerprint</i></div>
+                            <div class="info-row-content text-lower">
+                                <div>**********</div>
+                                <div class="text-muted sm-txt">Password</div>
+                            </div>
+                            <a href="/reset-passw" class="txt-col-dblue">
+                                <div class="info-row-action pull-right ">Reset →</div>
+                            </a>
+                        </div>
+
+                        <div class="info-row info-row info-row-bor-t">
+                                <div class="info-row-icon">
+                                    <i class="material-icons align-middle">verified_user</i>
+                                </div>
+                                <div class="info-row-content">
+                                    <div class=text-uppercase><%=userInfo.registrationnum%></div>
+                                    <div class="text-muted sm-txt">Registration Number</div>
+                                </div>
+                            </div>
+
+                    </div>
+                </div>
+            </div>
+            <!-- row1 / col 2: outer columns -->
+            <div class="col-sm-12 col-md-12 col-lg-8 col-xl-8">
+                <div class="pad-10" id="account-row1-col1-2">
+                    <div class="tile white-tile">
+                        <div class="tile-header">
+                            <i class="material-icons align-middle">group</i> Account
+                        </div>
+                        <div id="summary-account-info-container">
+                            <div class="info-row info-row-bor-t">
+                                <div class="info-row-icon">
+                                    <i class="material-icons align-middle">verified_user</i>
+                                </div>
+
+                            <% if (userInfo.registrationinfo.length>0 && userInfo.registrationinfo[0].registrationtype==='oi_standard_free' && !userInfo.registrationinfo[0].expired) { %>
+                                <div class="info-row-content">
+                                    <div>30 days free trial <span class="dot-seprator">Expiring on: <b style="color:red"> <%=userInfo.registrationinfo[0].expirationDate%></b></span></div>
+                                    <div class="text-muted sm-txt">Your registration will expire on <b><%=userInfo.registrationinfo[0].expirationDate%></b>. Please update your registration type to standard or business type to avoid any downtime.</div>
+                                </div>
+
+                            <% } else if(userInfo.registrationinfo.length>0 && userInfo.registrationinfo[0].registrationtype==='oi_standard_free' && userInfo.registrationinfo[0].expired) { %>
+                                <div>Your registration was expired on <b style="color:red"> <%=userInfo.registrationinfo[0].expirationDate%></b>. Click on update button to change your registration to standard or business type. </div>
+                            
+                            <% } else if(userInfo.registrationinfo.length>0 && userInfo.registrationinfo[0].registrationtype==='oi_standard_monthly') { %>
+                                <div class="info-row-content">
+                                    <div>Standard Account - Monthly Subscription 
+                                        <span class="dot-seprator">Next Payment on: <b style="color:red"><%=userInfo.registrationinfo[0].expirationDate%></b></span>
+                                    </div>
+                                    <div class="text-muted sm-txt">Next payment of $10 will deducted on <b><%=userInfo.registrationinfo[0].nextPaymentDate%></b>. click update if you would like to update your subscription, payment method or frequescy of your payments. </div>
+                                </div>
+                            <% } %>
+                            <a href="/update-registrationtype" class="txt-col-dblue">
+                                <div class="info-row-action pull-right ">Update →</div>
+                            </a>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+    
+    <script src="/src/js/summary.js"></script>
+
+</body>
+
+</html>
