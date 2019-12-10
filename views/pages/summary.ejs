@@ -21,7 +21,13 @@
                         <div class="info-row mgB-L">
                             <div class="text-center">
                                 <div class="profile-img">
-                                    <img src="<%=userInfo.profileimg%>">
+                                    <% if ('profileimg' in userInfo && userInfo.profileimg.length>0){ %>
+                                        <img src="<%=userInfo.profileimg%>" alt="[PROFILE PIC NOT FOUND. TRY UPLOADING AGAIN]">
+                                    <% }else { %>
+                                        <div class="jumbo-profile-initals">
+                                            <%=userInfo.initials%>
+                                        </div>
+                                    <% } %>
                                 </div>
                                 <div class="mgT-S"><b class="text-capitalize m-txt"><%=userInfo.fullnameLowerCased%></b>
                                 </div>
@@ -43,7 +49,7 @@
                                 <div class="text-muted sm-txt">Phone</div>
                             </div>
                             <a href="/personal-info-update" class="txt-col-dblue">
-                                <div class="info-row-action pull-right ">Update →</div>
+                                <div class="info-row-action">Update →</div>
                             </a>
                         </div>
 
@@ -54,7 +60,7 @@
                                 <div class="text-muted sm-txt">Password</div>
                             </div>
                             <a href="/reset-passw" class="txt-col-dblue">
-                                <div class="info-row-action pull-right ">Reset →</div>
+                                <div class="info-row-action">Reset →</div>
                             </a>
                         </div>
 
@@ -73,42 +79,42 @@
             </div>
             <!-- row1 / col 2: outer columns -->
             <div class="col-sm-12 col-md-12 col-lg-8 col-xl-8">
+
                 <div class="pad-10" id="account-row1-col1-2">
+
+                    <!-- ACCOUNT INFORMATION -->
                     <div class="tile white-tile">
                         <div class="tile-header">
                             <i class="material-icons align-middle">group</i> Account
                         </div>
+
                         <div id="summary-account-info-container">
-                            <div class="info-row info-row-bor-t">
-                                <div class="info-row-icon">
-                                    <i class="material-icons align-middle">verified_user</i>
-                                </div>
-
-                            <% if (userInfo.registrationinfo.length>0 && userInfo.registrationinfo[0].registrationtype==='oi_standard_free' && !userInfo.registrationinfo[0].expired) { %>
-                                <div class="info-row-content">
-                                    <div>30 days free trial <span class="dot-seprator">Expiring on: <b style="color:red"> <%=userInfo.registrationinfo[0].expirationDate%></b></span></div>
-                                    <div class="text-muted sm-txt">Your registration will expire on <b><%=userInfo.registrationinfo[0].expirationDate%></b>. Please update your registration type to standard or business type to avoid any downtime.</div>
-                                </div>
-
-                            <% } else if(userInfo.registrationinfo.length>0 && userInfo.registrationinfo[0].registrationtype==='oi_standard_free' && userInfo.registrationinfo[0].expired) { %>
-                                <div>Your registration was expired on <b style="color:red"> <%=userInfo.registrationinfo[0].expirationDate%></b>. Click on update button to change your registration to standard or business type. </div>
-                            
-                            <% } else if(userInfo.registrationinfo.length>0 && userInfo.registrationinfo[0].registrationtype==='oi_standard_monthly') { %>
-                                <div class="info-row-content">
-                                    <div>Standard Account - Monthly Subscription 
-                                        <span class="dot-seprator">Next Payment on: <b style="color:red"><%=userInfo.registrationinfo[0].expirationDate%></b></span>
-                                    </div>
-                                    <div class="text-muted sm-txt">Next payment of $10 will deducted on <b><%=userInfo.registrationinfo[0].nextPaymentDate%></b>. click update if you would like to update your subscription, payment method or frequescy of your payments. </div>
-                                </div>
-                            <% } %>
-                            <a href="/update-registrationtype" class="txt-col-dblue">
-                                <div class="info-row-action pull-right ">Update →</div>
-                            </a>
+                            <div class="text-center mgB-T-L">
+                                <img src="/src/images/loading.gif" style="width:40px;">
                             </div>
-                            
                         </div>
+
                     </div>
+
+                    <!-- PAYMENT INFORMATION -->
+                    <div class="tile white-tile mgB-T-L">
+                        <div class="tile-header">
+                            <div class="d-inline-block">
+                                <i class="material-icons align-middle">payment</i> Payment Methods
+                            </div>
+                            <div class="pos-a btn btn-primary sm-txt" style="right:5px;top:0px;"> Add Payment</div>
+                        </div>
+                    
+                        <div id="summary-payment-info-container">
+                            <div class="text-center mgB-T-L">
+                                <img src="/src/images/loading.gif" style="width:40px;">
+                            </div>
+                        </div>
+                    
+                    </div>
+
                 </div>
+
             </div>
         </div>
 

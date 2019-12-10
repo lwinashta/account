@@ -16,3 +16,14 @@ body{
     height: 100%;
     border-radius: 50%;
 }
+
+#summary .jumbo-profile-initals{
+    width:100%;
+    height:100%;
+    border-radius: 50%;
+    background-color: #ffc107;
+    color: darkslategrey;
+    font-size: 3em;
+    text-align: center;
+    line-height: 150px;
+}
