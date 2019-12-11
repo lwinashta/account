@@ -52,4 +52,8 @@ app.get('/profile',(req,res)=>{
     res.render('pages/profile');
 });
 
+app.get('/reset-passw',(req,res)=>{
+    res.render('pages/reset-passw');
+});
+
 app.listen(port,console.log("listening port "+port));

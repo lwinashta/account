@@ -55,24 +55,24 @@ const setPersonlInfo=function(){
 
 const setContactInfo=function(){
 
-    // //-- user can have multipe phone numbers 
+    // //-- user can have multipe contact numbers 
     if("contact_numbers" in runtime.userInfo){
         runtime.userInfo.mappedPhoneNums=runtime.userInfo.contact_numbers.map((elm)=>{
             return {
-                "value":elm.contact_number,
+                "value":`${elm.country_code} ${elm.contact_number}`,
                 "label":elm.contact_type
             }
         });
     }else{
         runtime.userInfo.mappedPhoneNums=[{
             "value":'<i>Unknown</i>',
-            "label":"Phone"
+            "label":"contact"
         }];
     }
     
-    let phone=setUserMultipleInfoRow('phone',runtime.userInfo.mappedPhoneNums,"phone");
+    let contact=setUserMultipleInfoRow('phone',runtime.userInfo.mappedPhoneNums,"contact");
     let email=setUserInfoRow('email','Email',`<span class="text-lowercase">${runtime.userInfo.emailid}</span>`,"email");
-    $('#profile-contact-info-container').html(phone+email);
+    $('#profile-contact-info-container').html(contact+email);
 };
 
 //** edit details */
@@ -141,29 +141,39 @@ const editInfo={
     },
 
     "refreshContactNumbers":function(){
-        let html=`${'contact_numbers' in runtime.userInfo 
-                && runtime.userInfo.contact_numbers.length>0 ? runtime.userInfo.contact_numbers.map((v)=>{
-            return `<div class="inline-dataview">
-                <div class="inline-label font-b">${v.contact_type}</div> 
-                <div class="inline-value">${v.country_code} ${v.contact_number}</div> 
-                <div class="inline-action delete-phone-number">
-                    <i class="material-icons">delete</i>
-                </div> 
-            </div>`;}).join(''):
-            "<div class='pad-10 text-muted'>No contact numbers found. Add contact information using the form below.</div>"}`;
+        let html="";
 
-            return html;
+        if('contact_numbers' in runtime.userInfo 
+            && runtime.userInfo.contact_numbers.length>0){
+
+            runtime.userInfo.contact_numbers.forEach(v=>{
+                if('deleted' in v && !v.deleted){
+                   html+=`<div class="inline-dataview">
+                        <div class="inline-label font-b" fieldname="contact_type">${v.contact_type}</div> 
+                        <div class="inline-value" >
+                            <span fieldname="country_code">${v.country_code}</span>
+                            <span fieldname="contact_number">${v.contact_number}</span>
+                        </div> 
+                        <div class="inline-action delete-contact-number actionicon">
+                            <i class="material-icons" style="color:red">delete</i>
+                        </div> 
+                    </div>`; 
+                }
+            }); 
+
+        }
+        return html.length>0?html:"<div class='pad-10 text-muted'>No contact numbers found. Add contact information using the form below.</div>"
     },
 
-    "phone":function(){
-        let html=`<div class="pad-10 profile-sections" id="edit-user-phone" edititem="phone">
+    "contact":function(){
+        let html=`<div class="pad-10 profile-sections" id="edit-user-contact" edititem="contact">
             <div class="text-center mgB-L">
                 <div>
                     <div class="d-inline-block pad-10 bg-w-hv back-to-details align-middle"><i class="material-icons align-middle">arrow_back</i></div>
-                    <div class="d-inline-block pad-10 align-middle"><div class="l-txt">Edit Phone</div></div>
+                    <div class="d-inline-block pad-10 align-middle"><div class="l-txt">Edit contact</div></div>
                 </div>
                 <div class="text-muted">
-                    <div>Update your phone number(s). You can have multiple phone number assigned</div>
+                    <div>Update your contact number(s). You can have multiple contact number assigned</div>
                     <div>Do not forget to click on <b><i>Update</i></b> button to save the information.</div>
                 </div>
             </div>
@@ -284,7 +294,7 @@ $.post('/api/global/account/user/bytoken').then(function(userinfo){
         }
     });
 
-    //add new phone number -- 
+    //add new contact number -- 
     $('section#profile').on('submit','#add-new-contact-number',async function(e){
         instanceForm.form = this;
         try {
@@ -303,13 +313,49 @@ $.post('/api/global/account/user/bytoken').then(function(userinfo){
                     "contact_numbers":[{
                         "country_code":data.get("country_code"),
                         "contact_number":data.get("contact_number"),
-                        "contact_type":data.get("contact_type")
+                        "contact_type":data.get("contact_type"),
+                        "deleted":false
                     }]
                 }),
                 "method": "POST"
             });
 
             window.location.assign('/profile');
+
+        } catch (err) {
+            console.error(err);
+        }
+    });
+
+    //add new contact number -- 
+    $('section#profile').on('click','#edit-user-contact .delete-contact-number',async function(e){
+        try {
+
+            let data={
+                "query":{
+                   "contact_numbers":{} 
+                },
+                "setvalues":{
+                    "contact_numbers.$.deleted":true
+                }
+            };
+
+            let container=$(this).closest('.inline-dataview');
+
+            $(container).find('[fieldname]').each(function(){
+                data.query.contact_numbers[$(this).attr('fieldname')]=$(this).text();
+            });
+
+            //content type must be json and json must be send as string 
+            let exeUpdate = await $.ajax({
+                "url": '/account/api/user/update',
+                "processData": false,
+                "contentType": "application/json; charset=utf-8",
+                "data": JSON.stringify(data),
+                "method": "POST"
+            });
+
+            window.location.reload();
 
         } catch (err) {
             console.error(err);

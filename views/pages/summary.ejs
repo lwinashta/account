@@ -45,38 +45,46 @@
                         
                         <div class="info-row info-row-bor-t" style="margin-top:0px">
                             <div class="info-row-icon"><i class="material-icons align-middle">email</i></div>
-                            <div class="info-row-content text-lower">
-                                <div><%=userInfo.emailid%></div>
-                                <div class="text-muted sm-txt">Email</div>
+                            <div>
+                                <div class="info-row-content text-lower">
+                                    <div><%=userInfo.emailid%></div>
+                                    <div class="text-muted sm-txt">Email</div>
+                                </div>
                             </div>
                         </div>
                         
                         <div class="info-row info-row info-row-bor-t">
                             <div class="info-row-icon"><i class="material-icons align-middle">call</i></div>
                             <% if('contact_numbers' in userInfo && userInfo.contact_numbers.length>0) { %>
+                                <div>
                                 <% userInfo.contact_numbers.forEach(elm=>{ %>
                                     <div class="info-row-content text-lower">
                                         <div><%=elm.contact_number%></div>
                                         <div class="text-muted sm-txt"><%=elm.contact_type%></div>
                                     </div>
                                 <% }) %>
+                                </div>
                             <%} else { %>
-                                <div class="info-row-content text-lower">
-                                    <div><i>Unknown</i></div>
-                                    <div class="text-muted sm-txt">Contact number</div>
+                                <div>
+                                    <div class="info-row-content text-lower">
+                                        <div><i>Unknown</i></div>
+                                        <div class="text-muted sm-txt">Contact number</div>
+                                    </div>
                                 </div>
                             <% } %>
 
-                            <a href="/profile?edititem=phone" class="txt-col-dblue">
+                            <a href="/profile?edititem=contact" class="txt-col-dblue">
                                 <div class="info-row-action">Update →</div>
                             </a>
                         </div>
                         
                         <div class="info-row info-row info-row-bor-t">
                             <div class="info-row-icon"><i class="material-icons align-middle">fingerprint</i></div>
-                            <div class="info-row-content text-lower">
-                                <div>**********</div>
-                                <div class="text-muted sm-txt">Password</div>
+                            <div>
+                                <div class="info-row-content text-lower">
+                                    <div>**********</div>
+                                    <div class="text-muted sm-txt">Password</div>
+                                </div>
                             </div>
                             <a href="/reset-passw" class="txt-col-dblue">
                                 <div class="info-row-action">Reset →</div>
@@ -87,10 +95,13 @@
                             <div class="info-row-icon">
                                 <i class="material-icons align-middle">verified_user</i>
                             </div>
-                            <div class="info-row-content">
-                                <div class=text-uppercase><%=userInfo.registrationnum%></div>
-                                <div class="text-muted sm-txt">Registration Number</div>
+                            <div>
+                               <div class="info-row-content">
+                                    <div class=text-uppercase><%=userInfo.registrationnum%></div>
+                                    <div class="text-muted sm-txt">Registration Number</div>
+                                </div> 
                             </div>
+                            
                         </div>
 
                     </div>
