@@ -55,12 +55,12 @@ const setPersonlInfo=function(){
 
 const setContactInfo=function(){
 
-    //-- user can have multipe phone numbers 
+    // //-- user can have multipe phone numbers 
     if("contact_numbers" in runtime.userInfo){
         runtime.userInfo.mappedPhoneNums=runtime.userInfo.contact_numbers.map((elm)=>{
             return {
-                "value":elm.number,
-                "label":elm.type
+                "value":elm.contact_number,
+                "label":elm.contact_type
             }
         });
     }else{
@@ -139,17 +139,22 @@ const editInfo={
         </div>`;
         $('section#profile').append(html);
     },
+
     "refreshContactNumbers":function(){
-        return `${'contact_numbers' in runtime.userInfo && runtime.userInfo.contact_numbers.length>0?runtime.userInfo.contact_numbers.map((v)=>{
+        let html=`${'contact_numbers' in runtime.userInfo 
+                && runtime.userInfo.contact_numbers.length>0 ? runtime.userInfo.contact_numbers.map((v)=>{
             return `<div class="inline-dataview">
-                <div class="inline-label font-b">${v.type}</div> 
-                <div class="inline-value">${v.number}</div> 
+                <div class="inline-label font-b">${v.contact_type}</div> 
+                <div class="inline-value">${v.country_code} ${v.contact_number}</div> 
                 <div class="inline-action delete-phone-number">
                     <i class="material-icons">delete</i>
                 </div> 
-            </div>`;
-        }):"<div class='pad-10 text-muted'>No contact numbers found. Add contact information using the form below.</div>"}`;
+            </div>`;}).join(''):
+            "<div class='pad-10 text-muted'>No contact numbers found. Add contact information using the form below.</div>"}`;
+
+            return html;
     },
+
     "phone":function(){
         let html=`<div class="pad-10 profile-sections" id="edit-user-phone" edititem="phone">
             <div class="text-center mgB-L">
@@ -167,7 +172,7 @@ const editInfo={
             </div>
             <div class="tile white-tile mgB-T-L">
                 <h5>Add Contact</h5>
-                <form id="add-new-contact-number">
+                <form id="add-new-contact-number" enctype="multipart/form-data">
                     <div class="form-group">
                         <label for="country_code" data-required="1">Country </label>
                         <select id="country_code" name="country_code" class='form-control' data-required="1">
@@ -188,9 +193,9 @@ const editInfo={
                         <select id="contact_type" name="contact_type" class='form-control' data-required="1">
                             <option value=""></option>
                             <option value="Work">Work</option>
-                            <option value="Work">Home</option>
-                            <option value="Work">Fax</option>
-                            <option value="Work">Other</option>
+                            <option value="Home">Home</option>
+                            <option value="Fax">Fax</option>
+                            <option value="Other">Other</option>
                         </select>
                     </div>
                     
@@ -202,6 +207,7 @@ const editInfo={
             </div>
         </div>`;
         $('section#profile').append(html);
+
     }
 }
 
@@ -209,20 +215,10 @@ const pushWinState=()=>{
     window.history.pushState({},"history",window.location.origin+window.location.pathname+'?'+thisPgUriParams.toString());
 }
 
-const updateUserInfo=(data)=>{
-    return $.ajax({
-        "url": '/account/api/user/update',
-        "processData": false,
-        "contentType": false,
-        "data": data,
-        "method": "POST"
-    });
-}
-
 //** EXECUTION */
 
 $.post('/api/global/account/user/bytoken').then(function(userinfo){
-
+    console.log(userinfo);
     runtime.userInfo=userinfo;
     
     return $.get('/gfs/utilities/countries.json');
@@ -273,7 +269,13 @@ $.post('/api/global/account/user/bytoken').then(function(userinfo){
             //get data 
             let data = new FormData(this);
 
-            let exeUpdate = await updateUserInfo(data);
+            let exeUpdate= await $.ajax({
+                "url": '/account/api/user/update',
+                "processData": false,
+                "contentType": false,
+                "data": data,
+                "method": "POST"
+            });
 
             window.location.assign('/profile');
 
@@ -292,7 +294,20 @@ $.post('/api/global/account/user/bytoken').then(function(userinfo){
             //get data 
             let data = new FormData(this);
 
-            let exeUpdate = await updateUserInfo(data);
+            //content type must be json and json must be send as string 
+            let exeUpdate = await $.ajax({
+                "url": '/account/api/user/update',
+                "processData": false,
+                "contentType": "application/json; charset=utf-8",
+                "data": JSON.stringify({
+                    "contact_numbers":[{
+                        "country_code":data.get("country_code"),
+                        "contact_number":data.get("contact_number"),
+                        "contact_type":data.get("contact_type")
+                    }]
+                }),
+                "method": "POST"
+            });
 
             window.location.assign('/profile');
 
