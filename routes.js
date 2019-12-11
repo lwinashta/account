@@ -27,9 +27,10 @@ app.use(formidable());
 //** SET ENGINES */
 app.set('view engine', 'ejs');
 
-//** SET ROUTES */
+//** SET GLOBAL ROUTES */
 const globalRoutes=require(globalFsPath+'/routes')(app);
 const paymentRoutes=require(globalFsPath+'/payment/routes')(app);
+const accountRoutes=require(globalFsPath+'/account/routes')(app);
 
 //** MIDDLEWARE USER LOGIN */
 app.use('/',async function(req,res,next){
@@ -45,6 +46,10 @@ app.use('/',async function(req,res,next){
 
 app.get('/',(req,res)=>{
     res.render('pages/summary');
+});
+
+app.get('/profile',(req,res)=>{
+    res.render('pages/profile');
 });
 
 app.listen(port,console.log("listening port "+port));

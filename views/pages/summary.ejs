@@ -28,6 +28,17 @@
                                             <%=userInfo.initials%>
                                         </div>
                                     <% } %>
+                                    <div class="upload-img-container">
+                                        <form id="update-profile-img-form" 
+                                            enctype="multipart/form-data" accept="image/*">
+                                            <input id="update-profile-img-input" 
+                                                name="upload-user-profile-image" 
+                                                type="file" title="upload image">
+                                        </form>
+                                        <div class="input-overlay">
+                                            <i class="material-icons">camera_alt</i>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="mgT-S"><b class="text-capitalize m-txt"><%=userInfo.fullnameLowerCased%></b>
                                 </div>
@@ -48,7 +59,7 @@
                                 <div>(937)266-5853</div>
                                 <div class="text-muted sm-txt">Phone</div>
                             </div>
-                            <a href="/personal-info-update" class="txt-col-dblue">
+                            <a href="/profile" class="txt-col-dblue">
                                 <div class="info-row-action">Update →</div>
                             </a>
                         </div>
