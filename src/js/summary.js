@@ -84,8 +84,7 @@ const setPaymentMethods=()=>{
                             <div class="sm-txt text-muted">Expiration: ${element.expirationDate}</div>
                         </div>
                     </div>
-                </div>
-                `;
+                </div>`;
             });
     }else{
         return `<div class="text-muted pad-10"> No payment method found.</div>`;

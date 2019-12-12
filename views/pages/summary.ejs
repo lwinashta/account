@@ -59,7 +59,7 @@
                                 <div>
                                 <% userInfo.contact_numbers.forEach(elm=>{ %>
                                     <div class="info-row-content text-lower">
-                                        <div><%=elm.contact_number%></div>
+                                        <div><%=elm.country_code%> <%=elm.contact_number%></div>
                                         <div class="text-muted sm-txt"><%=elm.contact_type%></div>
                                     </div>
                                 <% }) %>
