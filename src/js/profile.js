@@ -14,7 +14,8 @@ const setUserInfoRow=(icon,label,info,edititem)=>{
     if(edititem==="email" || edititem==="password"){
         editable="not-editable";
     }
-    return `<div class="info-row bg-ws-hv ${editable}" edititem=${edititem}>
+    return `${ edititem==="password"?"<a href='/reset-passw' style='text-decoration: none;color: inherit;'>":""}
+        <div class="info-row bg-ws-hv ${editable}" edititem=${edititem}>
         <div class="info-row-icon">
             <i class="material-icons align-middle">${icon}</i>
         </div>
@@ -24,7 +25,8 @@ const setUserInfoRow=(icon,label,info,edititem)=>{
                 <div class="text-muted sm-txt">${label}</div>
             </div>
         </div>
-    </div>`;
+    </div>
+    ${ edititem==="password"?"</a>":""}`;
 };
 
 const setUserMultipleInfoRow=(icon,info,edititem)=>{

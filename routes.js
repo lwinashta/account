@@ -52,6 +52,10 @@ app.get('/profile',(req,res)=>{
     res.render('pages/profile');
 });
 
+app.get('/payment',(req,res)=>{
+    res.render('pages/payment');
+});
+
 app.get('/reset-passw',(req,res)=>{
     res.render('pages/reset-passw');
 });

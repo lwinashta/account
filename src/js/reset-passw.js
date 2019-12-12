@@ -36,7 +36,6 @@ $('#reset-user-passw').on('submit',  async function (e) {
         let check=await checkCurrentPassw(data.get('current_passw'));
 
         //console.log(check);
-
         if(check.length===0){
             $(this).find('[name="current_passw"]')
                 .closest('.form-group')
@@ -48,17 +47,17 @@ $('#reset-user-passw').on('submit',  async function (e) {
         //all check are correct - update the passw
         //content type must be json and json must be send as string 
         let exeUpdate = await $.ajax({
-            "url": '/account/api/user/update',
+            "url": '/account/api/user/updatepassw',
             "processData": false,
             "contentType": "application/json; charset=utf-8",
             "data": JSON.stringify({
-                "password":data.get('current_passw')
+                "password":data.get('new_passw')
             }),
             "method": "POST"
         });
 
         //get settings to get the home page settings
-        let settings=await $.getJSON('/gfs/sys-settings/config/config.json');
+        let settings=await runtime.getSysSettings();
 
         //-- update made successfully. 
         window.location.assign(`${settings.website}/logout`);
