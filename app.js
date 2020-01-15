@@ -33,31 +33,49 @@ const paymentRoutes=require(globalFsPath+'/payment/routes')(app);
 const accountRoutes=require(globalFsPath+'/account/routes')(app);
 
 //** MIDDLEWARE USER LOGIN */
-app.use('/',async function(req,res,next){
-    app.locals.userInfo=await account.getUserFromToken(req,res);//checks if user token is set 
-    //console.log(app.locals.userInfo);
-    if(Object.keys(app.locals.userInfo).length===0){
-        let param=encodeURIComponent(`${req.headers.host}${req.path}`);
-        res.redirect(`${globalSettings.website}/login?goto=${param}`);
-    } else{
-        next();//got to next if user is already logged
+// app.use('/',async function(req,res,next){
+//     app.locals.userInfo=await account.getUserFromToken(req,res);//checks if user token is set 
+//     //console.log(app.locals.userInfo);
+//     if(Object.keys(app.locals.userInfo).length===0){
+//         let param=encodeURIComponent(`${req.headers.host}${req.path}`);
+//         res.redirect(`${globalSettings.website}/login?goto=${param}`);
+//     } else{
+//         next();//got to next if user is already logged
+//     }
+// });
+
+// app.get('/',(req,res)=>{
+//     res.render('pages/qualification');
+// });
+
+// app.get('/profile',(req,res)=>{
+//     res.render('pages/profile');
+// });
+
+// app.get('/payment',(req,res)=>{
+//     res.render('pages/payment');
+// });
+
+// app.get('/reset-passw',(req,res)=>{
+//     res.render('pages/reset-passw');
+// });
+
+app.get('/pre-req/:accounttype/:accountid',(req,res)=>{
+    
+    let accounttype = req.params.accounttype.toLowerCase(); 
+    let accountid = req.params.accountid.toLowerCase(); 
+
+    switch (accounttype) {
+        case 'healthcare-provider':
+            //get the provider information using the account id
+            res.render(`pages/pre-req/healthcare-provider-pre-req`);
+            break;
+        
+        case 'healthcare-facility':
+                break;
+        default:
+            break;
     }
-});
-
-app.get('/',(req,res)=>{
-    res.render('pages/summary');
-});
-
-app.get('/profile',(req,res)=>{
-    res.render('pages/profile');
-});
-
-app.get('/payment',(req,res)=>{
-    res.render('pages/payment');
-});
-
-app.get('/reset-passw',(req,res)=>{
-    res.render('pages/reset-passw');
-});
+})
 
 app.listen(port,console.log("listening port "+port));

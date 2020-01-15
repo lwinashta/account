@@ -1,8 +1,5 @@
 @import url("/gfs/styles/core.css");
-
-body{
-    background-color: whitesmoke;
-}
+@import url("/gfs/styles/app-layout.css");
 
 /* summary page */
 #summary .profile-img{

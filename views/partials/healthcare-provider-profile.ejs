@@ -1,0 +1,110 @@
+<div class="p-3 border rounded  bg-white" id="heathcare-provider-profile-form">
+
+        <div class="form-group">
+            <div class="row">
+                <div class="col">
+                    <label for="first-name" data-required="1">First Name </label>
+                    <input type="text" name="first_name" id="first-name" class="form-control"
+                        placeholder="First name">
+                </div>
+                <div class="col">
+                    <label for="last-name" data-required="1">Last Name </label>
+                    <input type="text" name="last_name" id="last-name" class="form-control"
+                        placeholder="Last name">
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div>
+                <label for="email-id" data-required="1">Email ID </label>
+
+                <div class="ctooltip"
+                    content="We do not share this email id with patients or users searching your profile. 
+                        This email id is linked to your account authentication and will be used as primary email for your account.">
+                    <i class="material-icons align-middle">info</i>
+                </div>
+            </div>
+            <input id="email-id" name="email_id" class='form-control' type="email" data-required="1"
+                autocomplete="off">
+        </div>
+
+        <div class="form-group">
+            <div>
+                <label for="phone-number" data-required="1">Phone Number </label>
+                <div class="ctooltip"
+                    content="We do not share this phone number with patients or users searching your profile. 
+                        This phone number is linked to your account authentication and will be used as primary number for your account.">
+                    <i class="material-icons align-middle">info</i>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col">
+                    <select name="country_code" id="country-code" class="form-control">
+                        <option value="IN">+91 (IN)</option>
+                    </select>
+                </div>
+                <div class="col">
+                    <input type="text" name="last_name" id="phone-number" class="form-control"
+                        placeholder="Phone Number">
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+                <div>
+                        <label for="specialty" data-required="1">Specialty </label>
+                        <div class="ctooltip"
+                            content="The selected speciality will be visible to all users who views yoru profile">
+                            <i class="material-icons align-middle">info</i>
+                        </div>
+                    </div>
+            <select id="specialty" name="specialty" class='form-control text-capitalize'
+                data-required="1"></select>
+        </div>
+
+        <div class="form-group">
+            <div>
+                <label>Address </label>
+                <div class="ctooltip"
+                    content="The address will not be visible to any users. Address information may be used during the trasactions.">
+                    <i class="material-icons align-middle">info</i>
+                </div>
+            </div>
+                
+            <input type="text" class="form-control mt-2" placeholder="Street Address line #1">
+            <input type="text" class="form-control mt-2" placeholder="Street Address line #2">
+            <div class="row mt-2">
+                <div class="col">
+                    <input type="text" name="city" id="city" class="form-control" placeholder="City">
+                </div>
+                <div class="col">
+                    <input type="text" name="zip_code" id="zip-code" class="form-control"
+                        placeholder="Zip/Postal code">
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col">
+                    <select name="state" id="state" class="form-control">
+                        <option value="IN">+91 (IN)</option>
+                    </select>
+                </div>
+                <div class="col">
+                    <select name="country" id="country" class="form-control">
+                        <option value="IN">+91 (IN)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4 text-center">
+            <a href="/signup/otp-verification/user-entry" style="text-decoration: none;">
+                <div class="btn btn-primary pointer">
+                    <i class="material-icons align-middle">trending_flat</i>
+                    <label class="mb-0 pointer"> Next</label>
+                </div>
+            </a>
+        </div>
+
+    </div>

@@ -1,0 +1,26 @@
+<header >
+
+    <a href='<%=sysSettings.website %>'>
+        <div class="pos-a pad-8" style="left:10px;z-index: 1">
+            <div class="d-inline-block header-logo-img-container">
+                <img class="img-fluid" src="/gfs/images/ownInventionIcon.png"></div>
+        </div>
+    </a>
+
+    <div class="pos-a w100 pad-10 desktopview" style="z-index:0;left:60px;">
+        <a href="/"><div class="d-inline-block pad-8 hpg-menu-item"> Summary</div></a>
+        <a href="/profile"><div class="d-inline-block mgL-L pad-8 hpg-menu-item"> Profile</div></a>
+        <a href="/payment"><div class="d-inline-block mgL-L pad-8 hpg-menu-item"> Payment</div></a>
+        <a href="/apps"><div class="d-inline-block mgL-L pad-8 hpg-menu-item"> Apps</div></a>
+    </div>
+
+    <div class="pos-a pad-10" style="right: 10px;z-index: 1">
+
+        <div class="d-inline-block">
+            <div class="desktopview">
+                <% include ../../../global-modules/account/partials/userinfo-header %>
+            </div>
+        </div>
+    </div>
+
+</header>

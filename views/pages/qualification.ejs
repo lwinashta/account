@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <% include ../../../partials/load-scripts %>
+    <% include ../partials/load-scripts %>
     <style>
         .step-tabs:nth-child(n+2)::before{
             content:'keyboard_arrow_right';
@@ -66,12 +66,11 @@
 </head>
 
 <body>
-    <% include ../../../partials/header %>
+    <% include ../partials/left-pane %>
+    <% include ../partials/header %>
 
-    </div>
-
-    <section class="top-section" style="margin-top:80px;">
-
+    <div id="app-right-pane-container">
+        
         <div class="container" >
 
             <div class="text-center" >
@@ -168,13 +167,7 @@
             </div>
            
         </div>
-
-    </section>
-
-
-    <% include ../../../partials/footer %>
-
-    <script src="/src/js/pg-scripts/healthcare-provider-signup.js"></script>
+    </div>
 
 </body>
 
