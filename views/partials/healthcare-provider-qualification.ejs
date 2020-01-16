@@ -18,8 +18,41 @@
 
     <div class="form-group">
         <label for="medical-registration-year" data-required="1">Registration Year</label>
-        <input type="text" id="medical-registration-number" name="medical_registration_number" class="form-control"
+        <input type="text" id="medical-registration-year" name="medical_registration_year" class="form-control"
             placeholder="Medical Registration Number">
+    </div>
+
+    <div class="form-group">
+    
+        <label for="medical-registration-file" data-required="1">Attach your medical Registration</label>
+    
+        <div class="mt-2 p-2 position-relative text-center droppable-file-container">
+    
+            <div class="droppable-file-action-container">
+    
+                <label>Drag and drop or upload the file</label>
+    
+                <img class="droppable-file-img-preview" src="">
+    
+                <div class="position-relative mt-2 upload-file-container">
+                    <div class="upload-img-container">
+                        <input type="file" id="medical-registration-file" name="medical_registration_file"
+                            class="form-control">
+                        <div class="btn btn-success input-overlay small">Upload File</div>
+                    </div>
+                </div>
+
+            </div>
+    
+            <div class="droppable-file-preview-container">
+                <div class="droppable-file-preview-content"></div>
+                <div class="droppable-file-preview-remove">
+                    <i class="material-icons">clear</i>
+                </div>
+            </div>
+    
+        </div>
+    
     </div>
 
     <h3 class="mt-4 mb-2">Medical Qualification</h3>
@@ -32,13 +65,13 @@
     </div>
 
     <div class="form-group">
-        <label for="medical-university" data-required="1">College/University</label>
-        <input type="text" id="medical-university" name="medical_university" class="form-control" placeholder="Name of college or university got your degree"/>
+        <label for="medical-degree-year-of-completion" data-required="1">Year of Completion</label>
+        <input type="text" id="medical-degree-year-of-completion" name="medical_degree_year_of_completion" class="form-control"/>
     </div>
 
     <div class="form-group">
-        <label for="medical-degree-year-of-completion" data-required="1">Year of Completion</label>
-        <input type="text" id="medical-degree-year-of-completion" name="medical_degree_year_of_completion" class="form-control"/>
+        <label for="medical-years-of-experience" data-required="1">Years of Experience</label>
+        <input type="text" id="medical-years-of-experience" name="medical_years_of_experience" class="form-control"/>
     </div>
     
     <div class="mt-4 text-center">
@@ -49,5 +82,81 @@
             </div>
         </a>
     </div>
+
+    <script>
+
+        const loadFilePreview=function(file,me){
+
+            let reader=new FileReader();
+
+            reader.onload = function (event) {
+                //console.log(event.target.result);
+
+                $(me).find('.droppable-file-preview-container').show();
+                $(me).find('.droppable-file-action-container').hide()
+
+                //check the file type
+                if(file.type==='image/jpeg'){
+                    $(me).find('.droppable-file-preview-container .droppable-file-preview-content')
+                        .html('<img src="'+event.target.result+'">');
+                }else{
+                    $(me).find('.droppable-file-preview-container .droppable-file-preview-content')
+                        .html('<embed src="'+event.target.result+'">');
+                }
+                
+                //$('.uploader').append($img);
+            }
+
+            reader.readAsDataURL(file)
+
+        };
+
+        $('.droppable-file-container').on('drag dragstart dragend dragover dragenter dragleave drop',function(e){
+            e.preventDefault();
+            e.stopPropagation();
+
+        }).on('dragover dragenter',function(){
+            $(this).addClass('on-drag');
+
+        }).on('dragleave dragend drop',function(e){
+            $(this).removeClass('on-drag');
+
+        }).on('drop',function(e){
+
+            let me=this;
+            let file=e.originalEvent.dataTransfer.files[0];
+
+            loadFilePreview(file,me);
+
+        });
+
+        //-- bind the on change event on the input field --
+        $('.droppable-file-container').find('input[type="file"]').on('change',function(e){
+            e.preventDefault();
+            e.stopPropagation();
+            loadFilePreview(e.target.files[0],$(this).closest('.droppable-file-container'));
+        });
+
+        //--- bind remove preview button 
+        $('.droppable-file-container').find('.droppable-file-preview-remove').on('click',function(e){
+            e.preventDefault();
+            e.stopPropagation();
+            $('.droppable-file-container')
+                .find('.droppable-file-preview-container')
+                .find('.droppable-file-preview-content')
+                .html('');
+
+            $('.droppable-file-container').find('.droppable-file-preview-container').hide();
+            $('.droppable-file-container').find('.droppable-file-action-container').show();
+
+            $('.droppable-file-container')
+                .find('.droppable-file-action-container')
+                .find('input[type="file"]')
+                .val('');
+            
+        });
+
+
+    </script>
 
 </div>
