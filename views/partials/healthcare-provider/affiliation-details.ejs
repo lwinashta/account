@@ -1,0 +1,90 @@
+<div class="p-3 border rounded  bg-white" id="heathcare-provider-qualification-form">
+    <h3>Affiliated Facility Details</h3>
+    <div class="form-group mt-2">
+        <label for="medical-affiliation-facility-name" data-required="1">Facility Name </label>
+        <input type="text" id="medical-affiliation-facility-name" name="medical_affiliation_facility_name"
+            class="form-control" placeholder="Healthcare Facility Name">
+    </div>
+
+    <div class="form-group">
+        <label for="medical-affiliation-type" data-required="1">Facility Type</label>
+        <select id="medical-affiliation-type" name="medical_affiliation_type" class='form-control' data-required="1">
+
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="medical-affiliation-description">Facility Description</label>
+        <textarea class="form-control" name="medical_affiliation_description"
+            id="medical-affiliation-description"></textarea>
+    </div>
+
+    <h3 class="mt-4">Affiliated Facility Location & Contact Information</h3>
+
+    <div class="form-group mt-2">
+        <div>
+            <label>Facility Address </label>
+            <div class="ctooltip"
+                content="The address will be visible to patients or users searching the facility or your profile.">
+                <i class="material-icons align-middle">info</i>
+            </div>
+        </div>
+
+        <input type="text" class="form-control mt-2" placeholder="Street Address line #1">
+        <input type="text" class="form-control mt-2" placeholder="Street Address line #2">
+        <div class="row mt-2">
+            <div class="col">
+                <input type="text" name="city" id="city" class="form-control" placeholder="City">
+            </div>
+            <div class="col">
+                <input type="text" name="zip_code" id="zip-code" class="form-control" placeholder="Zip/Postal code">
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col">
+                <select name="state" id="state" class="form-control">
+                    <option value="IN">+91 (IN)</option>
+                </select>
+            </div>
+            <div class="col">
+                <select name="country" id="country" class="form-control">
+                    <option value="IN">+91 (IN)</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div>
+            <label>Facility Contact </label>
+            <div class="ctooltip"
+                content="The contact information will be visible to patients and users searching the facility or your profile. Please note only top 3 contact information will be visible in the search results preview screen.">
+                <i class="material-icons align-middle">info</i>
+            </div>
+        </div>
+
+        <div class="row mt-2">
+            <div class="col">
+                <select id="contact-type" class="form-control"></select>
+            </div>
+            <div class="col">
+                <input type="text" name="contact-info" id="contact-info" class="form-control"
+                    placeholder="Contact information">
+            </div>
+            <div class="col">
+                <i class="material-icons">add</i>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="mt-4 text-center">
+        <a href="/signup/otp-verification/user-entry" style="text-decoration: none;">
+            <div class="btn btn-primary pointer">
+                <i class="material-icons align-middle">trending_flat</i>
+                <label class="mb-0 pointer"> Next</label>
+            </div>
+        </a>
+    </div>
+
+</div>

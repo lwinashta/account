@@ -2,12 +2,12 @@
 <html>
 
 <head>
-    <% include ../../partials/load-scripts %>
+    <% include ../../partials/common/load-scripts %>
 
 </head>
 
 <body>
-    <% include ../../partials/header-only-name %>
+    <% include ../../partials/common/header-only-name %>
     <section style="margin-top:80px">
 
         <div class="container">
@@ -39,14 +39,33 @@
 
             <div id="form-content-container" class="mt-3 mb-5 container">
 
-                <!-- <% include ../../partials/healthcare-provider-profile %> -->
+                <!-- <% include ../../partials/healthcare-provider/personal-info %> -->
 
-                <% include ../../partials/healthcare-provider-qualification %>
+                <% include ../../partials/healthcare-provider/availability-details %>
 
             </div>
 
         </div>
     </section>
+
+    <script>
+        let _bindEvents=new bindFormControlEvents();
+        _bindEvents.container=$('#form-content-container');
+
+        _bindEvents.dragDropFileContainer();
+
+        let _lists=new listjs();
+
+        //get countries 
+        _lists.getCountries().done(c=>{
+
+            //add data to all the fields related to countries 
+
+
+        });
+
+
+    </script>
 
 </body>
 
