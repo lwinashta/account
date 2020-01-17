@@ -11,62 +11,69 @@
     
     <section style="margin-top:80px">
 
-        <div class="container">
+        <div class="p-3 text-center" id="tabs-container">
 
-            <div class="text-center">
+            <div class="tabs tab-enabled d-inline-block" stepnum="1" showel="heathcare-provider-personal-info-form">
+                <div class="btn-rounded-sides d-inline-block bg-primary">1. Personal Info</div>
+            </div>
 
-                <div class="p-3">
+            <div class="tabs tab-disabled arrow-before" stepnum="2" showel="heathcare-provider-qualification-form">
+                <div class="btn-rounded-sides d-inline-block bg-light text-muted">2. Qualification Details</div>
+            </div>
 
-                    <div class="tabs d-inline-block" stepnum="1" showel="heathcare-provider-profile-form">
-                        <div class="btn-rounded-sides d-inline-block bg-primary">1. Personal Info</div>
-                    </div>
+            <div class="tabs tab-disabled arrow-before" stepnum="3" showel="heathcare-provider-practice-selection">
+                <div class="btn-rounded-sides d-inline-block bg-light text-muted">3. Practice Details</div>
+            </div>
 
-                    <div class="tabs tab-disabled arrow-before" stepnum="2" showel="heathcare-provider-qualification-form">
-                        <div class="btn-rounded-sides d-inline-block bg-light text-muted">2. Qualification Details</div>
-                    </div>
+            <div class="tabs tab-disabled arrow-before" stepnum="4" showel="heathcare-provider-availability-details-form">
+                <div class="btn-rounded-sides d-inline-block bg-light text-muted">4. Availability Details</div>
+            </div>
 
-                    <div class="tabs tab-disabled arrow-before" stepnum="3" showel="heathcare-provider-practice-selection">
-                        <div class="btn-rounded-sides d-inline-block bg-light text-muted">3. Practice & Availability
-                            Details</div>
-                    </div>
-
-                    <div class="tabs tab-disabled arrow-before" stepnum="4" showel="heathcare-provider-create-profile-form">
-                        <div class="btn-rounded-sides d-inline-block bg-light text-muted">4. Review & Create Profile
-                        </div>
-                    </div>
-
+            <div class="tabs tab-disabled arrow-before" stepnum="5" showel="heathcare-provider-create-profile-form">
+                <div class="btn-rounded-sides d-inline-block bg-light text-muted">4. Review & Create Profile
                 </div>
             </div>
 
-            <div id="form-content-container" class="mt-3 mb-5 container">
+        </div>
 
-                <!-- <% include ../../partials/healthcare-provider/personal-info %> -->
 
-                <% include ../../partials/healthcare-provider/availability-details %>
+        <div class="container">
+
+            
+            <div id="form-parent-content-container" class="mt-3 mb-5 container">
+
+                <div stepnum='1' class="form-content-container" id="heathcare-provider-personal-info-form">
+                    <% include ../../partials/healthcare-provider/personal-info %>
+                </div>
+
+                <div stepnum='2' class="form-content-container" id="heathcare-provider-qualification-form">
+                    <% include ../../partials/healthcare-provider/qualification %>
+                </div>
+
+                <div stepnum='3' class="form-content-container" id="heathcare-provider-practice-selection">
+                    <% include ../../partials/healthcare-provider/practice-type-selection %>
+                </div>
+
+                <div stepnum="3.1" class="form-content-container" id="heathcare-provider-affiliation-details-form">
+                    <% include ../../partials/healthcare-provider/affiliation-details %>
+                </div>
+
+                <div stepnum="3.2" class="form-content-container" id="heathcare-provider-private-practice-details-form">
+                    <% include ../../partials/healthcare-provider/private-practice-details %>
+                </div>
+
+                <div stepnum='4' class="form-content-container" id="heathcare-provider-availability-details-form">
+                    <% include ../../partials/healthcare-provider/availability-details %>
+                </div>
 
             </div>
 
         </div>
+
     </section>
 
-    <script>
-        let _bindEvents=new bindFormControlEvents();
-        _bindEvents.container=$('#form-content-container');
-
-        _bindEvents.dragDropFileContainer();
-
-        let _lists=new listjs();
-
-        //get countries 
-        _lists.getCountries().done(c=>{
-
-            //add data to all the fields related to countries 
-
-
-        });
-
-
-    </script>
+    <link href="/src/css/pre-req.css" rel="stylesheet" type="text/css"/>
+    <script src="/src/js/pre-req.js" type="text/javascript"></script>
 
 </body>
 
