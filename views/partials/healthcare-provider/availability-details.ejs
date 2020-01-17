@@ -1,77 +1,22 @@
-<div class="p-3 border rounded  bg-white" id="heathcare-provider-qualification-form">
-    <h3>Availability Details</h3>
-    
-    <div class="form-group mt-2 p-2" style="border: 1px dashed lightgrey;">
-        <label for="medical-affiliation-facility-name" data-required="1">Select Days</label>
+<div class="p-3 border rounded  bg-white">
 
-        <div>
-            <div class="form-check d-inline-block">
-                <input class="form-check-input" type="checkbox" name="exampleRadios" id="exampleRadios1">
-                <label for="exampleRadios1">Sun</label>
-            </div>
-            <div class="form-check  d-inline-block ml-2">
-                <input class="form-check-input" type="checkbox" name="exampleRadios" id="exampleRadios1">
-                <label for="exampleRadios1">mon</label>
-            </div>
-            <div class="form-check d-inline-block ml-2">
-                <input class="form-check-input" type="checkbox" name="exampleRadios" id="exampleRadios1">
-                <label for="exampleRadios1">tue</label>
-            </div>
-            <div class="form-check d-inline-block ml-2">
-                <input class="form-check-input" type="checkbox" name="exampleRadios" id="exampleRadios1">
-                <label for="exampleRadios1">wed</label>
-            </div>
-            <div class="form-check d-inline-block ml-2">
-                <input class="form-check-input" type="checkbox" name="exampleRadios" id="exampleRadios1">
-                <label for="exampleRadios1">thur</label>
-            </div>
-            <div class="form-check d-inline-block ml-2">
-                <input class="form-check-input" type="checkbox" name="exampleRadios" id="exampleRadios1">
-                <label for="exampleRadios1">Fri</label>
-            </div>
-            <div class="form-check d-inline-block ml-2">
-                <input class="form-check-input" type="checkbox" name="exampleRadios" id="exampleRadios1">
-                <label for="exampleRadios1">Sat</label>
-            </div>
+    <!-- <h3>Availability Details</h3> -->
+
+    <div class="multiple-availability-outer-container">
+        
+        <div class="multiple-availability-inner-container"></div>
+
+        <div class="mt-2 add-availability-days">
+            <div class="btn btn-success"><label class="m-0 pointer">Add Days</label></div>
         </div>
 
-        <div class="form-group mt-2">
-                <div>
-                        <label for="medical-affiliation-facility-name" data-required="1">Select Hours</label>
-                        <div class="ctooltip"
-                            content="You can add multiple time slots for each day. Click on the add icon to add additional time slots">
-                            <i class="material-icons align-middle">info</i>
-                        </div>
-                    </div>
-                
-                <div class="row mt-2">
-                        <div class="col">
-                            <select id="contact-type" class="form-control"></select>
-                        </div>
-                        <div class="col">
-                            <input type="text" name="contact-info" id="contact-info" class="form-control"
-                                placeholder="Contact information">
-                        </div>
-                        <div class="col" title="Add another slot">
-                            <i class="material-icons">add</i>
-                        </div>
-                    </div>
-           </div>
-   
-    </div>
-    <div class="mt-2">
-        <div class="btn btn-success"><label class="m-0">Add Days</label></div>
     </div>
 
-    
-
-    <div class="mt-4 text-center">
-        <a href="/signup/otp-verification/user-entry" style="text-decoration: none;">
-            <div class="btn btn-primary pointer">
-                <i class="material-icons align-middle">trending_flat</i>
-                <label class="mb-0 pointer"> Next</label>
-            </div>
-        </a>
+    <div class="mt-4 text-right">
+        <div class="btn btn-primary pointer next-button" nextstepnum="5">
+            <i class="material-icons align-middle">trending_flat</i>
+            <label class="mb-0 pointer"> Next</label>
+        </div>
     </div>
 
 </div>

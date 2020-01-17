@@ -4,93 +4,96 @@
 
     <div class="form-group">
         <label for="medical-registration-number" data-required="1">Registration/License Number </label>
-        <input type="text" id="medical-registration-number" 
-            name="medical_registration_number" class="form-control"
+        <input type="text" id="medical-registration-number" name="medical_registration_number" class="form-control"
             placeholder="Medical Registration Number">
     </div>
 
     <div class="form-group">
         <label for="medical-registration-council" data-required="1">Registration Council</label>
-        <select id="medical-registration-council" 
-            name="medical_registration_council" class='form-control'
-            data-required="1"></select>
+        <div id="medical-registration-council-search-container" class="multi-select-container hide-off-focus-outer-container">
+            <div class="selected-items mb-2" id="medical-registration-council" name="medical_registration_council" data-required="1"></div>
+            <div class="position-relative search-outer-container">
+                <input type="text" class="form-control search-box" placeholder="Search Medical Council">
+                <div class="search-results-container hide-off-focus-inner-container"></div>
+            </div>
+        </div>
     </div>
 
     <div class="form-group">
         <label for="medical-registration-year" data-required="1">Registration Year</label>
-        <input type="text" id="medical-registration-year" 
-            name="medical_registration_year" class="form-control"
-            placeholder="Medical Registration Number">
+        <select id="medical-registration-year" name="medical_registration_year" class="form-control years-dropdown"></select>
     </div>
 
     <div class="form-group">
-    
+
         <label for="medical-registration-file" data-required="1">Attach your medical Registration</label>
-    
-        <div id="medical-registration-file-container" 
+
+        <div id="medical-registration-file-container"
             class="mt-2 p-2 position-relative text-center droppable-file-container">
-    
+
             <div class="droppable-file-action-container">
-    
+
                 <label>Drag and drop or upload the file</label>
-    
+
                 <img class="droppable-file-img-preview" src="">
-    
+
                 <div class="position-relative mt-2 upload-file-container">
                     <div class="upload-img-container">
-                        <input type="file" id="medical-registration-file" 
-                            name="medical_registration_file"
+                        <input type="file" id="medical-registration-file" name="medical_registration_file"
                             class="form-control">
                         <div class="btn btn-success input-overlay small">Upload File</div>
                     </div>
                 </div>
 
             </div>
-    
+
             <div class="droppable-file-preview-container">
                 <div class="droppable-file-preview-content"></div>
                 <div class="droppable-file-preview-remove">
                     <i class="material-icons">clear</i>
                 </div>
             </div>
-    
+
         </div>
-    
+
     </div>
 
     <h3 class="mt-4 mb-2">Medical Qualification</h3>
 
     <div class="form-group">
         <label for="medical-degree" data-required="1">Degree</label>
-        <select id="medical-degree" name="medical_degree" class="form-control"></select>
+        <div id="medical-degree-search-container" class="multi-select-container hide-off-focus-outer-container">
+            <div class="selected-items mb-2" name="medical_degree" id="medical-degree"></div>
+            <div class="position-relative search-outer-container">
+                <input type="text" class="form-control search-box" placeholder="Search Degree">
+                <div class="search-results-container hide-off-focus-inner-container"></div>
+            </div>
+        </div>
     </div>
 
     <div class="form-group">
         <label for="medical-degree-year-of-completion" data-required="1">Year of Completion</label>
-        <select id="medical-degree-year-of-completion" 
-            name="medical_degree_year_of_completion" class="form-control"></select>
+        <select id="medical-degree-year-of-completion" name="medical_degree_year_of_completion" class="form-control years-dropdown"></select>
     </div>
 
     <div class="form-group">
         <label for="medical-years-of-experience" data-required="1">Years of Experience</label>
-        <input type="number" 
-            id="medical-years-of-experience" 
-            name="medical_years_of_experience" class="form-control"/>
+        <input type="number" id="medical-years-of-experience" name="medical_years_of_experience" class="form-control" />
     </div>
 
     <h3 class="mt-4 mb-2">Other Details</h3>
     <div class="form-group">
-        <label for="known-languages" data-required="1">Languages</label>
-        <div id="known-languages"  name="known_languages"  
-            class="multi-select-container language-multiselect-list">
-            <div class="selected-items" name="known_languages"></div>
-            <input type="text" class="form-control" placeholder="Search Language">
-            <div class="search-results-container"></div>
+        <label for="known-languages">Languages</label>
+        <div id="known-languages-search-container" class="multi-select-container hide-off-focus-outer-container">
+            <div class="selected-items mb-2" name="known_languages" id="known-languages"></div>
+            <div class="position-relative search-outer-container">
+                <input type="text" class="form-control search-box" placeholder="Search Language">
+                <div class="search-results-container hide-off-focus-inner-container"></div>
+            </div>
         </div>
     </div>
-    </div>
-    
-    <div class="mt-4 text-right" >
+
+    <div class="mt-4 text-right">
         <div class="btn btn-primary pointer next-button" nextstepnum="3">
             <i class="material-icons align-middle">trending_flat</i>
             <label class="mb-0 pointer"> Next</label>

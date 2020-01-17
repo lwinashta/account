@@ -1,37 +1,86 @@
-<div class="p-3 border rounded  bg-white" id="heathcare-provider-practice-details-form">
+<div class="p-3 border rounded  bg-white">
+    <h3>Private Practice Details</h3>
+    <div class="form-group mt-2">
+        <label for="private-practice-name">Name </label>
+        <input type="text" id="private-practice-name" name="private_practice_name"
+            class="form-control" placeholder="Name of practice establishment">
+    </div>
 
-   <div class="mt-2" style="width:300px;margin:0 auto;">
-       <div class="form-group">
-           <div class="form-check">
-               <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" >
-               <label class="text-capitalize" style="font-size: 1em;" for="exampleRadios1">Affiliated to Healthcare Facility</label>
-           </div>
-       </div>
-       <div class="form-group">
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" >
-                <label class="text-capitalize" style="font-size: 1em;" for="exampleRadios1">Private Practice</label>
+    <div class="form-group">
+        <label for="private-practice-type" data-required="1">Practice Facility Type</label>
+        <select id="private-practice-type" name="private_practice_type" 
+            class='form-control private-practice-type-list' data-required="1"></select>
+    </div>
+
+    <div class="form-group">
+        <label for="private-practice-description">Practice Facility Description</label>
+        <textarea class="form-control" name="private_practice_description"
+            id="private-practice-description"></textarea>
+    </div>
+
+    <div class="form-group mt-2">
+        <div>
+            <label>Practice Address </label>
+            <div class="ctooltip"
+                content="The address will be visible to patients or users searching your profile.">
+                <i class="material-icons align-middle">info</i>
             </div>
         </div>
-   </div>
 
-   <hr/>
-
-   <div class="mt-2" style="width:350px;margin:0 auto;">
-        <div class="p-2" style="font-size:14px;border:1px dotted lightgrey;background-color: cadetblue;color: white;">
-            As free member you are eligible to add only <i>one</i> practice or affiliation. 
-            You can add additional practices or affiliations once you subscribe to our <b><i>Member Plus</i></b> account after completing your profile information. 
-        </div>
-   </div>
-
-    
-    <div class="mt-4 text-center">
-        <a href="/signup/otp-verification/user-entry" style="text-decoration: none;">
-            <div class="btn btn-primary pointer">
-                <i class="material-icons align-middle">trending_flat</i>
-                <label class="mb-0 pointer"> Next</label>
+        <input type="text" id="private-practice-street-address-1" name="private_practice_street_address_1" 
+            class="form-control mt-2" placeholder="Street Address line #1">
+        <input type="text" id="private-practice-street-address-2" name="private_practice_street_address_2" 
+            class="form-control mt-2" placeholder="Street Address line #2">
+        
+        <div class="row mt-2">
+            <div class="col">
+                <input type="text" name="private_practice_city" id="private-practice-city" 
+                    class="form-control" placeholder="City">
             </div>
-        </a>
+            <div class="col">
+                <input type="text" name="private_practice_zip_code" id="private-practice-zip-code" 
+                    class="form-control" 
+                    placeholder="Zip/Postal code">
+            </div>
+        </div>
+
+        <div class="row mt-2">
+            <div class="col">
+                <input type="text" name="private_practice_state" id="private-practice-address-state" 
+                    class="form-control" 
+                    placeholder="State">
+            </div>
+            <div class="col">
+                <select name="private_practice_country" id="private-practice-country" class="form-control country-name-option-list"></select>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div>
+            <label>Practice Contact </label>
+            <div class="ctooltip"
+                content="The contact information will be visible to patients and users searching your profile. Please note only top 3 contact information will be visible in the search results preview screen.">
+                <i class="material-icons align-middle">info</i>
+            </div>
+        </div>
+
+        <div class="mt-2 multiple-contact-info-outer-container">
+            <div class="multiple-contact-info-inner-container multiple-data-entry"></div>
+            <div class="mt-2 add-contact">
+                <div class="btn btn-success">
+                    <label class="pointer m-0">Add Contact</label>
+                </div>
+            </div>
+                        
+        </div>
+    </div>
+
+    <div class="mt-4 text-right" >
+        <div class="btn btn-primary pointer next-button" nextstepnum="4">
+            <i class="material-icons align-middle">trending_flat</i>
+            <label class="mb-0 pointer"> Next</label>
+        </div>
     </div>
 
 </div>

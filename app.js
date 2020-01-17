@@ -60,7 +60,7 @@ const accountRoutes=require(globalFsPath+'/account/routes')(app);
 //     res.render('pages/reset-passw');
 // });
 
-app.get('/pre-req/:accounttype/:accountid',(req,res)=>{
+app.get('/enroll/:accounttype/:accountid',(req,res)=>{
     
     let accounttype = req.params.accounttype.toLowerCase(); 
     let accountid = req.params.accountid.toLowerCase(); 
@@ -68,7 +68,7 @@ app.get('/pre-req/:accounttype/:accountid',(req,res)=>{
     switch (accounttype) {
         case 'healthcare-provider':
             //get the provider information using the account id
-            res.render(`pages/pre-req/healthcare-provider-pre-req`);
+            res.render(`pages/enrollment/healthcare-provider`);
             break;
         
         case 'healthcare-facility':
