@@ -1,19 +1,37 @@
 <div class="p-3 border rounded  bg-white">
 
-    <div class="form-group">
+    <div class="form-group mt-4">
         <div class="row">
-            <div class="col">
-                <label for="first-name" data-required="1">First Name </label>
-                <input type="text" name="first_name" id="first-name" class="form-control" placeholder="First name">
+            <div class="col-sm-4">
+                <div class="mx-auto position-relative text-center" style="width:150px">
+                    <img src="/gfs/images/noimage-icon-x225.png" class="rounded-circle"
+                        alt="[PROFILE PIC NOT FOUND. TRY UPLOADING AGAIN]" style="max-width: 100%;">
+                    <div class="upload-img-container" style="top: 45%;right:-10px;">
+                        <input id="update-profile-img-input" 
+                            name="upload-user-profile-image" type="file"
+                            title="upload image">
+                        <div class="input-overlay" >
+                            <i class="material-icons">camera_alt</i>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="col">
-                <label for="last-name" data-required="1">Last Name </label>
-                <input type="text" name="last_name" id="last-name" class="form-control" placeholder="Last name">
+            <div class="col-sm-8">
+                <div class="form-group">
+                    <label for="first-name" data-required="1">First Name </label>
+                    <input type="text" name="first_name" id="first-name" data-required="1" 
+                        class="form-control entry-field" placeholder="First name">
+                </div>
+                <div class="form-group">
+                    <label for="last-name" data-required="1">Last Name </label>
+                    <input type="text" name="last_name" id="last-name" data-required="1" 
+                        class="form-control entry-field" placeholder="Last name">
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="form-group">
+    <div class="form-group mt-2">
         <div>
             <label for="personal-email-id" data-required="1">Email ID </label>
 
@@ -23,8 +41,10 @@
                 <i class="material-icons align-middle">info</i>
             </div>
         </div>
-        <input id="personal-email-id" name="personal_email_id" class='form-control' type="email" data-required="1"
-            autocomplete="off">
+        <input id="personal-email-id" name="personal_email_id" 
+            data-required="1" class='form-control entry-field' 
+            type="email" data-required="1"
+            autocomplete="off" placeholder="Email Id">
     </div>
 
     <div class="form-group">
@@ -39,11 +59,15 @@
 
         <div class="row">
             <div class="col">
-                <select name="country_code" id="country-code" class="form-control country-dial-code-option-list"></select>
+                <select name="country_code" 
+                    data-required="1" id="country-code" 
+                    class="form-control entry-field country-dial-code-option-list" 
+                    placeholder="country code"></select>
             </div>
             <div class="col">
                 <input type="text" name="personal_primary_number" 
-                    id="personal-primary-number" class="form-control"
+                    id="personal-primary-number" 
+                    class="form-control entry-field" data-required="1"  
                     placeholder="Phone Number">
             </div>
         </div>
@@ -56,22 +80,28 @@
                 <i class="material-icons align-middle">info</i>
             </div>
         </div>
-        <select id="specialty" name="specialty" class='form-control specialty-option-list' data-required="1"></select>
+        <select id="specialty"  name="specialty"  
+            class='form-control specialty-option-list entry-field' 
+            data-required="1" placeholder="Specialty"></select>
     </div>
 
     <div class="form-group">
         <div>
-            <label>Address </label>
+            <label>Address <i class="small text-muted">(Optional)</i></label>
             <div class="ctooltip"
                 content="The address will not be visible to any users. Address information may be used during the trasactions.">
                 <i class="material-icons align-middle">info</i>
             </div>
         </div>
 
-        <input type="text" id="personal-address-street-address-1" name="personal_address_street_address_1" 
-            class="form-control mt-2" placeholder="Street Address line #1">
-        <input type="text" id="personal-address-street-address-2" name="personal_address_street_address_2" 
-            class="form-control mt-2" placeholder="Street Address line #2">
+        <input type="text" name="personal_address_street_address_1"
+             id="personal-address-street-address-1" 
+            class="form-control mt-2 entry-field" 
+            placeholder="Street Address line #1">
+        <input type="text" name="personal_address_street_address_2"
+            id="personal-address-street-address-2" 
+            class="form-control mt-2 entry-field" 
+            placeholder="Street Address line #2">
         
         <div class="row mt-2">
             <div class="col">
@@ -87,20 +117,24 @@
 
         <div class="row mt-2">
             <div class="col">
-                <input type="text" name="personal_address_state" id="personal-address-state" 
-                    class="form-control" 
+                <input type="text" name="personal_address_state" 
+                    id="personal-address-state" 
+                    class="form-control entry-field" 
                     placeholder="State">
             </div>
             <div class="col">
-                <select name="personal_address_country" id="personal-address-country" class="form-control country-name-option-list"></select>
+                <select name="personal_address_country" 
+                    id="personal-address-country" 
+                    class="form-control country-name-option-list entry-field"></select>
             </div>
         </div>
     </div>
 
-    <div class="mt-4 text-right" >
-        <div class="btn btn-primary pointer next-button" nextstepnum="2">
-            <i class="material-icons align-middle">trending_flat</i>
-            <label class="mb-0 pointer"> Next</label>
+    <div style="height: 40px;" class="mt-4 pt-2 border-top">
+        <div class="float-right">
+            <div class="btn btn-primary pointer next-button step-click" stepnum="2">
+                <label class="mb-0 mt-1 pointer align-middle"> Next → </label>
+            </div>
         </div>
     </div>
 

@@ -1,3 +1,8 @@
 .form-content-container{
     display: none;
 }
+
+.ctooltip i{
+    font-size: 18px;
+    color: dodgerblue;
+}

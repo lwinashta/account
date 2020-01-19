@@ -1,20 +1,33 @@
 <div class="p-3 border rounded  bg-white">
     <h3>Private Practice Details</h3>
     <div class="form-group mt-2">
-        <label for="private-practice-name">Name </label>
+        <div>
+            <label for="private-practice-name">Name <i class="small text-muted">(Optional)</i></label>
+            <div class="ctooltip"
+                content="The facility type will be visible to patients or users searching the facility or your profile.">
+                <i class="material-icons align-middle">info</i>
+            </div>
+        </div>
         <input type="text" id="private-practice-name" name="private_practice_name"
-            class="form-control" placeholder="Name of practice establishment">
+            class="form-control" placeholder="Name of the establishment">
     </div>
 
     <div class="form-group">
-        <label for="private-practice-type" data-required="1">Practice Facility Type</label>
+        <label for="private-practice-type" data-required="1">Practice Facility Type </label>
         <select id="private-practice-type" name="private_practice_type" 
-            class='form-control private-practice-type-list' data-required="1"></select>
+            class='form-control medical-facility-type-list' data-required="1"></select>
     </div>
 
     <div class="form-group">
-        <label for="private-practice-description">Practice Facility Description</label>
-        <textarea class="form-control" name="private_practice_description"
+        <div>
+            <label for="private-practice-description">Practice Description/ Services Available <i>(optional)</i>(optional)</label>
+            <div class="ctooltip"
+                content="The facility type will be visible to patients or users searching the facility or your profile.">
+                <i class="material-icons align-middle">info</i>
+            </div>
+        </div>
+        <textarea class="form-control" 
+            name="private_practice_description"
             id="private-practice-description"></textarea>
     </div>
 
@@ -60,7 +73,7 @@
         <div>
             <label>Practice Contact </label>
             <div class="ctooltip"
-                content="The contact information will be visible to patients and users searching your profile. Please note only top 3 contact information will be visible in the search results preview screen.">
+                content="The contact information will be visible to patients and users searching your profile.">
                 <i class="material-icons align-middle">info</i>
             </div>
         </div>
@@ -76,10 +89,30 @@
         </div>
     </div>
 
-    <div class="mt-4 text-right" >
-        <div class="btn btn-primary pointer next-button" nextstepnum="4">
-            <i class="material-icons align-middle">trending_flat</i>
-            <label class="mb-0 pointer"> Next</label>
+    <div class="mt-5">
+        <h3 >Your Availability At Above Location</h3>
+        <div class="ctooltip"
+                content="The availability information is utilized to show next available appointments to users or patients.">
+                <i class="material-icons align-middle">info</i>
+            </div>
+    </div>
+
+    <div class="mt-2">
+        <% include availability-details %>
+    </div>
+
+    <div style="height: 40px;" class="mt-4 pt-2 border-top">
+        <div class="float-left">
+            <div class="btn btn-secondary pointer previous-step-button step-click" stepnum="3">
+                <label class="mb-0 mt-1 pointer align-middle"> ← Previous</label>
+            </div>
+        </div>
+
+        <div class="float-right">
+            <div class="btn btn-success pointer create-profile-button">
+                <i class="material-icons align-middle">person</i>
+                <label class="mb-0 pointer"> SAVE AND CREATE PROFILE</label>
+            </div>
         </div>
     </div>
 
