@@ -9,10 +9,10 @@
                 <i class="material-icons align-middle">info</i>
             </div>
         </div>
-        <div id="medical-degree-search-container" 
+        <div name="medical_degree"  id="medical-degree-search-container" 
             class="multi-select-container hide-off-focus-outer-container entry-field" 
             data-required="1" placeholder="Medical Degree">
-            <div class="selected-items mb-2" name="medical_degree" id="medical-degree"></div>
+            <div class="selected-items mb-2" id="medical-degree"></div>
             <div class="position-relative search-outer-container">
                 <input type="text" class="form-control search-box" placeholder="Search Degree">
                 <div class="search-results-container hide-off-focus-inner-container"></div>
@@ -106,16 +106,14 @@
             data-required="1"
             placeholder="Medical Registration">
 
-            <div class="droppable-file-action-container">
+            <div class="droppable-file-action-container entry-field">
 
                 <label>Drag and drop or upload the file</label>
 
-                <img class="droppable-file-img-preview" src="">
-
                 <div class="position-relative mt-2 upload-file-container">
                     <div class="upload-img-container">
-                        <input type="file" id="medical-registration-file" 
-                            name="medical_registration_file"
+                        <input type="file" 
+                            id="medical-registration-file" 
                             class="form-control">
                         <div class="btn btn-success input-overlay small">Upload File</div>
                     </div>
@@ -138,12 +136,17 @@
     <h3 class="mt-4 mb-2">Other Details</h3>
     <div class="form-group">
         <label for="known-languages">Languages <i class="small text-muted">(Optional)</i></label>
-        <div id="known-languages-search-container" class="multi-select-container hide-off-focus-outer-container">
-            <div class="selected-items mb-2" name="known_languages" id="known-languages"></div>
+        
+        <div name="known_languages"  
+            id="known-languages-search-container" 
+            class="multi-select-container hide-off-focus-outer-container entry-field">
+
+            <div class="selected-items mb-2" id="known-languages"></div>
             <div class="position-relative search-outer-container">
                 <input type="text" class="form-control search-box" placeholder="Search Language">
                 <div class="search-results-container hide-off-focus-inner-container"></div>
             </div>
+            
         </div>
     </div>
 

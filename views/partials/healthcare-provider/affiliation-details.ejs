@@ -8,7 +8,8 @@
                 <i class="material-icons align-middle">info</i>
             </div>
         </div>
-        <input type="text" id="medical-facility-name" name="medical_facility_name"
+        <input type="text" name="medical_facility_name"
+            id="medical-facility-name" data-required="1"
             class="form-control" placeholder="Healthcare Facility Name">
     </div>
 
@@ -20,20 +21,25 @@
                 <i class="material-icons align-middle">info</i>
             </div>
         </div>
-        <select id="medical-facility-type" name="medical_facility_type" 
-            class='form-control medical-facility-type-list' data-required="1"></select>
+
+        <select name="medical_facility_type" 
+            id="medical-facility-type" 
+            class='form-control medical-facility-type-list entry-field' 
+            data-required="1" placeholder="Facility type"></select>
     </div>
 
     <div class="form-group">
         <div>
-            <label for="medical-facility-description">Facility Description/ Available Services</label>
+            <label for="medical-facility-description">Facility Description/ Available Services <i class="small text-muted">(Optional)</i></label>
             <div class="ctooltip"
                 content="The facility description will be visible to patients or users searching the facility or your profile.">
                 <i class="material-icons align-middle">info</i>
             </div>
         </div>
-        <textarea class="form-control" name="medical_facility_description"
-            id="medical-facility-description"></textarea>
+        <textarea name="medical_facility_description"
+            id="medical-facility-description" 
+            class="form-control entry-field" placeholder="Description"></textarea>
+
         <p class="text-muted mt-2 small"> Please provide brief description about the facility and services provided (e.g., general and specialty surgical services, x ray/radiology services, laboratory services)</p>
     </div>
 
@@ -48,31 +54,49 @@
             </div>
         </div>
 
-        <input type="text" id="medical-facility-street-address-1" name="medical_facility_street_address_1" 
-            class="form-control mt-2" placeholder="Street Address line #1">
-        <input type="text" id="medical-facility-street-address-2" name="medical_facility_street_address_2" 
-            class="form-control mt-2" placeholder="Street Address line #2">
+        <div class="form-group">
+            <input type="text" name="medical_facility_street_address_1" 
+                id="medical-facility-street-address-1" 
+                class="form-control mt-2 entry-field" data-required="1"
+                placeholder="Street Address line #1">
+        </div>
+
+        <div class="form-group">
+            <input type="text" name="medical_facility_street_address_2" 
+                id="medical-facility-street-address-2" 
+                class="form-control mt-2 entry-field" 
+                placeholder="Street Address line #2 (Optional)">
+        </div>
         
         <div class="row mt-2">
+
             <div class="col">
-                <input type="text" name="medical_facility_city" id="medical-facility-city" 
-                    class="form-control" placeholder="City">
+                <input type="text" name="medical_facility_city" 
+                    id="medical-facility-city" data-required="1"
+                    class="form-control entry-field" placeholder="City">
             </div>
+
             <div class="col">
-                <input type="text" name="medical_facility_zip_code" id="medical-facility-zip-code" 
-                    class="form-control" 
+                <input type="text" name="medical_facility_zip_code" 
+                    id="medical-facility-zip-code" 
+                    class="form-control entry-field" data-required="1"
                     placeholder="Zip/Postal code">
             </div>
         </div>
 
         <div class="row mt-2">
             <div class="col">
-                <input type="text" name="medical_facility_state" id="medical-facility-address-state" 
-                    class="form-control" 
+                <input type="text" name="medical_facility_state" 
+                    id="medical-facility-address-state" 
+                    class="form-control entry-field" data-required="1"
                     placeholder="State">
             </div>
             <div class="col">
-                <select name="medical_facility_country" id="medical-facility-country" class="form-control country-name-option-list"></select>
+                <select name="medical_facility_country" 
+                    id="medical-facility-country" 
+                    class="form-control country-name-option-list entry-field"  
+                    placeholder="country"
+                    data-required="1"></select>
             </div>
         </div>
     </div>
@@ -87,7 +111,7 @@
         </div>
 
         <div class="mt-2 multiple-contact-info-outer-container">
-            <div class="multiple-contact-info-inner-container multiple-data-entry"></div>
+            <div class="multiple-contact-info-inner-container multiple-data-entry entry-field" data-required="1"></div>
             <div class="mt-2 add-contact d-inline-block">
                 <div class="btn btn-success">
                     <label class="pointer m-0">Add Contact</label>
@@ -105,7 +129,7 @@
             </div>
     </div>
 
-    <div class="xmt-2">
+    <div class="mt-2">
         <% include availability-details %>
     </div>
 

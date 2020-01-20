@@ -1,5 +1,7 @@
-const _bindEvents = new bindFormControlEvents();
-const _formjs=new formjs();
+const _formjs = new formjs();
+const _bindEvents = new bindFormControlEvents({
+    "formData": _formjs.formData
+});
 
 /**
  * @params null.
@@ -215,13 +217,14 @@ const bindListFields = async function () {
  * @bindAddcontact - to add multiple contact information
  */
 const bindAddContact = function () {
-    //bind multiple contact entry container 
-    $('.multiple-contact-info-outer-container').find('.add-contact').on('click', function () {
-        $(this).closest('.multiple-contact-info-outer-container')
-            .find('.multiple-contact-info-inner-container')
-            .append(`<div class="row mt-2 row-item">
+
+    let addContactLayout=function(parent){
+        let items=$(parent).find('.item').length;
+        return `<div class="row mt-2 row-item item">
             <div class="col">
-                <select name="affiliation_contact_type" class="form-control">
+                <select name="affiliation_contact_type" 
+                    class="form-control each-entry-field" data-required="1"
+                    placeholder="Contact Type">
                     <option value="">- Select contact type -</option>
                     <option value="Home Phone">Home Phone</option>
                     <option value="Mobile Phone">Mobile Phone</option>
@@ -231,13 +234,24 @@ const bindAddContact = function () {
                 </select>
             </div>
             <div class="col">
-                <input type="text" name="contact_info" class="form-control"
+                <input type="text" name="contact_info" 
+                    class="form-control each-entry-field" data-required="1"
                     placeholder="Contact information">
             </div>
-            <div class="col pointer remove-row-item">
+            ${items>0?`<div class="col pointer remove-row-item">
                 <i class="material-icons align-middle text-danger">clear</i>
-            </div>
-        </div>`);
+            </div>`:`<div class="col"></div>`}
+        </div>`
+    };
+
+    //bind multiple contact entry container 
+    $('.multiple-contact-info-outer-container').find('.add-contact').on('click', function () {
+        
+        let innerContainer=$(this).closest('.multiple-contact-info-outer-container')
+            .find('.multiple-contact-info-inner-container');
+
+        $(innerContainer).append(addContactLayout(innerContainer));
+
     });
 
     $('.multiple-contact-info-outer-container').find('.add-contact').trigger('click');
@@ -247,7 +261,6 @@ const bindAddContact = function () {
  * bind add multiple availability slots
  */
 const bindAddAvailability = function () {
-
 
     let wkdays = [{
         "name": "sunday",
@@ -285,41 +298,55 @@ const bindAddAvailability = function () {
         loopHoursMoment.add(15, 'minutes');
     }
 
-    let addTimeSlot = function () {
-        return `<div class="row-item mt-2">
-            <select name="availability_from_slot_time" style="width: auto;" class="form-control d-inline-block">
-            ${hours.map(e2 => {
-            return `<option value='${JSON.stringify(e2)}'>${e2.displayFormat}</option>`
-        }).join('')}
-            </select>
-            <div class="ml-2 mr-2 d-inline-block"><i> to</i></div>
-            <select name="availability_to_slot_time" style="width: auto;" class="form-control d-inline-block">
-                ${hours.map(e2 => {
-            return `<option value='${JSON.stringify(e2)}'>${e2.displayFormat}</option>`
-        }).join('')}
-            </select>
-             <div class="pointer remove-row-item d-inline-block ml-2">
-                <i class="material-icons align-middle text-danger">clear</i>
+    let addTimeSlot = function (parent) {
+
+        let items=$(parent).find('.item').length;
+
+        return `<div class="row-item item mt-2">
+            <div class="form-group d-inline-block" style="width:auto">
+                <select name="availability_from_slot_time" style="width: auto;" 
+                    class="form-control d-inline-block each-entry-field" 
+                    data-required="1" placeholder="From Time">
+                    <option value=''> - Select from Time - </option>
+                    ${hours.map(e2 => {
+                        return `<option value='${JSON.stringify(e2)}'>${e2.displayFormat}</option>`
+                    }).join('')}
+                </select>
             </div>
+
+            <div class="ml-2 mr-2 d-inline-block"><i> to</i></div>
+
+            <div class="form-group d-inline-block" style="width:auto">
+                <select name="availability_to_slot_time" style="width: auto;" 
+                class="form-control d-inline-block each-entry-field" 
+                data-required="1" placeholder="To Time">
+                <option value=''> - Select to Time - </option>
+                    ${hours.map(e2 => {
+                    return `<option value='${JSON.stringify(e2)}'>${e2.displayFormat}</option>`
+                }).join('')}    
+            </select>
+            </div>
+            
+            ${items>0?`<div class="pointer remove-row-item d-inline-block ml-2">
+                <i class="material-icons align-middle text-danger">clear</i>
+            </div>`:''}
+             
         </div>`;
     };
 
-    //bind multiple availability entry 
-    $('.multiple-availability-outer-container')
-        .find('.add-availability-days').click(function () {
+    let addAvailableDays=function(parent,indx){
 
-            let innerContainer = $(this)
-                .closest('.multiple-availability-outer-container')
-                .find('.multiple-availability-inner-container');
+        let items=$(parent).find('.item').length;
 
-            let indx = $(innerContainer).find('.availability-row-container').length;
-
-            $(innerContainer).append(`<div class="row-item form-group mt-2 p-2 availability-row-container" style="border: 1px dashed lightgrey;">
+        return `<div class="row-item item form-group mt-2 p-2 availability-row-container" style="border: 1px dashed lightgrey;">
+            
             <label data-required="1">Select Days</label>
-            <div class="pointer remove-row-item float-right">
+
+            ${items>0?`<div class="pointer remove-row-item float-right">
                 <i class="material-icons align-middle text-danger">clear</i>
-            </div>
-            <div class="availability-day-container">
+            </div>`:''}
+
+            <div class="availability-day-container checkbox-control-group each-entry-field" data-required="1">
                 ${wkdays.map((e1, j) => {
                 return `<div class="form-check d-inline-block mr-3">
                         <input id="availability-${e1.abbr}-${j}-${indx}" class="form-check-input" 
@@ -338,34 +365,50 @@ const bindAddAvailability = function () {
                     </div>
                 </div>
 
-                <div class="mt-2 availability-hours-session-container"></div>
+                <div class="mt-2 availability-hours-session-container multiple-data-entry each-entry-field" data-required="1"></div>
                 
                 <div class="mt-2 add-time-slot d-inline-block pointer" title="Add another slot">
-                    <div class="btn btn-info"> <label class="m-0">Add Time Slot</label></div>
+                    <div class="btn btn-info"> <label class="m-0 pointer">Add Time Slot</label></div>
                 </div>
+
             </div>
-        </div>`);
-        });
+        </div>`;
+    }
 
     $('.multiple-availability-outer-container').on('click', '.add-time-slot', function () {
-        $(this).closest('.availability-hours-container')
-            .find('.availability-hours-session-container')
-            .append(addTimeSlot());
+
+        let innerContainer=$(this).closest('.availability-hours-container')
+            .find('.availability-hours-session-container');
+
+        $(innerContainer).append(addTimeSlot(innerContainer));
+
+    });
+
+    //bind multiple availability entry 
+    $('.multiple-availability-outer-container').find('.add-availability-days').click(function () {
+
+        let innerContainer = $(this)
+            .closest('.multiple-availability-outer-container')
+            .find('.multiple-availability-inner-container');
+
+        let indx = $(innerContainer).find('.availability-row-container').length;
+
+        $(innerContainer).append(addAvailableDays(innerContainer, indx));
+
+        let items=$(innerContainer).find('.availability-row-container');
+        $(items[indx]).find('.add-time-slot').trigger('click');
+
     });
 
     $('.multiple-availability-outer-container')
         .find('.add-availability-days')
         .trigger('click');
 
-    $('.multiple-availability-outer-container')
-        .find('.multiple-availability-inner-container .add-time-slot')
-        .trigger('click');
-
 };
 
 const bindStepClickButton = function () {
 
-    let goToPg=function(btn){
+    let goToPg = function (btn) {
 
         let stepnum = parseFloat($(btn).attr('stepnum'));
 
@@ -389,7 +432,6 @@ const bindStepClickButton = function () {
             //--- just show the tab 
             //hide all form container
             $('.form-content-container').hide();
-
             $('.form-content-container[stepnum  ="' + stepnum + '"]').show();
 
         }
@@ -398,18 +440,41 @@ const bindStepClickButton = function () {
     $('.step-click').click(function () {
 
         //if the step click is next button then check the required fields
-        if($(this).hasClass('next-button') ){
+        if ($(this).hasClass('next-button')) {
 
-            _formjs.validateForm($(this).closest('.form-content-container')).then(c=>{
-                console.log(c);
+            let formValidation=_formjs.validateForm($(this).closest('.form-content-container'),'entry-field');
+
+            if(formValidation===0){
+                //add data to formdata array 
+                _formjs.aggregateData($(this).closest('.form-content-container'));
+
+                console.log(_formjs.formData);
+
                 goToPg(this);
-            });
-            
-        }else if($(this).hasClass('previous-step-button')){
+            }
+
+        } else if ($(this).hasClass('previous-step-button')) {
             goToPg(this);
         }
 
     });
+};
+
+const bindCreateProfileButton = function () {
+
+    $('.create-profile-button').click(function () {
+
+        let formValidation=_formjs.validateForm($(this).closest('.form-content-container'),'entry-field');
+
+            if(formValidation===0){
+                //add data to formdata array 
+                _formjs.aggregateData($(this).closest('.form-content-container'));
+
+                console.log(_formjs.formData);
+
+            }
+    });
+
 };
 
 /** INITIATE EXECUTION */
@@ -418,17 +483,45 @@ $('document').ready(function () {
     //insert all the drop downs options
     $('#tabs-container').on('click', '.tab-enabled', function () {
 
-        //hide all form container
-        $('.form-content-container').hide();
+        let me=this;
 
-        //show the element selected 
-        let showel = $(this).attr('showel');
-        $(`#${showel}`).show();
+        let goToPg=function(){
+            //hide all form container
+            $('.form-content-container').hide();
+    
+            //show the element selected 
+            let showel = $(me).attr('showel');
+            $(`#${showel}`).show();
 
-        //add checkmark 
-        $('#tabs-container').find('.tabs .btn-rounded-sides').removeClass('bg-info');
+            //add checkmark 
+            $('#tabs-container').find('.tabs .btn-rounded-sides').removeClass('bg-info');
 
-        $(this).find('.btn-rounded-sides').addClass('bg-info');
+            $(me).find('.btn-rounded-sides').addClass('bg-info');
+        };
+
+        //check all required elements for the current visible tab 
+        let visibleFormContainer = $('.form-content-container:visible');
+
+        //check if the stepnum for the current page is more than the clicked tab
+        //if the user is going to prev step - dont need valdation of current page 
+        // validatio is required only if user is going to next page 
+        let currentstepnum = parseFloat($(visibleFormContainer).attr('stepnum'));
+        let clickedstepnum = parseFloat($(this).attr('stepnum'));
+
+        if (currentstepnum < clickedstepnum) {
+
+            let validation=_formjs.validateForm($(visibleFormContainer),'entry-field');
+            if(validation===0){
+                //add data to formdata array 
+                _formjs.aggregateData($(visibleFormContainer));
+    
+                goToPg();
+            }
+
+        }else{
+
+            goToPg();
+        }
 
     });
 
@@ -442,6 +535,7 @@ $('document').ready(function () {
     bindAddContact();
     bindAddAvailability();
     bindStepClickButton();
+    bindCreateProfileButton();
 
     //--- bind lists ---- 
     bindListFields().then(function () {
@@ -460,7 +554,7 @@ $('document').ready(function () {
                 $('#heathcare-provider-practice-selection')
                     .find('.next-button').attr('stepnum', '3.1');
             }
-    });
+        });
 
     //bind all the remove-row-item buttons
     $('#form-parent-content-container').on('click', '.remove-row-item', function () {

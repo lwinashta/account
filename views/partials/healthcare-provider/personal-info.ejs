@@ -7,8 +7,9 @@
                     <img src="/gfs/images/noimage-icon-x225.png" class="rounded-circle"
                         alt="[PROFILE PIC NOT FOUND. TRY UPLOADING AGAIN]" style="max-width: 100%;">
                     <div class="upload-img-container" style="top: 45%;right:-10px;">
-                        <input id="update-profile-img-input" 
-                            name="upload-user-profile-image" type="file"
+                        <input type="file" name="personal_profile_image" 
+                            id="update-profile-img-input" 
+                            class="entry-field" 
                             title="upload image">
                         <div class="input-overlay" >
                             <i class="material-icons">camera_alt</i>
@@ -19,12 +20,14 @@
             <div class="col-sm-8">
                 <div class="form-group">
                     <label for="first-name" data-required="1">First Name </label>
-                    <input type="text" name="first_name" id="first-name" data-required="1" 
+                    <input type="text" name="first_name" 
+                        id="first-name" data-required="1" 
                         class="form-control entry-field" placeholder="First name">
                 </div>
                 <div class="form-group">
                     <label for="last-name" data-required="1">Last Name </label>
-                    <input type="text" name="last_name" id="last-name" data-required="1" 
+                    <input type="text" name="last_name" 
+                        id="last-name" data-required="1" 
                         class="form-control entry-field" placeholder="Last name">
                 </div>
             </div>
@@ -41,10 +44,9 @@
                 <i class="material-icons align-middle">info</i>
             </div>
         </div>
-        <input id="personal-email-id" name="personal_email_id" 
-            data-required="1" class='form-control entry-field' 
-            type="email" data-required="1"
-            autocomplete="off" placeholder="Email Id">
+        <input type="email"  id="personal-email-id" name="personal_email_id" 
+            class='form-control entry-field'  data-required="1"
+            placeholder="Email Id" autocomplete="off" >
     </div>
 
     <div class="form-group">
