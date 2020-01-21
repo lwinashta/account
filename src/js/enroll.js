@@ -213,6 +213,61 @@ const bindListFields = async function () {
 
 };
 
+//*** VALIDATE FORM FIELDS  
+const validateForm=function(form){
+    let errCount=_formjs.validateForm($(form),'entry-field');
+    errCount+=_formjs.validateForm($(form).find('.multiple-data-entry'),'each-entry-field');
+    return errCount
+};
+
+//**** GET FORM DATA */
+const aggregateData=function(form){
+
+    $(form).find('.entry-field').each(function(){
+        _formjs.formData=Object.assign(_formjs.formData,_formjs.getFieldData(this));
+    });
+
+    // -- get data for the multiple entry fields --- 
+    //-- start with data-level 1 --- 
+    $(form).find('.multiple-data-entry[data-level="1"]').each(function(){
+
+        let level=$(this).attr('data-level');
+        let name=$(this).attr('name');
+
+        _formjs.formData[name]=[];
+
+        $(this).find('.item').each(function () {
+
+            let fd = {};
+
+            $(this).find('.each-entry-field').each(function () {
+
+                if ($(this).closest(`.multiple-data-entry[data-level="${level}"]`).length > 0) {
+                    fd = Object.assign(fd, _formjs.getFieldData(this));
+                }
+                
+            });
+
+            _formjs.formData[name].push(fd);
+
+        });
+
+
+
+        // if($(this).parents('.multiple-data-entry').length===0){
+            
+        //     let name=$(this).attr('name');
+
+        //     _formjs.formData[name]=[];//reset the array for multiple data entry 
+            
+            
+
+        // }
+        
+    });
+
+}
+
 /**
  * @bindAddcontact - to add multiple contact information
  */
@@ -346,7 +401,8 @@ const bindAddAvailability = function () {
                 <i class="material-icons align-middle text-danger">clear</i>
             </div>`:''}
 
-            <div class="availability-day-container checkbox-control-group each-entry-field" data-required="1">
+            <div class="availability-day-container checkbox-control-group each-entry-field" 
+                data-required="1" name="availability_days">
                 ${wkdays.map((e1, j) => {
                 return `<div class="form-check d-inline-block mr-3">
                         <input id="availability-${e1.abbr}-${j}-${indx}" class="form-check-input" 
@@ -365,7 +421,8 @@ const bindAddAvailability = function () {
                     </div>
                 </div>
 
-                <div class="mt-2 availability-hours-session-container multiple-data-entry each-entry-field" data-required="1"></div>
+                <div class="mt-2 availability-hours-session-container multiple-data-entry" 
+                    data-required="1" data-level="2" name="availability_time_slots"></div>
                 
                 <div class="mt-2 add-time-slot d-inline-block pointer" title="Add another slot">
                     <div class="btn btn-info"> <label class="m-0 pointer">Add Time Slot</label></div>
@@ -442,11 +499,11 @@ const bindStepClickButton = function () {
         //if the step click is next button then check the required fields
         if ($(this).hasClass('next-button')) {
 
-            let formValidation=_formjs.validateForm($(this).closest('.form-content-container'),'entry-field');
+            let formValidation=validateForm($(this).closest('.form-content-container'));
 
             if(formValidation===0){
                 //add data to formdata array 
-                _formjs.aggregateData($(this).closest('.form-content-container'));
+                aggregateData($(this).closest('.form-content-container'));
 
                 console.log(_formjs.formData);
 
@@ -464,11 +521,11 @@ const bindCreateProfileButton = function () {
 
     $('.create-profile-button').click(function () {
 
-        let formValidation=_formjs.validateForm($(this).closest('.form-content-container'),'entry-field');
+        let formValidation=validateForm($(this).closest('.form-content-container'));
 
             if(formValidation===0){
                 //add data to formdata array 
-                _formjs.aggregateData($(this).closest('.form-content-container'));
+                aggregateData($(this).closest('.form-content-container'));
 
                 console.log(_formjs.formData);
 
@@ -510,10 +567,11 @@ $('document').ready(function () {
 
         if (currentstepnum < clickedstepnum) {
 
-            let validation=_formjs.validateForm($(visibleFormContainer),'entry-field');
+            let validation=validateForm($(visibleFormContainer));
+
             if(validation===0){
                 //add data to formdata array 
-                _formjs.aggregateData($(visibleFormContainer));
+                aggregateData($(visibleFormContainer));
     
                 goToPg();
             }
