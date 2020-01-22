@@ -1,17 +1,25 @@
  <header id="app-header" class="border-bottom p-3 bg-white">
-     <div id="app-header-user-info-container" class="float-right d-inline-block position-relative">
-        <div id="app-header-user-img">
+     
+    <div id="app-header-user-info-container" 
+        class="float-right d-inline-block position-relative hide-off-focus-outer-container">
+        
+        <div id="app-header-user-img" class="pointer" onclick="$('#app-header-user-menu').show();">
             <img src="/gfs/images/noimage-icon-x225.png">
         </div>
-        <div id="app-header-user-menu" class="shadow border">
-            <div class="p-2">
+
+        <div id="app-header-user-menu" class="shadow border hide-off-focus-inner-container">
+            
+            <div class="p-2 app-header-menu-item">
                 <i class="material-icons align-middle">person</i>
-                <div class="d-inline-block"> Manage Account</div>
+                <div class="d-inline-block small"> Manage Account</div>
             </div>
-            <div class="p-2">
+
+            <div class="p-2 app-header-menu-item">
                     <i class="material-icons align-middle">credit_card</i>
-                    <div class="d-inline-block"> Manage Payment</div>
+                    <div class="d-inline-block small"> Manage Payment</div>
                 </div>
         </div>
+
      </div>
+
 </header>
