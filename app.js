@@ -78,4 +78,8 @@ app.get('/enroll/:accounttype/:accountid',(req,res)=>{
     }
 })
 
+app.get('/summary',(req,res)=>{
+    res.render(`pages/summary`);
+})
+
 app.listen(port,console.log("listening port "+port));

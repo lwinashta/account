@@ -18,8 +18,8 @@ const bindListFields = async function () {
         return -1;
     });
 
-    let optionDialCodeHtml = "<option value=''>Select country code</option>";
-    let countryNameHtml = "<option value=''>Select country</option>";
+    let optionDialCodeHtml = '<option value="">Select country code</option>';
+    let countryNameHtml = '<option value="">Select country</option>';
 
     countries.forEach(c => {
         optionDialCodeHtml += `<option value="${c._id}">${c.name} (${c.dial_code}) </option>`;
@@ -217,7 +217,7 @@ const bindListFields = async function () {
 const validateForm=function(form){
     let errCount=_formjs.validateForm($(form),'entry-field');
     errCount+=_formjs.validateForm($(form).find('.multiple-data-entry'),'each-entry-field');
-    return errCount
+    return errCount;
 };
 
 //**** GET FORM DATA */
@@ -229,40 +229,42 @@ const aggregateData=function(form){
 
     // -- get data for the multiple entry fields --- 
     //-- start with data-level 1 --- 
+
+    let insertItems=function(md,level,d){
+
+        //--- name 
+        let name=$(md).attr('name');
+
+        if(!(name in d)){
+            d[name]=[];
+        }
+
+        $(md).children('.item').each(function () {
+
+            let fd = {};
+            let index=$(this).index();
+
+            $(this).find('.each-entry-field').each(function () {
+                if($(this).closest('.multiple-data-entry').attr('data-level')===level){
+                    fd = Object.assign(fd, _formjs.getFieldData(this));
+                }
+            });
+
+            d[name][index]={};
+            d[name][index]=fd;
+
+            $(this).find('.multiple-data-entry').each(function(){
+                insertItems(this,$(this).attr('data-level'),d[name][index]);
+            });
+
+        });
+    }
+
     $(form).find('.multiple-data-entry[data-level="1"]').each(function(){
 
         let level=$(this).attr('data-level');
-        let name=$(this).attr('name');
 
-        _formjs.formData[name]=[];
-
-        $(this).find('.item').each(function () {
-
-            let fd = {};
-
-            $(this).find('.each-entry-field').each(function () {
-
-                if ($(this).closest(`.multiple-data-entry[data-level="${level}"]`).length > 0) {
-                    fd = Object.assign(fd, _formjs.getFieldData(this));
-                }
-                
-            });
-
-            _formjs.formData[name].push(fd);
-
-        });
-
-
-
-        // if($(this).parents('.multiple-data-entry').length===0){
-            
-        //     let name=$(this).attr('name');
-
-        //     _formjs.formData[name]=[];//reset the array for multiple data entry 
-            
-            
-
-        // }
+        insertItems(this,level,_formjs.formData);
         
     });
 

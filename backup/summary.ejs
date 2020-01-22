@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <% include ../partials/load-scripts %>
+</head>
+
+<body>
+    <% include ../partials/header %>
+    <section id="summary" class="container-fluid" style="margin-top: 100px;">
+
+        <div class="row">
+            <!-- row1 / col 1: outer columns -->
+            <div class="col-sm-12 col-md-12 col-lg-4 col-xl-4">
+
+                <div class="pad-10" id="account-row1-col1-1">
+                    
+                    <!-- profile information tile -->
+                    <div class="tile white-tile">
+
+                        <div class="info-row mgB-L">
+                            <div class="text-center">
+                                <div class="profile-img">
+                                    <% if ('profileimg' in userInfo && userInfo.profileimg.length>0){ %>
+                                    <img src="<%=userInfo.profileimg%>" alt="[PROFILE PIC NOT FOUND. TRY UPLOADING AGAIN]">
+                                    <% }else { %>
+                                    <div class="jumbo-profile-initals">
+                                        <%=userInfo.initials%>
+                                    </div>
+                                    <% } %>
+                                    <div class="upload-img-container">
+                                        <form id="update-profile-img-form" enctype="multipart/form-data" accept="image/*">
+                                            <input id="update-profile-img-input" name="upload-user-profile-image" type="file"
+                                                title="upload image">
+                                        </form>
+                                        <div class="input-overlay">
+                                            <i class="material-icons">camera_alt</i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mgT-S"><b class="text-capitalize m-txt"><%=userInfo.fullnameLowerCased%></b>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="info-row info-row-bor-t" style="margin-top:0px">
+                            <div class="info-row-icon"><i class="material-icons align-middle">email</i></div>
+                            <div>
+                                <div class="info-row-content text-lower">
+                                    <div><%=userInfo.emailid%></div>
+                                    <div class="text-muted sm-txt">Email</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="info-row info-row info-row-bor-t">
+                            <div class="info-row-icon"><i class="material-icons align-middle">call</i></div>
+                            <% if('contact_numbers' in userInfo && userInfo.contact_numbers.length>0) { %>
+                                <div>
+                                <% userInfo.contact_numbers.forEach(elm=>{ %>
+                                    <div class="info-row-content text-lower">
+                                        <div><%=elm.country_code%> <%=elm.contact_number%></div>
+                                        <div class="text-muted sm-txt"><%=elm.contact_type%></div>
+                                    </div>
+                                <% }) %>
+                                </div>
+                            <%} else { %>
+                                <div>
+                                    <div class="info-row-content text-lower">
+                                        <div><i>Unknown</i></div>
+                                        <div class="text-muted sm-txt">Contact number</div>
+                                    </div>
+                                </div>
+                            <% } %>
+
+                            <a href="/profile?edititem=contact" class="txt-col-dblue">
+                                <div class="info-row-action">Update →</div>
+                            </a>
+                        </div>
+                        
+                        <div class="info-row info-row info-row-bor-t">
+                            <div class="info-row-icon"><i class="material-icons align-middle">fingerprint</i></div>
+                            <div>
+                                <div class="info-row-content text-lower">
+                                    <div>**********</div>
+                                    <div class="text-muted sm-txt">Password</div>
+                                </div>
+                            </div>
+                            <a href="/reset-passw" class="txt-col-dblue">
+                                <div class="info-row-action">Reset →</div>
+                            </a>
+                        </div>
+                        
+                        <div class="info-row info-row info-row-bor-t">
+                            <div class="info-row-icon">
+                                <i class="material-icons align-middle">verified_user</i>
+                            </div>
+                            <div>
+                               <div class="info-row-content">
+                                    <div class=text-uppercase><%=userInfo.registrationnum%></div>
+                                    <div class="text-muted sm-txt">Registration Number</div>
+                                </div> 
+                            </div>
+                            
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <!-- row1 / col 2: outer columns -->
+            <div class="col-sm-12 col-md-12 col-lg-8 col-xl-8">
+
+                <div class="pad-10" id="account-row1-col1-2">
+
+                    <!-- ACCOUNT INFORMATION -->
+                    <div class="tile white-tile">
+                        <div class="tile-header">
+                            <i class="material-icons align-middle">group</i> Account
+                        </div>
+
+                        <div id="summary-account-info-container">
+                            <div class="text-center mgB-T-L">
+                                <img src="/src/images/loading.gif" style="width:40px;">
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- PAYMENT INFORMATION -->
+                    <div class="tile white-tile mgB-T-L">
+                        <div class="tile-header">
+                            <div class="d-inline-block">
+                                <i class="material-icons align-middle">payment</i> Payment Methods
+                            </div>
+                            <div class="pos-a btn btn-primary sm-txt" style="right:5px;top:0px;"> Add Payment</div>
+                        </div>
+                    
+                        <div id="summary-payment-info-container">
+                            <div class="text-center mgB-T-L">
+                                <img src="/src/images/loading.gif" style="width:40px;">
+                            </div>
+                        </div>
+                    
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+    </section>
+    
+    <script src="/src/js/summary.js"></script>
+
+</body>
+
+</html>
