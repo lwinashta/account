@@ -11,82 +11,247 @@
 
     <div id="app-right-pane-container">
 
-        <div class="container mt-3">
+        <div class="container-fluid mt-3">
 
-            <!-- row1 / col 1: outer columns -->
-            <div class="col-sm-12 col-md-12 col-lg-5 col-xl-5">
+            <div class="p-3 bg-warning mb-2 rounded">
+                Your account is under review. Please contact us if there are any concerns or would like to escalate the
+                verification.
+            </div>
 
-                <div class="pad-10" id="account-row1-col1-1">
+            <div class="row">
+                <!-- row1 / col 1 -->
+                <div class="col-sm-12 col-md-12 col-lg-5 col-xl-5">
 
-                    <!-- profile information tile -->
-                    <div class="tile white-tile">
+                    <div class="p-1" id="account-row1-col1-1">
 
-                        <div class="mb-2">
+                        <!-- profile information tile -->
+                        <div class="tile white-tile mb-2">
 
-                            <div class="text-center">
-                                <div class="mx-auto position-relative text-center" style="width:150px">
-                                    <img src="/gfs/images/noimage-icon-x225.png" class="rounded-circle"
-                                        alt="[PROFILE PIC NOT FOUND. TRY UPLOADING AGAIN]" style="max-width: 100%;">
-                                    <div class="upload-img-container" style="top: 45%;right:-10px;">
-                                        <input type="file" name="personal_profile_image" id="update-profile-img-input"
-                                            class="entry-field" title="upload image">
-                                        <div class="input-overlay">
-                                            <i class="material-icons">camera_alt</i>
+                            <div class="mb-2">
+
+                                <div class="text-center">
+                                    <div class="mx-auto position-relative text-center" style="width:150px">
+                                        <img src="/gfs/images/noimage-icon-x225.png" class="rounded-circle"
+                                            alt="[PROFILE PIC NOT FOUND. TRY UPLOADING AGAIN]" style="max-width: 100%;">
+                                        <div class="upload-img-container" style="top: 45%;right:-10px;">
+                                            <input type="file" name="personal_profile_image"
+                                                id="update-profile-img-input" class="entry-field" title="upload image">
+                                            <div class="input-overlay">
+                                                <i class="material-icons">camera_alt</i>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
+
+                                <div class="mt-2 text-center">
+                                    <h3 class="text-capitalize">Pramod Ashta</h3>
+                                </div>
+
                             </div>
 
-                            <div class="mt-2 text-center">
-                                <h3 class="text-capitalize">Pramod Ashta</h3>
+                            <div class="mt-2 p-2 border-bottom position-relative">
+                                <div class="align-top pull-left">
+                                    <i class="material-icons align-middle">email</i>
+                                </div>
+                                <div class="d-inline-block text-lower ml-5">
+                                    <div>pramodashta@gmail.com</div>
+                                    <div class="text-muted small">Email</div>
+                                </div>
+                            </div>
+
+                            <div class="mt-2 p-2 border-bottom position-relative">
+                                <div class="align-top pull-left">
+                                    <i class="material-icons align-middle">call</i>
+                                </div>
+                                <div class="d-inline-block text-lower ml-5">
+                                    <div>+92 880120910290129</div>
+                                    <div class="text-muted small">Phone</div>
+                                </div>
+                            </div>
+
+                            <div class="mt-2 p-2 position-relative">
+                                <div class="align-top pull-left">
+                                    <i class="material-icons align-middle">local_library</i>
+                                </div>
+                                <div class="d-inline-block text-lower ml-5">
+                                    <div>Urologist</div>
+                                    <div class="text-muted small">Specialty</div>
+                                </div>
                             </div>
 
                         </div>
 
-                        <div class="mt-2 p-2 border-bottom">
-                            <div class="d-inline-block align-top">
-                                <i class="material-icons align-middle">email</i>
-                            </div>
-                            <div class="d-inline-block text-lower ml-2 small">
-                                <div>pramodashta@gmail.com</div>
-                                <div class="text-muted">Email</div>
-                            </div>
-                        </div>
+                        <div class="tile white-tile mb-2">
 
-                        <div class="mt-2 p-2 border-bottom">
-                            <div class="d-inline-block align-top">
-                                <i class="material-icons align-middle">call</i>
+                            <div class="mt-2 p-2 border-bottom position-relative">
+                                <div class="align-top pull-left">
+                                    <i class="material-icons align-middle">school</i>
+                                </div>
+                                <div class="d-inline-block text-lower ml-5">
+                                    <div>BHMS (Bachelor of Homeopathic Medicine & Surgery)</div>
+                                    <div class="text-muted small">Medical Degree</div>
+                                </div>
                             </div>
-                            <div class="d-inline-block text-lower ml-2 small">
-                                <div>+92 880120910290129</div>
-                                <div class="text-muted">Phone</div>
-                            </div>
-                        </div>
 
-                        <div class="mt-2 p-2 border-bottom">
-                            <div class="d-inline-block align-top">
-                                <i class="material-icons align-middle">person</i>
+                            <div class="mt-2 p-2 border-bottom position-relative">
+                                <div class="align-top pull-left">
+                                    <i class="material-icons align-middle">contacts</i>
+                                </div>
+                                <div class="d-inline-block text-lower ml-5">
+                                    <div>8321947234010</div>
+                                    <div class="text-muted small">Medical License Number</div>
+                                </div>
                             </div>
-                            <div class="d-inline-block text-lower ml-2 small">
-                                <div>Urologist</div>
-                                <div class="text-muted">Specialty</div>
-                            </div>
-                        </div>
 
-                        <div class="mt-2 p-2">
-                            <div class="d-inline-block align-top">
-                                <i class="material-icons align-middle">fingerprint</i>
+                            <div class="mt-2 p-2 border-bottom position-relative">
+                                <div class="align-top pull-left">
+                                    <i class="material-icons align-middle">business</i>
+                                </div>
+                                <div class="d-inline-block text-lower ml-5">
+                                    <div>Maharashtra Medical Council</div>
+                                    <div class="text-muted small">Medical Council</div>
+                                </div>
                             </div>
-                            <div class="d-inline-block text-lower ml-2">
-                                <div>*****************</div>
-                                <div class="text-muted small">Password</div>
+
+                            <div class="mt-2 p-2 position-relative">
+                                <div class="align-top pull-left">
+                                    <i class="material-icons align-middle">forum</i>
+                                </div>
+                                <div class="d-inline-block text-lower ml-5">
+                                    <div>Hindi, Marathi, English</div>
+                                    <div class="text-muted small">Languages</div>
+                                </div>
                             </div>
+
                         </div>
 
                     </div>
 
                 </div>
+
+                <!-- row1 / col 2 -->
+                <div class="col-sm-12 col-md-12 col-lg-7 col-xl-7">
+                    
+                    <div class="p-1">
+
+                        <!-- PRACTICES  -->
+                        <div class="tile white-tile mb-2">
+                            
+                            <div class="p-2 border-bottom ">
+                                <div class="d-inline-block text-uppercase small font-weight-bold">PRACTICES</div>
+                                <div class="pointer float-right btn btn-primary btn-sm" style="margin-top:-5px">
+                                    Manage Practices
+                                </div>
+                            </div>
+
+                            <div class="mt-2 p-2 border-bottom position-relative">
+                                <div class="d-inline-block">
+                                    <b>Prem Clinic (Affiliated Practice)</b>
+                                    <div class="small text-muted">2/35 Juhu Sameep, Andheri West, Mumbai 40003, Maharashtra, India </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-2 p-2 position-relative">
+                                <div class="d-inline-block">
+                                    <b>Clinic Kooll (Private Practice)</b>
+                                    <div class="small text-muted">2/35 Juhu Sameep, Andheri West, Mumbai 40003, Maharashtra, India </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- SUBSCRIPTIONS  -->
+                        <div class="tile white-tile mb-2">
+                            <div class="p-2 border-bottom ">
+                                <div class="d-inline-block text-uppercase small font-weight-bold">Subscriptions</div>
+                                <div class="pointer float-right btn btn-primary btn-sm" style="margin-top:-5px">
+                                    Manage Subscriptions
+                                </div>
+                            </div>
+
+                            <div class="mt-2 p-2 border-bottom position-relative" style="min-height: 110px;">
+                                <div class="align-top pull-left" style="width: 90px;">
+                                   <img src="/gfs/images/behavior.png" style="max-width:100%">
+                                </div>
+                                <div class="d-inline-block" style="margin-left: 110px;">
+                                    <b> Membership Plus </b>
+                                    <div>Following are included in Membership Plus subscription</div>
+                                    <div>
+                                        <ul>
+                                            <li>
+                                                <div>Appointment Booking</div>
+                                                <div class="text-muted small">This subscription allows users or patients to book appointment directlyy from our site. No phone calls no waiting, Users can view your schedule and book appointments per thiers and yours availability.</div>
+                                            </li>
+                                            <li>
+                                                <div>My Space</div>
+                                                <div class="text-muted small">Allows you to store patient records/documents in secured environment. Which you can access anytime, anywhere.</div>
+                                            </li>
+                                            <li>
+                                                <div>Checkin</div>
+                                                <div class="text-muted small">Allows patient to checkin as soon as patient arrives to your facility. Patient Checkin allows to reduce burden on your front desk professional and increases the wait time.</div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="push-right small text-primary">Next Billing: 30 Dec 2020</div>
+                            </div>
+
+                            <div class="mt-2 p-2 border-bottom position-relative" style="min-height: 110px;">
+                                <div class="align-top pull-left" style="width: 90px;">
+                                   <img src="/gfs/images/setup_screen_x256.png" style="max-width:100%">
+                                </div>
+                                <div class="d-inline-block" style="margin-left: 110px;">
+                                    <b> Public Web </b>
+                                    <p>
+                                        Public Web susbscriptions makes your profile more public to the world. 
+                                        Lear more how it works. 
+                                    </p>
+                                </div>
+                                <div class="push-right small text-primary">Next Billing: 30 Dec 2020</div>
+
+                            </div>
+
+                            <div class="mt-2 p-2 border-bottom position-relative" style="min-height: 110px;">
+                                <div class="align-top pull-left" style="width: 90px;">
+                                   <img src="/gfs/images/emr.png" style="max-width:100%">
+                                </div>
+                                <div class="d-inline-block" style="margin-left: 110px;">
+                                    <b> Jot </b>
+                                    <p>
+                                        Jot is Electronic Health Record (EHR) application, 
+                                        which helps automate your practice workflows, 
+                                        store your patient medical data (e.g., medical history, diagnoses, medications, treatment plans, immunization dates, allergies, radiology images, and laboratory and test results. 
+                                        Allow access to evidence-based tools that providers can use to make decisions about a patient’s care 
+                                    </p>
+                                </div>
+                                <div class="push-right small text-primary">Next Billing: 30 Dec 2020</div>
+
+                            </div>
+
+                            <div class="mt-2 p-2 position-relative" style="min-height: 110px;">
+                                <div class="align-top pull-left" style="width: 90px;">
+                                   <img src="/gfs/images/Care.png" style="max-width:100%">
+                                </div>
+                                <div class="d-inline-block" style="margin-left: 110px;">
+                                    <b> Practice Right </b>
+                                    <p>
+                                        Practice Right provides doctors with wealth of 
+                                        best practice strategy and information to make thier practice more knowledgable and better for patietns. 
+                                        Click here to learn more
+                                    </p>
+                                </div>
+                                <div class="push-right small text-primary">Next Billing: 30 Dec 2020</div>
+
+                            </div>
+                        
+                        </div>
+
+                    </div>
+
+                </div>
+
             </div>
+
         </div>
 
     </div>
