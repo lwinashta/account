@@ -3,11 +3,14 @@ const process=require("process");
 const formidable = require('express-formidable');
 const globalSettings=require("../global-modules/sys-settings/config/config.json");
 const express = require('express');
-const iAccount=require('@oi/account');
+// const iAccount=require('@oi/account');
+
+const userTokenMethods=require('@oi/account/lib/token'); 
+
 //const parser=require('body-parser');
 
 //*** INTIALIZATIONS  */
-const account=new iAccount();
+// const account=new iAccount();
 const app = express();
 const port=8081;
 const os=process.platform;
@@ -33,16 +36,22 @@ const paymentRoutes=require(globalFsPath+'/payment/routes')(app);
 const accountRoutes=require(globalFsPath+'/account/routes')(app);
 
 //** MIDDLEWARE USER LOGIN */
-// app.use('/',async function(req,res,next){
-//     app.locals.userInfo=await account.getUserFromToken(req,res);//checks if user token is set 
-//     //console.log(app.locals.userInfo);
-//     if(Object.keys(app.locals.userInfo).length===0){
-//         let param=encodeURIComponent(`${req.headers.host}${req.path}`);
-//         res.redirect(`${globalSettings.website}/login?goto=${param}`);
-//     } else{
-//         next();//got to next if user is already logged
-//     }
-// });
+app.use('/',async function(req,res,next){
+    //console.log(req);
+    //-- get the user info from token ---
+    app.locals.user_info=await userTokenMethods.verifyToken(req,res);//checks if user token is set
+    
+    // console.log(app.locals.user_info,"wpopoepwpeowpewpeowpepwepwo",req);
+    
+    //if token is expired or token is not valid take user to login screen
+    if(Object.keys(app.locals.user_info).length===0){
+        let param=encodeURIComponent(`${req.headers.host}${req.path}`);
+        res.redirect(`${globalSettings.website}/login?goto=${param}`);
+    }
+
+    next();
+
+});
 
 // app.get('/',(req,res)=>{
 //     res.render('pages/qualification');
@@ -61,17 +70,17 @@ const accountRoutes=require(globalFsPath+'/account/routes')(app);
 // });
 
 app.get('/enroll/:accounttype/:accountid',(req,res)=>{
-    
+
     let accounttype = req.params.accounttype.toLowerCase(); 
     let accountid = req.params.accountid.toLowerCase(); 
 
     switch (accounttype) {
-        case 'healthcare-provider':
+        case 'healthcare_provider':
             //get the provider information using the account id
             res.render(`pages/enrollment/healthcare-provider`);
             break;
         
-        case 'healthcare-facility':
+        case 'healthcare_facility':
                 break;
         default:
             break;
