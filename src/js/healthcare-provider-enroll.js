@@ -1,6 +1,11 @@
-const _formjs = new formjs();
-const _bindEvents = new bindFormControlEvents({
-    "formData": _formjs.formData
+//import {runtime} from '../base/base.js';
+import {formjs, bindFormControlEvents} from '/gfs/utilities/lib/js/form.js';
+import {listjs} from '/gfs/utilities/lib/js/list.js';
+
+//*** INITIALIZE VARIABLES */
+const _formjs=new formjs();
+const _bindEvents=new bindFormControlEvents({
+    "formData": _formjs.formData//reference variable
 });
 
 /**
@@ -36,7 +41,6 @@ const bindListFields = async function () {
         if (a.name > b.name) return 1;
         return -1;
     });
-
     specialties.map(m => m.name = capitalizeText(m.name));
 
     let specialtiesHtml = "<option value=''> - Select specialty - </option>";
@@ -85,7 +89,7 @@ const bindListFields = async function () {
             let itemId = $(item).attr('_id');
             let langageInfoIndx = languages.findIndex(l => l._id === itemId);
 
-            return `<div class="d-inline-block item p-1 pl-2 pr-2 mr-2 border" _id="${itemId}">
+            return `<div class="d-inline-block item p-1 pl-2 pr-2 mr-2 mt-1 border" _id="${itemId}">
                 <div class="d-inline-block mr-2">${languages[langageInfoIndx].name}</div>
                 <div class="d-inline-block remove-item">
                     <i class="material-icons text-danger align-middle pointer">clear</i>
@@ -130,7 +134,7 @@ const bindListFields = async function () {
             let itemId = $(item).attr('_id');
             let indx = councils.findIndex(l => l._id === itemId);
 
-            return `<div class="d-inline-block item p-1 pl-2 pr-2 mr-2 border" _id="${itemId}">
+            return `<div class="d-inline-block item p-1 pl-2 pr-2 mr-2 mt-1 border" _id="${itemId}">
                 <div class="d-inline-block mr-2">${councils[indx].name}</div>
                 <div class="d-inline-block remove-item">
                     <i class="material-icons text-danger align-middle pointer">clear</i>
@@ -175,7 +179,7 @@ const bindListFields = async function () {
             let itemId = $(item).attr('_id');
             let indx = degrees.findIndex(l => l._id === itemId);
 
-            return `<div class="d-inline-block item p-1 pl-2 pr-2 mr-2 border" _id="${itemId}">
+            return `<div class="d-inline-block item p-1 pl-2 pr-2 mr-2 mt-1 border" _id="${itemId}">
                 <div class="d-inline-block mr-2">${degrees[indx].abbr} (${degrees[indx].name})</div>
                 <div class="d-inline-block remove-item">
                     <i class="material-icons text-danger align-middle pointer">clear</i>
@@ -342,17 +346,17 @@ const bindAddAvailability = function () {
         "abbr": "sat"
     }];
 
-    let loopHoursMoment = window.moment().hours(0).minutes(0).seconds(0);
+    let loopHours=window.moment().hours(0).minutes(0).seconds(0);
     let td = window.moment().hours(0).minutes(0).seconds(0);
     let hours = [];
-    while (loopHoursMoment.diff(td, 'days') <= 0) {
+    while (loopHours.diff(td, 'days') <= 0) {
         hours.push({
-            "displayFormat": loopHoursMoment.format('hh:mm a'),
-            "hours": loopHoursMoment.hours(),
-            "minutes": loopHoursMoment.minutes(),
-            "meridian": loopHoursMoment.format('a')
+            "displayFormat": loopHours.format('hh:mm a'),
+            "hours": loopHours.hours(),
+            "minutes": loopHours.minutes(),
+            "meridian": loopHours.format('a')
         });
-        loopHoursMoment.add(15, 'minutes');
+        loopHours.add(15, 'minutes');
     }
 
     let addTimeSlot = function (parent) {
@@ -519,21 +523,104 @@ const bindStepClickButton = function () {
     });
 };
 
-const bindCreateProfileButton = function () {
+const bindCreateProfileButton = function (user) {
 
     $('.create-profile-button').click(function () {
 
-        let formValidation=validateForm($(this).closest('.form-content-container'));
+        let form=$(this).closest('.form-content-container');
+        let formValidation = validateForm(form);
 
-            if(formValidation===0){
-                //add data to formdata array 
-                aggregateData($(this).closest('.form-content-container'));
+        if (formValidation === 0) {
+            
+            //add data to formdata array 
+            aggregateData(form);
 
-                console.log(_formjs.formData);
+            let profileInfo = new FormData();
+
+            //-- split the profile and practice information 
+
+            //Get profile Information 
+            $('#heathcare-provider-personal-info-form,#heathcare-provider-qualification-form').find('.entry-field').each(function () {
+                let name = $(this).attr("name");
+                profileInfo.append(name,_formjs.formData[name]);
+            });
+
+            //match the existing user info with entered information
+            Object.keys(user).forEach(key=>{
+                if(!profileInfo.has(key)){
+                    profileInfo.append(key,user[key]);
+                }
+            });
+
+            let practice = {};
+            if ($(form).attr('id') === "heathcare-provider-private-practice-details-form") {
+                                
+                let practiceDetailFormName = "";
+
+                if (_formjs.formData["practice_type"][0] === "affiliated_to_facility") {
+                    practiceDetailFormName = "#heathcare-provider-affiliation-details-form";
+
+                } else if (_formjs.formData["practice_type"][0] === "private_practice") {
+                    practiceDetailFormName = "#heathcare-provider-private-practice-details-form";
+                }
+
+                $('#heathcare-provider-practice-selection,' + practiceDetailFormName)
+                    .find('.entry-field,.multiple-data-entry').each(function () {
+                        let name = $(this).attr("name");
+                        practice[name] = _formjs.formData[name];
+                    });
+
+                practice.user_mongo_id = profileInfo._id;
+                practice.user_id = profileInfo.user_id;
+            }
+
+            //Inject Values
+            profileInfo.append('enrolled',true);
+            console.log(practice);
+
+            if($(form).attr('id')==="heathcare-provider-qualification-form"){
+                //just insert profile information
+                $.ajax({
+                    "url": "/account/api/user/update",
+                    "processData": false,
+                    "contentType": false,
+                    "data": profileInfo,
+                    "method": "POST"
+                }).done(d=>{
+                    console.log(d);
+                });
+
+            }else if($(form).attr('id')==="heathcare-provider-private-practice-details-form"){
+                //update profile and insert new practice details 
 
             }
+
+        }
     });
 
+};
+
+const updateUserProfile=function(data){
+    return new Promise((resolve,reject)=>{
+
+    });
+};
+
+const insertNewPractice=function(data){
+    return new Promise((resolve,reject)=>{
+        
+    });
+};
+
+const getUserId=function(){
+    return window.location.pathname.split('/').pop();
+};
+
+const getPersonalInfo=function(){
+    let _id=getUserId();
+    return $.getJSON('/account/api/user/get',{
+        "_id":_id
+    });
 };
 
 /** INITIATE EXECUTION */
@@ -595,11 +682,38 @@ $('document').ready(function () {
     bindAddContact();
     bindAddAvailability();
     bindStepClickButton();
-    bindCreateProfileButton();
+    
 
     //--- bind lists ---- 
     bindListFields().then(function () {
         //hide the loader 
+        return getPersonalInfo();
+    }).then(users=>{
+        let user=users[0];
+        Object.keys(user).forEach(key=>{
+            $('#heathcare-provider-personal-info-form').find('[name="'+key+'"]').val(user[key]);
+        });
+
+        bindCreateProfileButton(user);
+        
+    });
+
+    //bind upload profile image 
+    $('#update-profile-img-input').change(function(e){
+        
+        let me=this;
+        if(e.target.files.length>0){
+            
+            let reader = new FileReader();
+
+            reader.onload = function (event) {
+                //console.log(event.target.result);
+                $(me).closest('.form-group').find('img').attr("src",event.target.result);
+            }
+
+            reader.readAsDataURL(e.target.files[0]);
+        }
+        
     });
 
     //-- bind practice selection --- 

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <% include ../../partials/common/load-scripts %>
+</head>
+
+<body>
+    <% include ../../partials/common/left-pane %>
+    <% include ../../partials/common/header %>
+
+    <div id="app-right-pane-container">
+
+        <div class="container-fluid mt-3">
+
+            <div class="row">
+
+                <!-- row1 / col 1 -->
+                <div class="col-sm-12 col-md-12 col-lg-5 col-xl-5">
+
+                    <div id="account-row1-col1-1">
+
+                        <!-- profile information tile -->
+                        <div class="tile white-tile mb-2">
+
+                            <div class="mb-2">
+
+                                <div class="text-center">
+                                    <div class="mx-auto position-relative text-center" style="width:150px">
+                                        <img src="/gfs/images/noimage-icon-x225.png" class="rounded-circle"
+                                            alt="[PROFILE PIC NOT FOUND. TRY UPLOADING AGAIN]" style="max-width: 100%;">
+                                        <div class="upload-img-container" style="top: 45%;right:-10px;">
+                                            <input type="file" name="personal_profile_image"
+                                                id="update-profile-img-input" class="entry-field" title="upload image">
+                                            <div class="input-overlay">
+                                                <i class="material-icons">camera_alt</i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-2 text-center">
+                                    <h3 class="text-capitalize">Welcome,
+                                        <%=user_info.first_name+" "+user_info.last_name %></h3>
+                                </div>
+
+                            </div>
+
+                            <div class="mt-2 p-2 border-bottom position-relative">
+                                <div class="align-top pull-left">
+                                    <i class="material-icons align-middle">email</i>
+                                </div>
+                                <div class="d-inline-block text-lower ml-5">
+                                    <div><%=user_info.email_id %></div>
+                                    <div class="text-muted small">Email</div>
+                                </div>
+                            </div>
+
+                            <div class="mt-2 p-2 border-bottom position-relative">
+                                <div class="align-top pull-left">
+                                    <i class="material-icons align-middle">call</i>
+                                </div>
+                                <div class="d-inline-block text-lower ml-5">
+                                    <div><%=user_info.country_dial_code+" "+user_info.personal_primary_number %></div>
+                                    <div class="text-muted small">Phone</div>
+                                </div>
+                            </div>
+
+                            <div class="mt-2 p-2 position-relative">
+                                <div class="align-top pull-left">
+                                    <i class="material-icons align-middle">local_library</i>
+                                </div>
+                                <div class="d-inline-block text-lower ml-5">
+                                    <div class="text-capitalize"><%=user_info.specialty.name %></div>
+                                    <div class="text-muted small">Specialty</div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="tile white-tile mb-2">
+
+                            <div class="mt-2 p-2 border-bottom position-relative">
+                                <div class="align-top pull-left">
+                                    <i class="material-icons align-middle">school</i>
+                                </div>
+                                <div class="d-inline-block text-lower ml-5">
+                                    <div>BHMS (Bachelor of Homeopathic Medicine & Surgery)</div>
+                                    <div class="text-muted small">Medical Degree</div>
+                                </div>
+                            </div>
+
+                            <div class="mt-2 p-2 border-bottom position-relative">
+                                <div class="align-top pull-left">
+                                    <i class="material-icons align-middle">contacts</i>
+                                </div>
+                                <div class="d-inline-block text-lower ml-5">
+                                    <div>8321947234010</div>
+                                    <div class="text-muted small">Medical License Number</div>
+                                </div>
+                            </div>
+
+                            <div class="mt-2 p-2 border-bottom position-relative">
+                                <div class="align-top pull-left">
+                                    <i class="material-icons align-middle">business</i>
+                                </div>
+                                <div class="d-inline-block text-lower ml-5">
+                                    <div>Maharashtra Medical Council</div>
+                                    <div class="text-muted small">Medical Council</div>
+                                </div>
+                            </div>
+
+                            <div class="mt-2 p-2 position-relative">
+                                <div class="align-top pull-left">
+                                    <i class="material-icons align-middle">forum</i>
+                                </div>
+                                <div class="d-inline-block text-lower ml-5">
+                                    <div>Hindi, Marathi, English</div>
+                                    <div class="text-muted small">Languages</div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- row1 / col 2 -->
+                <div class="col-sm-12 col-md-12 col-lg-7 col-xl-7 mb-3">
+                    <% if ('enrolled' in user_info && !user_info.enrolled) { %>
+                        <div class="row">
+                            <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                                <div class="tile white-tile mb-2 p-3">
+                                    <h4>Enroll</h4>
+                                    <div class="pt-2 ml-2 position-relative">
+                                        <div class="position-relative d-inline" style="min-height:120px;">
+                                            <!-- create pie chart  -->
+                                            <svg class="progress-ring" width="120" height="120">
+                                                <circle  class="progress-ring-circle"
+                                                    stroke="red"
+                                                    stroke-width="8"
+                                                    fill="transparent"
+                                                    r="50"
+                                                    cx="60"
+                                                    cy="60" />
+                                            </svg>
+                                            <svg class="bg-progress-ring" width="120" height="120">
+                                                <circle 
+                                                    stroke="whitesmoke"
+                                                    stroke-width="4"
+                                                    fill="transparent"
+                                                    r="52"
+                                                    cx="60"
+                                                    cy="60"/>
+                                            </svg>
+                                            <div class="percent-text">
+                                                0%
+                                            </div>
+                                        </div>
+                                        <div class="text-muted" style="margin-left: 130px;">
+                                            <p>
+                                               Your profile is 0% completed.
+                                            </p>
+                                            <p>
+                                               <b>Important:</b> Your practice or profile information wont be visible to others untill you have completed 
+                                                your profile, and your profile has been reviewed by our compliance team.
+                                                Please contact us if there are questions or concerns.   
+                                            </p>
+                                             <div class="mt-2">
+                                                 <a href="/enroll/<%=user_info.user_type %>/<%=user_info._id %>">
+                                                    <div class="btn btn-success"><label class="m-0 pointer">Get Started & Complete your profile</label></div>
+                                                 </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <% } %>	
+
+                    <div class="row">
+
+                        <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                            <div class="tile white-tile mb-2 p-3">
+                                <h4>Practices</h4>
+                                <div class="pb-2">
+                                    <div class="d-inline-block mr-2 align-top" style="width:70%">
+                                        <p class="text-muted"> Manage your practice address, availability and other
+                                            information.
+                                            Keep your practice information up to date and improve the inflow of
+                                            patients.
+                                        </p>
+                                    </div>
+                                    <div class="float-right" style="width:20%">
+                                        <img src="/gfs/images/facilities-icons/hospital.png" style="max-width:100%;">
+                                    </div>
+                                </div>
+                                <div class="p-2 pointer text-center">
+                                    <div class="btn btn-primary"><label class="m-0 pointer">manage your
+                                            practice(s)</label></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                            <div class="tile white-tile mb-2 p-3">
+                                <h4>Subscription</h4>
+                                <div class="pb-2">
+                                    <div class="d-inline-block mr-2 align-top" style="width:70%">
+                                        <p class="text-muted">
+                                            Subscribe and improve your practice by choosing amazing suite of
+                                            applications
+                                            designed for healthcare providers by healthcare providers
+                                        </p>
+                                    </div>
+                                    <div class="float-right" style="width:20%">
+                                        <img src="/gfs/images/core/apps.png" style="max-width:100%;">
+                                    </div>
+                                </div>
+                                <div class="p-2 pointer text-center">
+                                    <div class="btn btn-primary"><label class="m-0 pointer">manage subscriptions</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <link rel="stylesheet" type="text/css" href="/src/css/summary.css">
+    <script>
+        var circle = document.querySelector('.progress-ring-circle');
+        var radius = circle.r.baseVal.value;
+        var circumference = radius * 2 * Math.PI;
+
+        circle.style.strokeDasharray = `${circumference} ${circumference}`;
+        circle.style.strokeDashoffset = `${circumference}`;
+
+        function setProgress(percent) {
+            const offset = circumference - percent / 100 * circumference;
+            circle.style.strokeDashoffset = offset;
+        }
+        setProgress(0);
+        setTimeout(function(){
+            setProgress(30);
+        },100);
+    </script>
+
+</body>
+
+</html>
