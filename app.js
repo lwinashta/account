@@ -44,15 +44,15 @@ app.use('/',async function(req,res,next){
         //-- get the user info from token ---
         app.locals.user_info=await userToken.verifyToken(req,res);//checks if user token is set
 
-        //-- get countries --
-        app.locals.user_info.country_dial_code=countries.filter(c=>c._id===app.locals.user_info.country_code)[0].dial_code;
-        app.locals.user_info.specialty=specialties.filter(s=>s._id===app.locals.user_info.specialty)[0];
-
         //if token is expired or token is not valid redirect user to login screen
         if(Object.keys(app.locals.user_info).length===0){
             let param=encodeURIComponent(`${req.headers.host}${req.path}`);
             res.redirect(`${globalSettings.website}/login?goto=${param}`);
         }
+
+        //-- get countries --
+        app.locals.user_info.country_dial_code=countries.filter(c=>c._id===app.locals.user_info.country_code)[0].dial_code;
+        app.locals.user_info.specialty=specialties.filter(s=>s._id===app.locals.user_info.specialty)[0];
 
         next();
         
