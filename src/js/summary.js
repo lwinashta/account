@@ -1,9 +1,10 @@
-//MARK THE SELECTED PAGE
-$('#homepg-top-nav a[href="/"] .hpg-menu-item').addClass('hpg-menu-item-sel');
-
+import {
+    runtime
+} from "./base.js";
 
 /** UPLOAD PROFILE IMAGE */
-const uploadProfileImg=()=>{
+
+const uploadProfileImg = () => {
     let uploadImgForm = document.getElementById('update-profile-img-form');
     if ($(uploadImgForm).length > 0) {
         uploadImgForm.onsubmit = function (e) {
@@ -32,44 +33,52 @@ const uploadProfileImg=()=>{
     }
 }
 
+const setSVGPie = function (progress) {
+    console.log(progress);
+    var circle = document.querySelector('.progress-ring-circle');
+    var radius = circle.r.baseVal.value;
+    var circumference = radius * 2 * Math.PI;
+
+    circle.style.strokeDasharray = `${circumference} ${circumference}`;
+    circle.style.strokeDashoffset = `${circumference}`;
+
+    var setProgress=function(percent) {
+        const offset = circumference - percent / 100 * circumference;
+        circle.style.strokeDashoffset = offset;
+    }
+    
+    setProgress(progress);
+    $('.enrolled-percent-txt').text(progress+"%")
+}
+
 //INITIAL DATA LOAD 
-async function dataLoad(){
+async function dataLoad() {
     try {
         // get user info 
         runtime.userInfo = await runtime.getUserInfo();
 
-        //check if the user registration type. free registration doesnt require any credit card
-        if (runtime.userInfo.registrationinfo[0].registrationtype !== "oi_standard_free") {
+        //set enrollment progress 
+        if(!runtime.userInfo.enrolled){
 
-            //-- get the user payment information 
-            runtime.userInfo.paymentDetails = await runtime.getCustomerInfo();
+            let progress=1;
+            let totalSteps=3;
 
-            runtime.userInfo.transactions=await runtime.getCustomerTransactions();
+            progress+="qualification_provided" in runtime.userInfo && runtime.userInfo.qualification_provided?1:0;
+            progress+="practice_info_provided" in runtime.userInfo && runtime.userInfo.practice_info_provided?1:0;
 
-            $('#summary-account-info-container').html(runtime.setAccountDetails());
-            $('#summary-payment-info-container').html(runtime.setPaymentMethods());
-
-        } else {
-            runtime.userInfo.paymentDetails = null;
-            runtime.userInfo.transactions = null;
-
-            //set accunt detils & payment method
-            $('#summary-account-info-container').html(runtime.setAccountDetails());
-            $('#summary-payment-info-container').html(runtime.setPaymentMethods());
-
-            //set payment method to null
-            throw "no payment method stored";
+            setSVGPie(Math.round((progress/totalSteps)*100));
         }
+
     } catch (error) {
         console.error(error);
     }
-    
-
-
 }
 
-//TRIGGER FUNCTIONS ON LOAD
-uploadProfileImg();
 
-// Trigger data load 
-dataLoad();
+
+
+$('document').ready(function () {
+    dataLoad(); // Trigger data load 
+    //TRIGGER FUNCTIONS ON LOAD
+    uploadProfileImg();
+});

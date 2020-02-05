@@ -686,10 +686,11 @@ $('document').ready(function () {
 
     //--- bind lists ---- 
     bindListFields().then(function () {
-        //hide the loader 
+        //get the user personal information 
         return getPersonalInfo();
     }).then(users=>{
         let user=users[0];
+
         Object.keys(user).forEach(key=>{
             $('#heathcare-provider-personal-info-form').find('[name="'+key+'"]').val(user[key]);
         });

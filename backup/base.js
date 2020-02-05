@@ -21,7 +21,7 @@ export var runtime={
         return $.getJSON('/gfs/sys-settings/config/config.json');
     },
     "getUserInfo":()=>{
-        return $.post('/account/api/user/verifytoken');
+        return $.post('/api/account/user/verifytoken')
     },
     "getCustomerInfo":()=>{
         if(Object.keys(runtime.userInfo).length===0) throw 'user information not found';

@@ -39,7 +39,7 @@
                                             cx="60"
                                             cy="60"/>
                                     </svg>
-                                    <div class="percent-text">
+                                    <div class="percent-text enrolled-percent-txt">
                                         0%
                                     </div>
                                 </div>
@@ -48,7 +48,7 @@
                                 <div class="pt-2 ml-2 position-relative">
                             
                                     <div class="text-muted">
-                                        <p>Your profile is 0% completed.</p>
+                                        <p>Your profile is <span class="enrolled-percent-txt">0%</span> completed.</p>
                                         <p>
                                             <b>Important:</b> Your practice or profile information wont be visible to others untill you have completed 
                                             your profile, and your profile has been reviewed by our compliance team.
@@ -67,6 +67,29 @@
                     </div>
                 </div>
             </div>
+            <% } else { %>
+                <div class="row mb-3">
+                    <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                        <div class="tile white-tile mb-2 p-3">
+                            <h4>Enrolled</h4>
+                            <div class=" position-relative" style="min-height: 120px;">
+                                <div class="p-2 position-absolute" style="left:0px;top:0px;">
+                                    <img style="width: 100px;" src="/gfs/images/core/award.png">
+                                </div>
+                                <div class="pt-2"  style="margin-left: 120px;">
+                                    <h3>Awesome! You are all set.</h3>
+                                    <p>Thank you for enrolling. 
+                                        Your account is now under review and we will be in touch if 
+                                        additional information is required from your side. 
+                                        If there are any questions please feel free to contact us. 
+                                    </p>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>    
+
             <% } %>	
 
             <div class="row">
@@ -122,7 +145,7 @@
                                 </div>
                             </div>
 
-                            <div class="mt-2 p-2 position-relative">
+                            <div class="mt-2 p-2 border-bottom position-relative">
                                 <div class="align-top pull-left">
                                     <i class="material-icons align-middle">local_library</i>
                                 </div>
@@ -132,49 +155,42 @@
                                 </div>
                             </div>
 
-                        </div>
-
-                        <div class="tile white-tile mb-2">
-
-                            <div class="mt-2 p-2 border-bottom position-relative">
+                            <!-- MEDICAL DEGREE -->
+                            <% if("medical_degree" in user_info && user_info.medical_degree.length>0) {%>
+                                <div class="mt-2 p-2 border-bottom position-relative">
                                 <div class="align-top pull-left">
                                     <i class="material-icons align-middle">school</i>
                                 </div>
                                 <div class="d-inline-block text-lower ml-5">
-                                    <div>BHMS (Bachelor of Homeopathic Medicine & Surgery)</div>
+                                    <div><%- user_info.medical_degree.map(m=>{ return m; }).join(',') %></div>
                                     <div class="text-muted small">Medical Degree</div>
                                 </div>
                             </div>
+                            <% } %>
 
-                            <div class="mt-2 p-2 border-bottom position-relative">
+                            <% if("medical_registration_number" in user_info && user_info.medical_registration_number.length>0) {%>
+                                <div class="mt-2 p-2 border-bottom position-relative">
                                 <div class="align-top pull-left">
                                     <i class="material-icons align-middle">contacts</i>
                                 </div>
                                 <div class="d-inline-block text-lower ml-5">
-                                    <div>8321947234010</div>
-                                    <div class="text-muted small">Medical License Number</div>
+                                    <div><%= user_info.medical_registration_number %></div>
+                                    <div class="text-muted small">Medical Registration/License Number</div>
                                 </div>
                             </div>
-
-                            <div class="mt-2 p-2 border-bottom position-relative">
+                            <% } %>
+                            
+                            <% if("medical_registration_council" in user_info && user_info.medical_registration_council.length>0) {%>
+                                <div class="mt-2 p-2 border-bottom position-relative">
                                 <div class="align-top pull-left">
                                     <i class="material-icons align-middle">business</i>
                                 </div>
                                 <div class="d-inline-block text-lower ml-5">
-                                    <div>Maharashtra Medical Council</div>
-                                    <div class="text-muted small">Medical Council</div>
+                                    <div><%- user_info.medical_registration_council.map(m=>{ return m.name; }).join(',') %></div>
+                                    <div class="text-muted small">Medical Registration/License Number</div>
                                 </div>
                             </div>
-
-                            <div class="mt-2 p-2 position-relative">
-                                <div class="align-top pull-left">
-                                    <i class="material-icons align-middle">forum</i>
-                                </div>
-                                <div class="d-inline-block text-lower ml-5">
-                                    <div>Hindi, Marathi, English</div>
-                                    <div class="text-muted small">Languages</div>
-                                </div>
-                            </div>
+                            <% } %>
 
                         </div>
 
@@ -185,8 +201,6 @@
                 <!-- row1 / col 2 -->
                 <div class="col-sm-12 col-md-12 col-lg-7 col-xl-7 mb-3">
                         
-                    
-
                     <div class="row">
 
                         <div class="col-sm-12 col-md-12 col-lg-12 col-xl-6">
@@ -242,23 +256,7 @@
 
 
     <link rel="stylesheet" type="text/css" href="/src/css/summary.css">
-    <script>
-        var circle = document.querySelector('.progress-ring-circle');
-        var radius = circle.r.baseVal.value;
-        var circumference = radius * 2 * Math.PI;
-
-        circle.style.strokeDasharray = `${circumference} ${circumference}`;
-        circle.style.strokeDashoffset = `${circumference}`;
-
-        function setProgress(percent) {
-            const offset = circumference - percent / 100 * circumference;
-            circle.style.strokeDashoffset = offset;
-        }
-        setProgress(0);
-        setTimeout(function(){
-            setProgress(30);
-        },100);
-    </script>
+    <script type="module" src="/src/js/summary.js"></script>
 
 </body>
 
