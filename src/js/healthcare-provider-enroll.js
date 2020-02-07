@@ -227,8 +227,10 @@ const validateForm=function(form){
 //**** GET FORM DATA */
 const aggregateData=function(form){
 
+    let formData={};
+    
     $(form).find('.entry-field').each(function(){
-        _formjs.formData=Object.assign(_formjs.formData,_formjs.getFieldData(this));
+        formData=Object.assign(formData,_formjs.getFieldData(this));
     });
 
     // -- get data for the multiple entry fields --- 
@@ -268,10 +270,17 @@ const aggregateData=function(form){
 
         let level=$(this).attr('data-level');
 
-        insertItems(this,level,_formjs.formData);
+        insertItems(this,level,formData);
         
     });
 
+    let formName=$(form).attr('name');
+
+    if(!(formName in _formjs.formData)){
+        _formjs.formData[formName]={};//initalize the object
+    }
+
+    _formjs.formData[formName]=Object.assign(_formjs.formData[formName],formData);
 }
 
 /**
@@ -527,23 +536,20 @@ const bindCreateProfileButton = function (user) {
 
     $('.create-profile-button').click(function () {
 
-        let form=$(this).closest('.form-content-container');
-        let formValidation = validateForm(form);
+        let form=$('.form-content-container:visible');
+        let formValidation = validateForm(form);//validate the current visible form
 
         if (formValidation === 0) {
             
             //add data to formdata array 
             aggregateData(form);
 
+            console.log(_formjs.formData);
+
             let profileInfo = new FormData();
 
-            //-- split the profile and practice information 
-
-            //Get profile Information 
-            $('#heathcare-provider-personal-info-form,#heathcare-provider-qualification-form').find('.entry-field').each(function () {
-                let name = $(this).attr("name");
-                profileInfo.append(name,_formjs.formData[name]);
-            });
+            //append data to formData Object 
+            profileInfo=_formjs.convertJsonToFormdataObject(_formjs.formData.personal_info_form);
 
             //match the existing user info with entered information
             Object.keys(user).forEach(key=>{
@@ -552,64 +558,57 @@ const bindCreateProfileButton = function (user) {
                 }
             });
 
-            let practice = {};
-            if ($(form).attr('id') === "heathcare-provider-private-practice-details-form") {
-                                
+            //set qualification data
+            let qualification=new FormData(); 
+            if("qualification_form" in _formjs.formData){
+                qualification=_formjs.convertJsonToFormdataObject(_formjs.formData.qualification_form);
+                qualification.user_mongo_id = profileInfo._id;
+                qualification.user_id = profileInfo.user_id;
+            }
+
+            //set the practice details
+            let practice=new FormData(); 
+            if("practice_details_form" in _formjs.formData){
+                
+                let practiceCopy={};
+
                 let practiceDetailFormName = "";
 
-                if (_formjs.formData["practice_type"][0] === "affiliated_to_facility") {
+                if (_formjs.formData.practice_details_form.practice_type[0] === "affiliated_to_facility") {
                     practiceDetailFormName = "#heathcare-provider-affiliation-details-form";
 
-                } else if (_formjs.formData["practice_type"][0] === "private_practice") {
+                } else if (_formjs.formData.practice_details_form.practice_type[0] === "private_practice") {
                     practiceDetailFormName = "#heathcare-provider-private-practice-details-form";
                 }
 
+                //clean up the data per the selection 
                 $('#heathcare-provider-practice-selection,' + practiceDetailFormName)
                     .find('.entry-field,.multiple-data-entry').each(function () {
                         let name = $(this).attr("name");
-                        practice[name] = _formjs.formData[name];
+                        practiceCopy[name] = _formjs.formData.practice_details_form[name];
                     });
-
+                
+                practice=_formjs.convertJsonToFormdataObject(practiceCopy);
                 practice.user_mongo_id = profileInfo._id;
                 practice.user_id = profileInfo.user_id;
             }
 
-            //Inject Values
-            profileInfo.append('enrolled',true);
-            console.log(practice);
+            console.log(profileInfo,qualification,practice);
 
-            if($(form).attr('id')==="heathcare-provider-qualification-form"){
-                //just insert profile information
-                $.ajax({
-                    "url": "/account/api/user/update",
-                    "processData": false,
-                    "contentType": false,
-                    "data": profileInfo,
-                    "method": "POST"
-                }).done(d=>{
-                    console.log(d);
-                });
-
-            }else if($(form).attr('id')==="heathcare-provider-private-practice-details-form"){
-                //update profile and insert new practice details 
-
-            }
+            //just insert profile information
+            $.ajax({
+                "url": "/account/api/user/update",
+                "processData": false,
+                "contentType": false,
+                "data": profileInfo,
+                "method": "POST"
+            }).done(d=>{
+                console.log(d);
+            });
 
         }
     });
 
-};
-
-const updateUserProfile=function(data){
-    return new Promise((resolve,reject)=>{
-
-    });
-};
-
-const insertNewPractice=function(data){
-    return new Promise((resolve,reject)=>{
-        
-    });
 };
 
 const getUserId=function(){
