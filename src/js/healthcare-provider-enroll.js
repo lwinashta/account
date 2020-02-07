@@ -279,7 +279,7 @@ const aggregateData=function(form){
     if(!(formName in _formjs.formData)){
         _formjs.formData[formName]={};//initalize the object
     }
-
+    
     _formjs.formData[formName]=Object.assign(_formjs.formData[formName],formData);
 }
 
@@ -544,8 +544,6 @@ const bindCreateProfileButton = function (user) {
             //add data to formdata array 
             aggregateData(form);
 
-            console.log(_formjs.formData);
-
             let profileInfo = new FormData();
 
             //append data to formData Object 
@@ -593,7 +591,7 @@ const bindCreateProfileButton = function (user) {
                 practice.user_id = profileInfo.user_id;
             }
 
-            console.log(profileInfo,qualification,practice);
+            //console.log(profileInfo,qualification,practice);
 
             //just insert profile information
             $.ajax({
