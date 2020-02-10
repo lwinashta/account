@@ -688,8 +688,16 @@ $('document').ready(function () {
     }).then(users=>{
         let user=users[0];
 
+        //assign values to the fields 
+
+
         Object.keys(user).forEach(key=>{
-            $('#heathcare-provider-personal-info-form').find('[name="'+key+'"]').val(user[key]);
+            if($('#heathcare-provider-personal-info-form').find('[name="'+key+'"]').is(':file')){
+                $('#heathcare-provider-personal-info-form').find('[name="'+key+'"]').closest('.form-group').find('img').attr('src',user[key][0].location);
+            }else{
+              $('#heathcare-provider-personal-info-form').find('[name="'+key+'"]').val(user[key]);  
+            }
+            
         });
 
         bindCreateProfileButton(user);

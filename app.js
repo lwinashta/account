@@ -4,6 +4,7 @@ const formidable = require('express-formidable');
 const globalSettings=require("../global-modules/sys-settings/config/config.json");
 const express = require('express');
 const userToken=require('@oi/account/lib/token'); 
+const path=require('path');
 
 const countries=require('@oi/utilities/lib/lists/countries.json');
 const specialties=require('@oi/utilities/lib/lists/medical-specialties.json');
@@ -47,6 +48,11 @@ app.use('/',async function(req,res,next){
         //-- get countries --
         app.locals.user_info.country_dial_code=countries.filter(c=>c._id===app.locals.user_info.country_code)[0].dial_code;
         app.locals.user_info.specialty=specialties.filter(s=>s._id===app.locals.user_info.specialty)[0];
+
+        process.env["user_info"]=JSON.stringify(app.locals.user_info);
+
+        //Serving static files using the static express path from the server
+        app.use('/fs',express.static(path.join(`../filesystem/${app.locals.user_info.registration_number}`)));
 
         next();
         
