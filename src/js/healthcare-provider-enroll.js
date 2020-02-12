@@ -596,11 +596,11 @@ const bindCreateProfileButton = function (user) {
 
                 //append data to formData Object 
                 profileInfo = _formjs.convertJsonToFormdataObject(_formjs.formData.personal_info_form);
-
                 profileInfo.append("_id", user._id);
+                profileInfo.append("profile_details_provided_flag", true);
 
                 //update the information 
-                //let updateProfileInfo = await sendAjaxReq("/account/api/user/update", profileInfo);
+                let updateProfileInfo = await sendAjaxReq("/account/api/user/update", profileInfo);
 
                 //set qualification data
                 let qualification = new FormData();
@@ -608,8 +608,9 @@ const bindCreateProfileButton = function (user) {
                 if ("qualification_form" in _formjs.formData) {
                     qualification = _formjs.convertJsonToFormdataObject(_formjs.formData.qualification_form);
                     qualification.append("_id", user._id);
+                    qualification.append("medical_qualification_details_provided_flag", true);
 
-                   // let updateQualification = await sendAjaxReq("/account/api/user/update", qualification);
+                   let updateQualification = await sendAjaxReq("/account/api/user/update", qualification);
 
                 }
 
@@ -617,41 +618,44 @@ const bindCreateProfileButton = function (user) {
                 let practice = new FormData();
                 if ("practice_details_form" in _formjs.formData) {
 
-                    let practiceCopy = {};
-
-                    let practiceDetailFormName = "";
-
-                    if (_formjs.formData.practice_details_form.practice_type[0] === "affiliated_to_facility") {
-                        practiceDetailFormName = "#heathcare-provider-affiliation-details-form";
-
-                    } else if (_formjs.formData.practice_details_form.practice_type[0] === "private_practice") {
-                        practiceDetailFormName = "#heathcare-provider-private-practice-details-form";
-                    }
-
-                    //clean up the data per the selection 
-                    $('#heathcare-provider-practice-selection,' + practiceDetailFormName)
-                        .find('.entry-field,.multiple-data-entry').each(function () {
-                            let name = $(this).attr("name");
-                            practiceCopy[name] = _formjs.formData.practice_details_form[name];
-                        });
-
-                    practice = _formjs.convertJsonToFormdataObject(practiceCopy);
-                    practice.append("user_mongo_id",profileInfo._id);                    
-
+                    practice = _formjs.convertJsonToFormdataObject(_formjs.formData.practice_details_form);
+                    practice.append("user_mongo_id",user._id);                    
+                    
+                    //get practice address
                     let address=`${practice.get("medical_facility_street_address_1")},${practice.get("medical_facility_city")},${practice.get("medical_facility_state")}, ${practice.get("medical_facility_zip_code")}`;
 
-                    //get the cordinates per the address
-                    let coordinates=await $.getJSON('/google/maps/api/getaddresscordinates',{
-                        "address":address
+                    //get the cordinates of the practice address
+                    let coordinates = await $.getJSON('/google/maps/api/getaddresscordinates', {
+                        "address": address,
+                        "strict": true
                     });
 
-                    //check if cordintes are recieved
-                    //if no cordinates - invalid address entered
+                    //save practice details 
+                    practice.append('practice_cordinates.$object', JSON.stringify({
+                        type: "Point",
+                        coordinates: [coordinates.json.results[0].geometry.location.lng, coordinates.json.results[0].geometry.location.lat]
+                    }));
 
-                    console.log(coordinates);
+                    let practice_info = await sendAjaxReq("/account/api/user/createpractice", practice);
+
+                    ///update the user info stating enrollment complete : enrolled: true
+                    let updateEnrolledFlag=new FormData();
+
+                    updateEnrolledFlag.append("_id",user._id);
+                    updateEnrolledFlag.append("practice_info_provided_flag",true);
+                    updateEnrolledFlag.append("enrolled",true);
+
+                    let updateEnrolled = await sendAjaxReq("/account/api/user/update", updateEnrolledFlag);
+
                 }
+
+                //all updates completed with no failure 
+
             }
         } catch (error) {
+            console.error(error);
+
+            //add notification for invalid address 
 
         }
         

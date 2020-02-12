@@ -57,18 +57,18 @@ async function dataLoad() {
         // get user info 
         runtime.userInfo = await runtime.getUserInfo();
 
-        //set enrollment progress 
         if(!runtime.userInfo.enrolled){
-
             let progress=1;
             let totalSteps=3;
-
-            progress+="qualification_provided" in runtime.userInfo && runtime.userInfo.qualification_provided?1:0;
-            progress+="practice_info_provided" in runtime.userInfo && runtime.userInfo.practice_info_provided?1:0;
+            
+            //check if medical_qualification_done_flag exists ?
+            progress+="medical_qualification_details_provided_flag" in runtime.userInfo && runtime.userInfo.medical_qualification_details_provided_flag?1:0;
+            
+            progress+="practice_info_provided_flag" in runtime.userInfo && runtime.userInfo.practice_info_provided_flag?1:0;
 
             setSVGPie(Math.round((progress/totalSteps)*100));
         }
-
+        
     } catch (error) {
         console.error(error);
     }
