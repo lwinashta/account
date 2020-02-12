@@ -1,5 +1,5 @@
 //import {runtime} from '../base/base.js';
-import {formjs, bindFormControlEvents} from '/gfs/utilities/lib/js/form.js';
+import {formjs, bindFormControlEvents, insertValues} from '/gfs/utilities/lib/js/form.js';
 import {listjs} from '/gfs/utilities/lib/js/list.js';
 
 //*** INITIALIZE VARIABLES */
@@ -7,6 +7,57 @@ const _formjs=new formjs();
 const _bindEvents=new bindFormControlEvents({
     "formData": _formjs.formData//reference variable
 });
+
+//-- Insert list values -- 
+var lists={};
+
+/**
+ * Callbacks for fields in the form 
+ */
+const fieldCallbacks={
+    "known_languages":{
+        "onselect":function(itemId){
+            let languages=lists.languages;
+            let langageInfoIndx = languages.findIndex(l => l._id === itemId);
+
+            return `<div class="d-inline-block item p-1 pl-2 pr-2 mr-2 mt-1 border" _id="${itemId}">
+                <div class="d-inline-block mr-2">${languages[langageInfoIndx].name}</div>
+                <div class="d-inline-block remove-item">
+                    <i class="material-icons text-danger align-middle pointer">clear</i>
+                </div>
+            </div>`;
+
+        }
+    },
+    "medical_degree":{
+        "onselect":function(itemId){
+
+            let degrees=lists.degrees;
+            let indx = degrees.findIndex(l => l._id === itemId);
+
+            return `<div class="d-inline-block item p-1 pl-2 pr-2 mr-2 mt-1 border" _id="${itemId}">
+                <div class="d-inline-block mr-2">${degrees[indx].abbr} (${degrees[indx].name})</div>
+                <div class="d-inline-block remove-item">
+                    <i class="material-icons text-danger align-middle pointer">clear</i>
+                </div>
+            </div>`;
+        }
+    },
+    "medical_registration_council":{
+        "onselect":function(itemId){
+
+            let councils=lists.councils;
+            let indx = councils.findIndex(l => l._id === itemId);
+
+            return `<div class="d-inline-block item p-1 pl-2 pr-2 mr-2 mt-1 border" _id="${itemId}">
+                <div class="d-inline-block mr-2">${councils[indx].name}</div>
+                <div class="d-inline-block remove-item">
+                    <i class="material-icons text-danger align-middle pointer">clear</i>
+                </div>
+            </div>`;
+        }
+    }
+}
 
 /**
  * @params null.
@@ -22,6 +73,8 @@ const bindListFields = async function () {
         if (a.name > b.name) return 1;
         return -1;
     });
+
+    lists.countries=countries;
 
     let optionDialCodeHtml = '<option value="">Select country code</option>';
     let countryNameHtml = '<option value="">Select country</option>';
@@ -43,6 +96,8 @@ const bindListFields = async function () {
     });
     specialties.map(m => m.name = capitalizeText(m.name));
 
+    lists.specialties=specialties;
+
     let specialtiesHtml = "<option value=''> - Select specialty - </option>";
 
     specialties.forEach(c => {
@@ -60,6 +115,8 @@ const bindListFields = async function () {
         if (a.name > b.name) return 1;
         return -1;
     });
+
+    lists.languages=languages;
 
     //bind the language container 
     _bindEvents.datasetSearchAndSelect({
@@ -84,17 +141,8 @@ const bindListFields = async function () {
             });
             return html;
         },
-        "displayOnSelect": function (item) {
-
-            let itemId = $(item).attr('_id');
-            let langageInfoIndx = languages.findIndex(l => l._id === itemId);
-
-            return `<div class="d-inline-block item p-1 pl-2 pr-2 mr-2 mt-1 border" _id="${itemId}">
-                <div class="d-inline-block mr-2">${languages[langageInfoIndx].name}</div>
-                <div class="d-inline-block remove-item">
-                    <i class="material-icons text-danger align-middle pointer">clear</i>
-                </div>
-            </div>`;
+        "displayOnSelect": function (itemId) {
+            return fieldCallbacks.known_languages.onselect(itemId);
         }
     });
 
@@ -105,6 +153,8 @@ const bindListFields = async function () {
         if (a.name > b.name) return 1;
         return -1;
     });
+
+    lists.councils=councils;
 
     //bind the medical council container 
     _bindEvents.datasetSearchAndSelect({
@@ -130,16 +180,8 @@ const bindListFields = async function () {
             });
             return html;
         },
-        "displayOnSelect": function (item) {
-            let itemId = $(item).attr('_id');
-            let indx = councils.findIndex(l => l._id === itemId);
-
-            return `<div class="d-inline-block item p-1 pl-2 pr-2 mr-2 mt-1 border" _id="${itemId}">
-                <div class="d-inline-block mr-2">${councils[indx].name}</div>
-                <div class="d-inline-block remove-item">
-                    <i class="material-icons text-danger align-middle pointer">clear</i>
-                </div>
-            </div>`;
+        "displayOnSelect": function (itemId) {
+            return fieldCallbacks.medical_registration_council.onselect(itemId);
         }
     });
 
@@ -151,7 +193,9 @@ const bindListFields = async function () {
         return -1;
     });
 
-    //bind the language container 
+    lists.degrees=degrees;
+
+    //bind the medical degree container 
     _bindEvents.datasetSearchAndSelect({
         "container": $('#medical-degree-search-container'),
         "dataset": degrees,
@@ -174,17 +218,8 @@ const bindListFields = async function () {
             });
             return html;
         },
-        "displayOnSelect": function (item) {
-
-            let itemId = $(item).attr('_id');
-            let indx = degrees.findIndex(l => l._id === itemId);
-
-            return `<div class="d-inline-block item p-1 pl-2 pr-2 mr-2 mt-1 border" _id="${itemId}">
-                <div class="d-inline-block mr-2">${degrees[indx].abbr} (${degrees[indx].name})</div>
-                <div class="d-inline-block remove-item">
-                    <i class="material-icons text-danger align-middle pointer">clear</i>
-                </div>
-            </div>`;
+        "displayOnSelect": function (itemId) {
+            return fieldCallbacks.medical_degree.onselect(itemId);
         }
     });
 
@@ -534,77 +569,92 @@ const bindStepClickButton = function () {
 
 const bindCreateProfileButton = function (user) {
 
-    $('.create-profile-button').click(function () {
+    const sendAjaxReq=function(uri,data){
+        return $.ajax({
+            "url": uri,
+            "processData": false,
+            "contentType": false,
+            "data": data,
+            "method": "POST"
+        });
+    };
 
-        let form=$('.form-content-container:visible');
-        let formValidation = validateForm(form);//validate the current visible form
+    $('.create-profile-button').click(async function () {
 
-        if (formValidation === 0) {
-            
-            //add data to formdata array 
-            aggregateData(form);
+        try {
 
-            let profileInfo = new FormData();
+            let form = $('.form-content-container:visible');
+            let formValidation = validateForm(form); //validate the current visible form
 
-            //append data to formData Object 
-            profileInfo=_formjs.convertJsonToFormdataObject(_formjs.formData.personal_info_form);
+            if (formValidation === 0) {
 
-            //match the existing user info with entered information
-            Object.keys(user).forEach(key=>{
-                if(!profileInfo.has(key)){
-                    profileInfo.append(key,user[key]);
+                //add data to formdata array 
+                aggregateData(form);
+                console.log(_formjs.formData)
+
+                let profileInfo = new FormData();
+
+                //append data to formData Object 
+                profileInfo = _formjs.convertJsonToFormdataObject(_formjs.formData.personal_info_form);
+
+                profileInfo.append("_id", user._id);
+
+                //update the information 
+                //let updateProfileInfo = await sendAjaxReq("/account/api/user/update", profileInfo);
+
+                //set qualification data
+                let qualification = new FormData();
+
+                if ("qualification_form" in _formjs.formData) {
+                    qualification = _formjs.convertJsonToFormdataObject(_formjs.formData.qualification_form);
+                    qualification.append("_id", user._id);
+
+                   // let updateQualification = await sendAjaxReq("/account/api/user/update", qualification);
+
                 }
-            });
 
-            //set qualification data
-            let qualification=new FormData(); 
-            if("qualification_form" in _formjs.formData){
-                qualification=_formjs.convertJsonToFormdataObject(_formjs.formData.qualification_form);
-                qualification.user_mongo_id = profileInfo._id;
-                qualification.user_id = profileInfo.user_id;
-            }
+                //set the practice details
+                let practice = new FormData();
+                if ("practice_details_form" in _formjs.formData) {
 
-            //set the practice details
-            let practice=new FormData(); 
-            if("practice_details_form" in _formjs.formData){
-                
-                let practiceCopy={};
+                    let practiceCopy = {};
 
-                let practiceDetailFormName = "";
+                    let practiceDetailFormName = "";
 
-                if (_formjs.formData.practice_details_form.practice_type[0] === "affiliated_to_facility") {
-                    practiceDetailFormName = "#heathcare-provider-affiliation-details-form";
+                    if (_formjs.formData.practice_details_form.practice_type[0] === "affiliated_to_facility") {
+                        practiceDetailFormName = "#heathcare-provider-affiliation-details-form";
 
-                } else if (_formjs.formData.practice_details_form.practice_type[0] === "private_practice") {
-                    practiceDetailFormName = "#heathcare-provider-private-practice-details-form";
-                }
+                    } else if (_formjs.formData.practice_details_form.practice_type[0] === "private_practice") {
+                        practiceDetailFormName = "#heathcare-provider-private-practice-details-form";
+                    }
 
-                //clean up the data per the selection 
-                $('#heathcare-provider-practice-selection,' + practiceDetailFormName)
-                    .find('.entry-field,.multiple-data-entry').each(function () {
-                        let name = $(this).attr("name");
-                        practiceCopy[name] = _formjs.formData.practice_details_form[name];
+                    //clean up the data per the selection 
+                    $('#heathcare-provider-practice-selection,' + practiceDetailFormName)
+                        .find('.entry-field,.multiple-data-entry').each(function () {
+                            let name = $(this).attr("name");
+                            practiceCopy[name] = _formjs.formData.practice_details_form[name];
+                        });
+
+                    practice = _formjs.convertJsonToFormdataObject(practiceCopy);
+                    practice.append("user_mongo_id",profileInfo._id);                    
+
+                    let address=`${practice.get("medical_facility_street_address_1")},${practice.get("medical_facility_city")},${practice.get("medical_facility_state")}, ${practice.get("medical_facility_zip_code")}`;
+
+                    //get the cordinates per the address
+                    let coordinates=await $.getJSON('/google/maps/api/getaddresscordinates',{
+                        "address":address
                     });
-                
-                practice=_formjs.convertJsonToFormdataObject(practiceCopy);
-                practice.user_mongo_id = profileInfo._id;
-                practice.user_id = profileInfo.user_id;
+
+                    //check if cordintes are recieved
+                    //if no cordinates - invalid address entered
+
+                    console.log(coordinates);
+                }
             }
-
-            //console.log(profileInfo,qualification,practice);
-
-            //just insert profile information
-            $.ajax({
-                "url": "/account/api/user/update",
-                "processData": false,
-                "contentType": false,
-                "data": profileInfo,
-                "method": "POST"
-            }).done(d=>{
-                console.log(d);
-            });
+        } catch (error) {
 
         }
+        
     });
 
 };
@@ -680,25 +730,20 @@ $('document').ready(function () {
     bindAddAvailability();
     bindStepClickButton();
     
-
     //--- bind lists ---- 
     bindListFields().then(function () {
         //get the user personal information 
         return getPersonalInfo();
     }).then(users=>{
+
+        //insert personal info values 
         let user=users[0];
 
         //assign values to the fields 
-
-
-        Object.keys(user).forEach(key=>{
-            if($('#heathcare-provider-personal-info-form').find('[name="'+key+'"]').is(':file')){
-                $('#heathcare-provider-personal-info-form').find('[name="'+key+'"]').closest('.form-group').find('img').attr('src',user[key][0].location);
-            }else{
-              $('#heathcare-provider-personal-info-form').find('[name="'+key+'"]').val(user[key]);  
-            }
-            
-        });
+        let _insert=new insertValues({
+            "container":$('#heathcare-provider-personal-info-form,#heathcare-provider-qualification-form'),
+            "fieldCallbacks":fieldCallbacks//callback especially for the onselect multi select field
+        }).insert(user);
 
         bindCreateProfileButton(user);
         
