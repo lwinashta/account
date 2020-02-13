@@ -597,7 +597,7 @@ const bindCreateProfileButton = function (user) {
                 //append data to formData Object 
                 profileInfo = _formjs.convertJsonToFormdataObject(_formjs.formData.personal_info_form);
                 profileInfo.append("_id", user._id);
-                profileInfo.append("profile_details_provided_flag", true);
+                profileInfo.append("profile_details_provided_flag.$boolean", true);
 
                 //update the information 
                 let updateProfileInfo = await sendAjaxReq("/account/api/user/update", profileInfo);
@@ -608,7 +608,7 @@ const bindCreateProfileButton = function (user) {
                 if ("qualification_form" in _formjs.formData) {
                     qualification = _formjs.convertJsonToFormdataObject(_formjs.formData.qualification_form);
                     qualification.append("_id", user._id);
-                    qualification.append("medical_qualification_details_provided_flag", true);
+                    qualification.append("medical_qualification_details_provided_flag.$boolean", true);
 
                    let updateQualification = await sendAjaxReq("/account/api/user/update", qualification);
 
@@ -642,8 +642,8 @@ const bindCreateProfileButton = function (user) {
                     let updateEnrolledFlag=new FormData();
 
                     updateEnrolledFlag.append("_id",user._id);
-                    updateEnrolledFlag.append("practice_info_provided_flag",true);
-                    updateEnrolledFlag.append("enrolled",true);
+                    updateEnrolledFlag.append("practice_info_provided_flag.$boolean",true);
+                    updateEnrolledFlag.append("enrolled.$boolean",true);
 
                     let updateEnrolled = await sendAjaxReq("/account/api/user/update", updateEnrolledFlag);
 
