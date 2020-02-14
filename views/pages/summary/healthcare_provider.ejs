@@ -162,7 +162,7 @@
                                     <i class="material-icons align-middle">school</i>
                                 </div>
                                 <div class="d-inline-block text-lower ml-5">
-                                    <div><%- user_info.medical_degree.map(m=>{ return m; }).join(',') %></div>
+                                    <div><%- user_info.medical_degree.map(d=>{return d.name}).join(', ') %></div>
                                     <div class="text-muted small">Medical Degree</div>
                                 </div>
                             </div>
@@ -186,7 +186,7 @@
                                     <i class="material-icons align-middle">business</i>
                                 </div>
                                 <div class="d-inline-block text-lower ml-5">
-                                    <div><%- user_info.medical_registration_council.map(m=>{ return m.name; }).join(',') %></div>
+                                    <div><%- user_info.medical_registration_council.map(m=>{ return m.name; }).join(', ') %></div>
                                     <div class="text-muted small">Medical Registration/License Number</div>
                                 </div>
                             </div>

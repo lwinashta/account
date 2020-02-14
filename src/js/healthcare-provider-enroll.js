@@ -582,6 +582,7 @@ const bindCreateProfileButton = function (user) {
     $('.create-profile-button').click(async function () {
 
         try {
+            $('body').append(`<div class="screen-loader" message="Saving your details"></div>`);
 
             let form = $('.form-content-container:visible');
             let formValidation = validateForm(form); //validate the current visible form
@@ -619,7 +620,7 @@ const bindCreateProfileButton = function (user) {
                 if ("practice_details_form" in _formjs.formData) {
 
                     practice = _formjs.convertJsonToFormdataObject(_formjs.formData.practice_details_form);
-                    practice.append("user_mongo_id",user._id);                    
+                    practice.append("user_mongo_id.$_id",user._id);                    
                     
                     //get practice address
                     let address=`${practice.get("medical_facility_street_address_1")},${practice.get("medical_facility_city")},${practice.get("medical_facility_state")}, ${practice.get("medical_facility_zip_code")}`;
@@ -650,13 +651,14 @@ const bindCreateProfileButton = function (user) {
                 }
 
                 //all updates completed with no failure 
+                window.location.assign('/summary');//go to summary page
 
             }
         } catch (error) {
             console.error(error);
 
             //add notification for invalid address 
-
+            $('body').find(`.screen-loader`).remove();
         }
         
     });

@@ -8,6 +8,8 @@ const path=require('path');
 
 const countries=require('@oi/utilities/lib/lists/countries.json');
 const specialties=require('@oi/utilities/lib/lists/medical-specialties.json');
+const degrees=require('@oi/utilities/lib/lists/medical-degrees.json');
+const councils=require('@oi/utilities/lib/lists/medical-councils.json');
 
 //const parser=require('body-parser');
 
@@ -49,6 +51,20 @@ app.use('/',async function(req,res,next){
         //-- get countries --
         app.locals.user_info.country_dial_code=countries.filter(c=>c._id===app.locals.user_info.country_code)[0].dial_code;
         app.locals.user_info.specialty=specialties.filter(s=>s._id===app.locals.user_info.specialty)[0];
+        
+        if("medical_degree" in app.locals.user_info && app.locals.user_info.medical_degree.length>0){
+            app.locals.user_info.medical_degree=app.locals.user_info.medical_degree.map(d=>{
+                return degrees.filter(deg=>deg._id===d)[0];
+            });
+        }
+
+        if("medical_registration_council" in app.locals.user_info && app.locals.user_info.medical_registration_council.length>0){
+            app.locals.user_info.medical_registration_council=app.locals.user_info.medical_registration_council.map(c=>{
+                return councils.filter(deg=>deg._id===c)[0];
+            });
+        }
+
+        console.log(app.locals.user_info);
 
         process.env["user_info"]=JSON.stringify(app.locals.user_info);
 
