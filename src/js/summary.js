@@ -68,7 +68,7 @@ async function dataLoad() {
 
             setSVGPie(Math.round((progress/totalSteps)*100));
         }
-        
+                
     } catch (error) {
         console.error(error);
     }
@@ -78,7 +78,16 @@ async function dataLoad() {
 
 
 $('document').ready(function () {
-    dataLoad(); // Trigger data load 
-    //TRIGGER FUNCTIONS ON LOAD
-    uploadProfileImg();
+    //Initial Data Load 
+    dataLoad().then(r1=>{
+        $.ajax({
+            "url":'/account/api/practice/getbyuser',
+            "processData": true,
+            "contentType": "application/json; charset=utf-8",
+            "data":{"user_mongo_id":runtime.userInfo._id},
+            "method":"GET"
+        }).done(function(d){
+            console.log(d);
+        });
+    });    
 });

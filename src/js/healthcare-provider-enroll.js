@@ -637,7 +637,7 @@ const bindCreateProfileButton = function (user) {
                         coordinates: [coordinates.json.results[0].geometry.location.lng, coordinates.json.results[0].geometry.location.lat]
                     }));
 
-                    let practice_info = await sendAjaxReq("/account/api/user/createpractice", practice);
+                    let practice_info = await sendAjaxReq("/account/api/practice/create", practice);
 
                     ///update the user info stating enrollment complete : enrolled: true
                     let updateEnrolledFlag=new FormData();

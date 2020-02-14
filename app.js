@@ -91,6 +91,10 @@ app.get('/summary',(req,res)=>{
     res.render(`pages/summary/${app.locals.user_info.user_type}`);
 });
 
+app.get('/practices',(req,res)=>{
+    res.render(`pages/practices`);
+});
+
 app.get('/enroll/:accounttype/:accountid',(req,res)=>{
 
     let accounttype = req.params.accounttype.toLowerCase(); 
