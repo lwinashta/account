@@ -2,18 +2,33 @@ import {
     runtime
 } from "./base.js";
 
+import {formjs, bindFormControlEvents, insertValues} from '/gfs/utilities/lib/js/form.js';
+const _formjs=new formjs();
+
+
 /** UPLOAD PROFILE IMAGE */
 
 const uploadProfileImg = () => {
-    let uploadImgForm = document.getElementById('update-profile-img-form');
-    if ($(uploadImgForm).length > 0) {
-        uploadImgForm.onsubmit = function (e) {
-            e.preventDefault();
-            let d = new FormData(uploadImgForm);
+    $('#update-profile-img-input').on('change', function (e) {
+        
+        e.preventDefault();
+
+        if($('#update-profile-img-input').val().length>0){
+            
+            let files=e.target.files[0];
+            files.fieldname="personal_profile_image";
+
+            //console.log(e.target.files);
+
+            let imgData={
+                "personal_profile_image-1":files,
+                "_id":runtime.userInfo._id
+            }
+        
             $.ajax({
-                "url": '/api/global/account/user/upload-profile-image',
-                "method": 'post',
-                "data": d,
+                "url": '/account/api/user/uploadprofileimage',
+                "method": 'POST',
+                "data": _formjs.convertJsonToFormdataObject(imgData),
                 "processData": false,
                 "contentType": false,
             }).done((response) => {
@@ -23,14 +38,9 @@ const uploadProfileImg = () => {
             }).fail(function (err) {
                 console.log(err);
             });
-        };
-
-        $('#update-profile-img-input').on('change', function (e) {
-            if ($(this).val().length > 0) {
-                $(this).closest('form').submit();
-            }
-        });
-    }
+        }
+        
+    });
 }
 
 const setSVGPie = function (progress) {
@@ -48,26 +58,18 @@ const setSVGPie = function (progress) {
     }
     
     setProgress(progress);
-    $('.enrolled-percent-txt').text(progress+"%")
+    
 }
 
 //INITIAL DATA LOAD 
 async function dataLoad() {
+
     try {
         // get user info 
         runtime.userInfo = await runtime.getUserInfo();
+        let progress="enrollmentProgress" in runtime.userInfo?runtime.userInfo.enrollmentProgress:0;
 
-        if(!runtime.userInfo.enrolled){
-            let progress=1;
-            let totalSteps=3;
-            
-            //check if medical_qualification_done_flag exists ?
-            progress+="medical_qualification_details_provided_flag" in runtime.userInfo && runtime.userInfo.medical_qualification_details_provided_flag?1:0;
-            
-            progress+="practice_info_provided_flag" in runtime.userInfo && runtime.userInfo.practice_info_provided_flag?1:0;
-
-            setSVGPie(Math.round((progress/totalSteps)*100));
-        }
+        $('.enrolled-percent-txt').text(progress+"%")
                 
     } catch (error) {
         console.error(error);
@@ -75,19 +77,12 @@ async function dataLoad() {
 }
 
 
-
-
 $('document').ready(function () {
+    
     //Initial Data Load 
     dataLoad().then(r1=>{
-        $.ajax({
-            "url":'/account/api/practice/getbyuser',
-            "processData": true,
-            "contentType": "application/json; charset=utf-8",
-            "data":{"user_mongo_id":runtime.userInfo._id},
-            "method":"GET"
-        }).done(function(d){
-            console.log(d);
-        });
+
+        uploadProfileImg();//bind upload profile image 
+        
     });    
 });

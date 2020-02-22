@@ -8,7 +8,7 @@
 
 <body>
 
-    <% if (('enrolled' in user_info && !user_info.enrolled) || !('enrolled' in user_info)) { %>
+    <% if (('enrollmentProgress' in user_info && parseFloat(user_info.enrollmentProgress)!==100) || !('enrollmentProgress' in user_info)) { %>
         
         <header id="app-header-only-name" class="border-bottom p-3 bg-white">
 

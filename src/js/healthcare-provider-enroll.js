@@ -587,6 +587,9 @@ const bindCreateProfileButton = function (user) {
             let form = $('.form-content-container:visible');
             let formValidation = validateForm(form); //validate the current visible form
 
+            let totalSteps=3;
+            let completedSteps=1;
+
             if (formValidation === 0) {
 
                 //add data to formdata array 
@@ -598,7 +601,6 @@ const bindCreateProfileButton = function (user) {
                 //append data to formData Object 
                 profileInfo = _formjs.convertJsonToFormdataObject(_formjs.formData.personal_info_form);
                 profileInfo.append("_id", user._id);
-                profileInfo.append("profile_details_provided_flag.$boolean", true);
 
                 //update the information 
                 let updateProfileInfo = await sendAjaxReq("/account/api/user/update", profileInfo);
@@ -609,52 +611,67 @@ const bindCreateProfileButton = function (user) {
                 if ("qualification_form" in _formjs.formData) {
                     qualification = _formjs.convertJsonToFormdataObject(_formjs.formData.qualification_form);
                     qualification.append("_id", user._id);
-                    qualification.append("medical_qualification_details_provided_flag.$boolean", true);
 
                    let updateQualification = await sendAjaxReq("/account/api/user/update", qualification);
+                   
+                   completedSteps++;
 
                 }
 
                 //set the practice details
-                let practice = new FormData();
                 if ("practice_details_form" in _formjs.formData) {
 
-                    practice = _formjs.convertJsonToFormdataObject(_formjs.formData.practice_details_form);
-                    practice.append("user_mongo_id.$_id",user._id);                    
-                    
-                    //get practice address
-                    let address=`${practice.get("medical_facility_street_address_1")},${practice.get("medical_facility_city")},${practice.get("medical_facility_state")}, ${practice.get("medical_facility_zip_code")}`;
+                    //--- split the elements for the "healthcareFacilityUsers" table
+                    let healthcareFacilityUserInfo={
+                        "user_mongo_id.$_id":user._id,
+                        "practice_type":_formjs.formData.practice_details_form.practice_type,
+                        "availability_information":_formjs.formData.practice_details_form.availability_information,
+                    };
+
+                    //remove the user information from facility details 
+                    delete _formjs.formData.practice_details_form.practice_type;
+                    delete _formjs.formData.practice_details_form.availability_information;
+
+                    _formjs.formData.practice_details_form.registration_number=user.registration_number;
 
                     //get the cordinates of the practice address
+                    let address=`${_formjs.formData.practice_details_form.medical_facility_street_address_1},${_formjs.formData.practice_details_form.medical_facility_city},${_formjs.formData.practice_details_form.medical_facility_state}, ${_formjs.formData.practice_details_form.medical_facility_zip_code}`;
+
                     let coordinates = await $.getJSON('/google/maps/api/getaddresscordinates', {
                         "address": address,
                         "strict": true
                     });
 
-                    //save practice details 
-                    practice.append('practice_cordinates.$object', JSON.stringify({
+                    _formjs.formData.practice_details_form["medical_facility_cordinates.$object"]=JSON.stringify({
                         type: "Point",
                         coordinates: [coordinates.json.results[0].geometry.location.lng, coordinates.json.results[0].geometry.location.lat]
-                    }));
+                    });
 
-                    let practice_info = await sendAjaxReq("/account/api/practice/create", practice);
+                    let healthcareFacility = await sendAjaxReq("/account/api/heathcarefacility/create", _formjs.convertJsonToFormdataObject(_formjs.formData.practice_details_form));
 
-                    ///update the user info stating enrollment complete : enrolled: true
-                    let updateEnrolledFlag=new FormData();
+                    //-- Inject facility Id in facilityUserInfo
+                    healthcareFacilityUserInfo["facilityId.$_id"]=healthcareFacility.insertedId;
 
-                    updateEnrolledFlag.append("_id",user._id);
-                    updateEnrolledFlag.append("practice_info_provided_flag.$boolean",true);
-                    updateEnrolledFlag.append("enrolled.$boolean",true);
-
-                    let updateEnrolled = await sendAjaxReq("/account/api/user/update", updateEnrolledFlag);
+                    let healthcareFacilityUserDbInfo=await sendAjaxReq("/account/api/heathcarefacilityuser/create", _formjs.convertJsonToFormdataObject(healthcareFacilityUserInfo));
+                    
+                    completedSteps++;
 
                 }
+
+                let enrollmentPercentage=Math.round((completedSteps/totalSteps)*100);
+
+                ///update the user info stating enrollment complete : enrolled: true
+                let enrollment=new FormData();
+                enrollment.append("_id",user._id);
+                enrollment.append("enrollmentProgress",enrollmentPercentage);
+
+                let updateEnrolled = await sendAjaxReq("/account/api/user/update", enrollment);
 
                 //all updates completed with no failure 
                 window.location.assign('/summary');//go to summary page
 
             }
-        } catch (error) {
+        } catch (error) {   
             console.error(error);
 
             //add notification for invalid address 

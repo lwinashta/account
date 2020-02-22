@@ -1,0 +1,48 @@
+
+                        <h4>Enroll</h4>
+                        <div class="row">
+                            <div class="col-sm-12 col-md-12 col-lg-2 col-xl-2">
+                                <div class="position-relative" style="min-height:120px;">
+                                    <!-- create pie chart  -->
+                                    <svg class="progress-ring" width="120" height="120">
+                                        <circle  class="progress-ring-circle"
+                                            stroke="red"
+                                            stroke-width="8"
+                                            fill="transparent"
+                                            r="50"
+                                            cx="60"
+                                            cy="60" />
+                                    </svg>
+                                    <svg class="bg-progress-ring" width="120" height="120">
+                                        <circle 
+                                            stroke="whitesmoke"
+                                            stroke-width="4"
+                                            fill="transparent"
+                                            r="52"
+                                            cx="60"
+                                            cy="60"/>
+                                    </svg>
+                                    <div class="percent-text enrolled-percent-txt">
+                                        0%
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 col-md-12 col-lg-10 col-xl-10">
+                                <div class="pt-2 ml-2 position-relative">
+                            
+                                    <div class="text-muted">
+                                        <p>Your profile is <span class="enrolled-percent-txt">0%</span> completed.</p>
+                                        <p>
+                                            <b>Important:</b> Your practice or profile information wont be visible to others untill you have completed 
+                                            your profile, and your profile has been reviewed by our compliance team.
+                                            Please contact us if there are questions or concerns.   
+                                        </p>
+                                        <div class="mt-2">
+                                            <a href="/enroll/<%=user_info.user_type %>/<%=user_info._id %>">
+                                                <div class="btn btn-success"><label class="m-0 pointer">Get Started & Complete your profile</label></div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>

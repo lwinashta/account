@@ -64,7 +64,7 @@ app.use('/',async function(req,res,next){
             });
         }
 
-        console.log(app.locals.user_info);
+        //console.log(app.locals.user_info);
 
         process.env["user_info"]=JSON.stringify(app.locals.user_info);
 

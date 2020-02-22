@@ -154,3 +154,7 @@ export var runtime={
         return html;
     }
 };
+
+$('document').ready(function(){
+    $('#app-header-user-info-container').hideOffFocus();
+});
