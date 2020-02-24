@@ -1,0 +1,26 @@
+<div id="edit-personal-email-id" class="form" userid="<%=user_info._id%>">
+    <h3 class="mt-2">
+        <div class="pointer d-inline-block mr-2 btn-rounded align-middle bg-default cancel-go-back"
+            style=" line-height: 42px;width: 40px;height: 40px;">
+            <i class="material-icons align-middle text-white">keyboard_arrow_left</i>
+        </div>
+        <span>Email ID</span>
+    </h3>
+
+    <div class="tile white-tile rounded mt-2">
+        <p class="text-muted">
+            Updating the email id will update the userid with which you login.
+            Once your email id is updated successfully; you will be logged out and next time you login you should use
+            new email id.
+        </p>
+        <div class="form-group mt-2">
+            <input type="email" id="personal-email-id" name="email_id" class='form-control entry-field'
+                data-required="1" placeholder="Email Id" autocomplete="off" value="<%=user_info.email_id %>">
+        </div>
+        <div class="mt-2 text-right pointer">
+            <div class="btn btn-primary">
+                <label class="m-0 pointer">Done</label>
+            </div>
+        </div>
+    </div>
+</div>

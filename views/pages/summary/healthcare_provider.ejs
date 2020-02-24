@@ -11,7 +11,8 @@
 
     <div id="app-right-pane-container">
 
-        <div class="container-fluid mt-3">
+        <div class="pg-section container-fluid mt-3" id="summary-container">
+            
             <% if (('enrollmentProgress' in user_info && parseFloat(user_info.enrollmentProgress)!==100) || !('enrollmentProgress' in user_info))  { %>
             <div class="row mb-3">
                 <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
@@ -59,7 +60,7 @@
             <div class="row">
 
                 <!-- row1 / col 1 -->
-                <div class="col-sm-12 col-md-12 col-lg-5 col-xl-5">
+                <div class="col-sm-12 col-md-12 col-lg-7 col-xl-7">
 
                     <div id="account-row1-col1-1">
 
@@ -102,6 +103,9 @@
                                     <div><%=user_info.email_id %></div>
                                     <div class="text-muted small">Email</div>
                                 </div>
+                                <div class="push-right pointer p-1 edit-item-button" edititem="email_id">
+                                    <i class="material-icons align-middle small-icon">edit</i>
+                                </div>
                             </div>
 
                             <div class="mt-2 p-2 border-bottom position-relative">
@@ -112,7 +116,32 @@
                                     <div><%=user_info.country_dial_code+" "+user_info.personal_primary_number %></div>
                                     <div class="text-muted small">Phone</div>
                                 </div>
+                                <div class="push-right pointer p-1 edit-item-button" edititem="personal_primary_number">
+                                    <i class="material-icons align-middle small-icon">edit</i>
+                                </div>
                             </div>
+
+                            <div class="mt-2 p-2 border-bottom position-relative">
+                                <div class="align-top pull-left">
+                                    <i class="material-icons align-middle">home</i>
+                                </div>
+                                <div class="d-inline-block text-lower ml-5 w-90">
+                                    <% if ('personal_address_street_address_1' in user_info) { %>
+                                        <span><%=user_info.personal_address_street_address_1 %></span>
+                                        <span><%=user_info.personal_address_street_address_2 %></span>
+                                        <span><%=user_info.personal_address_city %>, 
+                                                <%=user_info.personal_address_state %>, <%=user_info.personal_address_zip_code %>, </span>
+                                        <span><%=user_info.personal_address_country.name%></span>
+                                    <% } else { %>
+                                        <div>Unknown</div>
+                                    <% } %>
+                                    <div class="text-muted small">Address</div>
+                                </div>
+                                <div class="push-right pointer p-1 edit-item-button" edititem="personal_address">
+                                    <i class="material-icons align-middle small-icon">edit</i>
+                                </div>
+                            </div>
+
 
                             <div class="mt-2 p-2 border-bottom position-relative">
                                 <div class="align-top pull-left">
@@ -122,6 +151,9 @@
                                     <div class="text-capitalize"><%=user_info.specialty.name %></div>
                                     <div class="text-muted small">Specialty</div>
                                 </div>
+                                <div class="push-right pointer p-1 edit-item-button" edititem="specialty">
+                                    <i class="material-icons align-middle small-icon">edit</i>
+                                </div>
                             </div>
 
                             <!-- MEDICAL DEGREE -->
@@ -130,9 +162,12 @@
                                 <div class="align-top pull-left">
                                     <i class="material-icons align-middle">school</i>
                                 </div>
-                                <div class="d-inline-block text-lower ml-5">
+                                <div class="d-inline-block text-lower ml-5 w-90">
                                     <div><%- user_info.medical_degree.map(d=>{return d.name}).join(', ') %></div>
                                     <div class="text-muted small">Medical Degree</div>
+                                </div>
+                                <div class="push-right pointer p-1 edit-item-button" edititem="medical_degree">
+                                    <i class="material-icons align-middle small-icon">edit</i>
                                 </div>
                             </div>
                             <% } %>
@@ -146,6 +181,9 @@
                                     <div><%= user_info.medical_registration_number %></div>
                                     <div class="text-muted small">Medical Registration/License Number</div>
                                 </div>
+                                <div class="push-right pointer p-1" edititem="medical_registration_number">
+                                    <i class="material-icons align-middle small-icon">edit</i>
+                                </div>
                             </div>
                             <% } %>
                             
@@ -154,9 +192,12 @@
                                 <div class="align-top pull-left">
                                     <i class="material-icons align-middle">business</i>
                                 </div>
-                                <div class="d-inline-block text-lower ml-5">
+                                <div class="d-inline-block text-lower ml-5 w-90">
                                     <div><%- user_info.medical_registration_council.map(m=>{ return m.name; }).join(', ') %></div>
                                     <div class="text-muted small">Medical council</div>
+                                </div>
+                                <div class="push-right pointer p-1" edititem="medical_registration_council">
+                                    <i class="material-icons align-middle small-icon">edit</i>
                                 </div>
                             </div>
                             <% } %>
@@ -168,7 +209,7 @@
                 </div>
 
                 <!-- row1 / col 2 -->
-                <div class="col-sm-12 col-md-12 col-lg-7 col-xl-7 mb-3">
+                <div class="col-sm-12 col-md-12 col-lg-5 col-xl-5 mb-3">
                         
                     <div class="row">
 
@@ -227,11 +268,16 @@
 
         </div>
 
+
+        <div class="pg-section container-fluid mt-3 d-none" id="editform-container">
+
+        </div>
+
     </div>
 
 
     <link rel="stylesheet" type="text/css" href="/src/css/summary.css">
-    <script type="module" src="/src/js/summary.js"></script>
+    <script type="module" src="/src/js/healthcare-provider-summary.js"></script>
 
 </body>
 

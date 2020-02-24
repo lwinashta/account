@@ -1,0 +1,52 @@
+<div id="edit-personal-primary-number">
+    <h3 class="mt-2">
+        <div class="pointer d-inline-block mr-2 btn-rounded align-middle bg-default cancel-go-back" 
+            style=" line-height: 42px;width: 40px;height: 40px;">
+            <i class="material-icons align-middle text-white">keyboard_arrow_left</i>
+        </div>
+        <span>Phone Number</span>
+    </h3>
+    
+    <div class="tile white-tile rounded mt-2">
+        <p class="text-muted">
+            Phone number is primary contact information via which we can reach you for any reason.
+            Updating the phone number requires you to verify your phone number again. 
+            Once your phone number has been updated, the verification code will be sent to your 
+            phoner number, which you should verify within 30 mins. 
+        </p>
+        <div class="form-group mt-2">
+            <div class="row">
+                <div class="col-sm-2">
+                    <select name="country_code" 
+                        data-required="1" id="country-code" 
+                        class="form-control entry-field country-dial-code-option-list" 
+                        placeholder="country code">
+                        <option value=""></option>
+                        <% countries.forEach(c=>{ %>
+                            <option value="<%=c._id%>"><%=c.name%> ( <%=c.dial_code%> ) </option>
+                        <% }) %>
+                    </select>
+                </div>
+                <div class="col-sm-10">
+                    <input type="text" name="personal_primary_number" 
+                        id="personal-primary-number" 
+                        class="form-control entry-field" data-required="1"  
+                        placeholder="Phone Number" 
+                        value="<%=user_info.personal_primary_number %>">
+                </div>
+            </div>
+        </div>
+        <div class="mt-2 text-right">
+            <div class="btn btn-primary pointer">
+                <label class="m-0 pointer">Done</label>
+            </div>
+        </div>
+        
+    </div>
+    <script>
+        //set dial code for the phone number 
+        $('#edit-personal-primary-number select[name="country_code"]')
+            .val('<%=user_info.country_code%>');
+    </script>
+</div>
+

@@ -2,9 +2,11 @@ import {
     runtime
 } from "./base.js";
 
+import {listjs} from '/gfs/utilities/lib/js/list.js';
 import {formjs, bindFormControlEvents, insertValues} from '/gfs/utilities/lib/js/form.js';
-const _formjs=new formjs();
 
+const _formjs=new formjs();
+const _lists=new listjs();
 
 /** UPLOAD PROFILE IMAGE */
 
@@ -67,6 +69,8 @@ async function dataLoad() {
     try {
         // get user info 
         runtime.userInfo = await runtime.getUserInfo();
+
+        console.log(runtime.userInfo);
         let progress="enrollmentProgress" in runtime.userInfo?runtime.userInfo.enrollmentProgress:0;
 
         $('.enrolled-percent-txt').text(progress+"%")
@@ -83,6 +87,25 @@ $('document').ready(function () {
     dataLoad().then(r1=>{
 
         uploadProfileImg();//bind upload profile image 
+
+        $('.edit-item-button').on('click',function(){
+            let itemtype=$(this).attr('edititem');
+
+            //hide all pg sections and show only editfom-container section
+            $.get(`/edit/${itemtype}`).done(function(ly){
+                $('.pg-section').addClass('d-none');
+                $('#editform-container').removeClass('d-none').html(ly);
+            });
+        });
+
+        $('#editform-container').on('click','.cancel-go-back',function(){
+            //-- remove the form 
+            $(this).closest('.form').remove();
+
+            $('.pg-section').addClass('d-none');
+            
+            $('#summary-container').removeClass('d-none');
+        });
         
     });    
 });

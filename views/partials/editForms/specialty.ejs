@@ -1,0 +1,76 @@
+<div id="edit-specialty" class="form" userid="<%=user_info._id%>">
+
+    <h3 class="mt-2">
+        <div class="pointer d-inline-block mr-2 btn-rounded align-middle bg-default cancel-go-back"
+            style=" line-height: 42px;width: 40px;height: 40px;">
+            <i class="material-icons align-middle text-white">keyboard_arrow_left</i>
+        </div>
+        <span>Primary Specialty</span>
+    </h3>
+
+    <div class="tile white-tile rounded mt-2">
+        <p class="text-muted">
+            Updating the specialty will update the specialty information everywhere in our applications and apps.
+        </p>
+        <div class="form-group mt-2">
+            <select id="specialty" name="specialty" 
+                class='form-control specialty-option-list entry-field'
+                data-required="1" placeholder="Specialty">
+                <option value=""></option>
+                <% specialties.forEach(s=>{ %>
+                <option value="<%=s._id%>"><%=s.name%></option>
+                <% }) %>
+            </select>
+        </div>
+        <div class="mt-2 text-right pointer done-button">
+            <div class="btn btn-primary">
+                <label class="m-0 pointer">Done</label>
+            </div>
+        </div>
+    </div>
+    <script type="module">
+        
+        import {formjs} from '/gfs/utilities/lib/js/form.js';
+        let _formjs=new formjs();
+
+        //set dial code for the phone number 
+        $('#edit-specialty select[name="specialty"]')
+            .val('<%=user_info.specialty._id%>');
+        
+        //send the update information to the server 
+        $('#edit-specialty .done-button').click(function(){
+            let form=$(this).closest('.form');
+            try {
+
+                //-- validate form -- 
+                let errCount=_formjs.validateForm($(form),'entry-field');
+                
+                if(errCount===0){
+
+                    let data=new FormData();
+
+                    data.append("specialty",$('#edit-specialty select[name="specialty"]').val());
+                    data.append("_id",$('#edit-specialty').attr('userid'));
+
+                    $.ajax({
+                        "url": '/account/api/user/update',
+                        "processData": false,
+                        "contentType": false,
+                        "data": data,
+                        "method": "POST"
+                    }).done(res=>{
+                        window.location.reload();
+                    });
+
+                }else{
+                    throw "validation error";
+                }
+
+            } catch (error) {
+                console.error(error);
+            }
+            
+        });
+        
+    </script>
+</div>

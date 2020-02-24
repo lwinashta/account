@@ -48,9 +48,19 @@ app.use('/',async function(req,res,next){
         //-- get the user info from token ---
         app.locals.user_info=await userToken.verifyToken(req,res);//checks if user token is set
 
-        //-- get countries --
+        //check if the account is verified. 
+        //If account is not verified send user to verification screen 
+        if(!('verified' in app.locals.user_info) || !app.locals.user_info.verified){
+            res.redirect(`${globalSettings.website}/otp-verification/${app.locals.user_info.verification_number}`);
+        }
+
+        //-- get countries --   
         app.locals.user_info.country_dial_code=countries.filter(c=>c._id===app.locals.user_info.country_code)[0].dial_code;
         app.locals.user_info.specialty=specialties.filter(s=>s._id===app.locals.user_info.specialty)[0];
+
+        if("personal_address_country" in app.locals.user_info){
+            app.locals.user_info.personal_address_country=countries.filter(c=>c._id===app.locals.user_info.personal_address_country)[0]
+        }
         
         if("medical_degree" in app.locals.user_info && app.locals.user_info.medical_degree.length>0){
             app.locals.user_info.medical_degree=app.locals.user_info.medical_degree.map(d=>{
@@ -63,8 +73,6 @@ app.use('/',async function(req,res,next){
                 return councils.filter(deg=>deg._id===c)[0];
             });
         }
-
-        //console.log(app.locals.user_info);
 
         process.env["user_info"]=JSON.stringify(app.locals.user_info);
 
@@ -113,7 +121,19 @@ app.get('/enroll/:accounttype/:accountid',(req,res)=>{
     }
 });
 
+app.get('/edit/:edititem',(req,res)=>{
 
+    let itemname = req.params.edititem.toLowerCase(); 
+
+    app.locals.countries=countries;
+    app.locals.specialties=specialties;
+
+    app.render(`partials/editForms/${itemname}`,app.locals,function(err, html){
+        if(err) res.status('404').send('layout not found');
+        res.status(200).send(html);
+    });
+
+});
 
 app.listen(port,console.log("listening port "+port));
 

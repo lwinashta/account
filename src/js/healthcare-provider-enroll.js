@@ -1,4 +1,5 @@
 //import {runtime} from '../base/base.js';
+import {healthcareProviderActions as actions} from './healthcare-provider-form-actions.js';
 import {formjs, bindFormControlEvents, insertValues} from '/gfs/utilities/lib/js/form.js';
 import {listjs} from '/gfs/utilities/lib/js/list.js';
 
@@ -12,243 +13,32 @@ const _bindEvents=new bindFormControlEvents({
 var lists={};
 
 /**
- * Callbacks for fields in the form 
- */
-const fieldCallbacks={
-    "known_languages":{
-        "onselect":function(itemId){
-            let languages=lists.languages;
-            let langageInfoIndx = languages.findIndex(l => l._id === itemId);
-
-            return `<div class="d-inline-block item p-1 pl-2 pr-2 mr-2 mt-1 border" _id="${itemId}">
-                <div class="d-inline-block mr-2">${languages[langageInfoIndx].name}</div>
-                <div class="d-inline-block remove-item">
-                    <i class="material-icons text-danger align-middle pointer">clear</i>
-                </div>
-            </div>`;
-
-        }
-    },
-    "medical_degree":{
-        "onselect":function(itemId){
-
-            let degrees=lists.degrees;
-            let indx = degrees.findIndex(l => l._id === itemId);
-
-            return `<div class="d-inline-block item p-1 pl-2 pr-2 mr-2 mt-1 border" _id="${itemId}">
-                <div class="d-inline-block mr-2">${degrees[indx].abbr} (${degrees[indx].name})</div>
-                <div class="d-inline-block remove-item">
-                    <i class="material-icons text-danger align-middle pointer">clear</i>
-                </div>
-            </div>`;
-        }
-    },
-    "medical_registration_council":{
-        "onselect":function(itemId){
-
-            let councils=lists.councils;
-            let indx = councils.findIndex(l => l._id === itemId);
-
-            return `<div class="d-inline-block item p-1 pl-2 pr-2 mr-2 mt-1 border" _id="${itemId}">
-                <div class="d-inline-block mr-2">${councils[indx].name}</div>
-                <div class="d-inline-block remove-item">
-                    <i class="material-icons text-danger align-middle pointer">clear</i>
-                </div>
-            </div>`;
-        }
-    }
-}
-
-/**
  * @params null.
  * Bind all the list fields 
  */
 const bindListFields = async function () {
 
-    let _lists = new listjs();
+    //-- Set country and dial code drop down--
+    let setCountriedDialCodeDD=await actions.bindFields.setCountryDialCodeDropDownField($('#form-parent-content-container').find('.country-dial-code-option-list'));
+    let setCountriesDD=await actions.bindFields.setCountryDropDownField($('#form-parent-content-container').find('.country-name-option-list'));
 
-    //*** BIND COUNTRIES DROP DOWN FIELD ***
-    let countries = await _lists.getCountries();
-    countries = countries.sort(function (a, b) {
-        if (a.name > b.name) return 1;
-        return -1;
-    });
+    //--Set Specialties Drop down--- 
+    let setSpecialtiesDD=await actions.bindFields.setMedicalSpecialtiesDropDownField($('#form-parent-content-container').find('.specialty-option-list'));
+    
+    //-- Set languages -- 
+    let setLanguagesCF=await actions.bindFields.setLanguageComboField($('#known-languages-search-container'));
 
-    lists.countries=countries;
-
-    let optionDialCodeHtml = '<option value="">Select country code</option>';
-    let countryNameHtml = '<option value="">Select country</option>';
-
-    countries.forEach(c => {
-        optionDialCodeHtml += `<option value="${c._id}">${c.name} (${c.dial_code}) </option>`;
-        countryNameHtml += `<option value="${c._id}">${c.name}</option>`
-    });
-
-    //add data to all the fields related to countries 
-    $('#form-parent-content-container').find('.country-dial-code-option-list').html(optionDialCodeHtml);
-    $('#form-parent-content-container').find('.country-name-option-list').html(countryNameHtml);
-
-    //*** BIND MEDICAL SPECIALTIES DROP DOWN FIELDS ***
-    let specialties = await _lists.getMedicalSpecialties();
-    specialties = specialties.sort(function (a, b) {
-        if (a.name > b.name) return 1;
-        return -1;
-    });
-    specialties.map(m => m.name = capitalizeText(m.name));
-
-    lists.specialties=specialties;
-
-    let specialtiesHtml = "<option value=''> - Select specialty - </option>";
-
-    specialties.forEach(c => {
-        specialtiesHtml += `<option class="text-capitalize" value="${c._id}">${c.name}</option>`;
-    });
-
-    //add data to all the fields related to countries 
-    $('#form-parent-content-container')
-        .find('.specialty-option-list')
-        .html(specialtiesHtml);
-
-    /**** BIND LANGUAGES DROP DOWN FIELDS ***/
-    let languages = await _lists.getLanguages();
-    languages = languages.sort(function (a, b) {
-        if (a.name > b.name) return 1;
-        return -1;
-    });
-
-    lists.languages=languages;
-
-    //bind the language container 
-    _bindEvents.datasetSearchAndSelect({
-        "container": $('#known-languages-search-container'),
-        "dataset": languages,
-        "search": function (txt) {
-            let rgEx = new RegExp(txt, 'i');
-            return languages.reduce(function (acc, ci) {
-                if (rgEx.test(ci.name)) {
-                    acc.push(ci);
-                }
-                return acc;
-            }, []);
-        },
-        "initialSearchResults": languages.slice(0, 20),
-        "displayItems": function (items) {
-            let html = '';
-            items.forEach((element, indx) => {
-                html += `<div class='p-2 search-results-item border-bottom' indx="${indx}" _id="${element._id}">
-                    <div class="text-capitalize">${element.name}</div>
-                </div>`;
-            });
-            return html;
-        },
-        "displayOnSelect": function (itemId) {
-            return fieldCallbacks.known_languages.onselect(itemId);
-        }
-    });
-
-
-    /**** BIND MEDICAL COUNCILS */
-    let councils = await _lists.getMedicalCouncils();
-    councils = councils.sort(function (a, b) {
-        if (a.name > b.name) return 1;
-        return -1;
-    });
-
-    lists.councils=councils;
-
-    //bind the medical council container 
-    _bindEvents.datasetSearchAndSelect({
-        "container": $('#medical-registration-council-search-container'),
-        "dataset": councils,
-        "single": true,
-        "search": function (txt) {
-            let rgEx = new RegExp(txt, 'i');
-            return councils.reduce(function (acc, ci) {
-                if (rgEx.test(ci.name)) {
-                    acc.push(ci);
-                }
-                return acc;
-            }, []);
-        },
-        "initialSearchResults": councils.slice(0, 20),
-        "displayItems": function (items) {
-            let html = '';
-            items.forEach((element, indx) => {
-                html += `<div class='p-2 search-results-item border-bottom' indx="${indx}" _id="${element._id}">
-                    <div class="text-capitalize">${element.name}</div>
-                </div>`;
-            });
-            return html;
-        },
-        "displayOnSelect": function (itemId) {
-            return fieldCallbacks.medical_registration_council.onselect(itemId);
-        }
-    });
-
-
-    /** MEDICAL DEGREES */
-    let degrees = await _lists.getMedicalDegrees();
-    degrees = degrees.sort(function (a, b) {
-        if (a.name > b.name) return 1;
-        return -1;
-    });
-
-    lists.degrees=degrees;
-
-    //bind the medical degree container 
-    _bindEvents.datasetSearchAndSelect({
-        "container": $('#medical-degree-search-container'),
-        "dataset": degrees,
-        "search": function (txt) {
-            let rgEx = new RegExp(txt, 'i');
-            return degrees.reduce(function (acc, ci) {
-                if (rgEx.test(ci.name) || rgEx.test(ci.abbr)) {
-                    acc.push(ci);
-                }
-                return acc;
-            }, []);
-        },
-        "initialSearchResults": degrees.slice(0, 20),
-        "displayItems": function (items) {
-            let html = '';
-            items.forEach((element, indx) => {
-                html += `<div class='p-2 search-results-item border-bottom' indx="${indx}" _id="${element._id}">
-                    <div class="text-capitalize">${element.abbr} (${element.name})</div>
-                </div>`;
-            });
-            return html;
-        },
-        "displayOnSelect": function (itemId) {
-            return fieldCallbacks.medical_degree.onselect(itemId);
-        }
-    });
-
+    //-- Set Medical Council -
+    let medicalCouncilCF=await actions.bindFields.setMedicalCouncilComboField($('#medical-registration-council-search-container'));
+    
+    //--- set Medical Degree -- 
+    let setMedicalDegreeCF=await actions.bindFields.setMedicalDegressComboField($('#medical-degree-search-container'))
 
     /** BIND MEDICAL FACILITY TYPE LIST  */
-    let types = await _lists.getMedicalFacilityTypes();
+    let setFacilityType=await actions.bindFields.setMedicalFacilityTypeDropDownField($('.medical-facility-type-list'));
 
-    types = types.sort(function (a, b) {
-        if (a.name > b.name) return 1;
-        return -1;
-    });
-    let html = '<option value="">- Select the facility type -</option>';
-    types.forEach(element => {
-        html += `<option value="${element._id}">${element.name}</option>`;
-    });
-
-    $('.medical-facility-type-list').html(html);
-
-
-    /** BIND YEARS FIELDS */
-    //-- add years in the drop down -- 
-    let md = window.moment();
-    let yearloop = 80;
-    $('.years-dropdown').append(`<option value="">- Select the year -</option>`);
-    while (yearloop > 0) {
-        $('.years-dropdown').append(`<option value="${md.year()}">${md.year()}</option>`);
-        md.subtract(1, 'year');
-        yearloop--;
-    }
+    //-- Year Drop down --- 
+    actions.bindFields.setYearDropDownField($('.years-dropdown'));
 
 };
 
@@ -754,6 +544,8 @@ $('document').ready(function () {
     bindStepClickButton();
     
     //--- bind lists ---- 
+    //add data to all the fields related to countries 
+    
     bindListFields().then(function () {
         //get the user personal information 
         return getPersonalInfo();
@@ -765,7 +557,7 @@ $('document').ready(function () {
         //assign values to the fields 
         let _insert=new insertValues({
             "container":$('#heathcare-provider-personal-info-form,#heathcare-provider-qualification-form'),
-            "fieldCallbacks":fieldCallbacks//callback especially for the onselect multi select field
+            "fieldCallbacks":actions.fieldCallbacks//callback especially for the onselect multi select field
         }).insert(user);
 
         bindCreateProfileButton(user);
