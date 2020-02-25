@@ -48,6 +48,10 @@ app.use('/',async function(req,res,next){
         //-- get the user info from token ---
         app.locals.user_info=await userToken.verifyToken(req,res);//checks if user token is set
 
+        if(Object.keys(app.locals.user_info).length===0){
+            throw "no user logged in";
+        }
+
         //check if the account is verified. 
         //If account is not verified send user to verification screen 
         if(!('verified' in app.locals.user_info) || !app.locals.user_info.verified){

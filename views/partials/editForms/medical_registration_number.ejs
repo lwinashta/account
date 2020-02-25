@@ -1,0 +1,85 @@
+<div id="edit-medical-registration-number" class="form" userid="<%=user_info._id%>">
+    <h3 class="mt-2">
+        <div class="pointer d-inline-block mr-2 btn-rounded align-middle bg-default cancel-go-back"
+            style=" line-height: 42px;width: 40px;height: 40px;">
+            <i class="material-icons align-middle text-white">keyboard_arrow_left</i>
+        </div>
+        <span>Medical Registration Number</span>
+    </h3>
+
+    <div class="tile white-tile rounded mt-2">
+        <p class="text-muted">
+            Updating medical registration number will hide your profile until our compliance team validates your registration number. 
+            Feel free to contact us if there are any concerns. 
+        </p>
+        <div class="form-group mt-2">
+            <input type="text" name="medical_registration_number" 
+            id="medical-registration-number" 
+            class="form-control entry-field" data-required="1"
+            placeholder="Medical Registration Number">
+            
+        </div>
+        <div class="form-group mt-2">
+            <div id="medical-registration-file-container"
+                name="medical_registration_file" 
+                class="mt-2 p-2 position-relative text-center droppable-file-container entry-field" 
+                data-required="1"
+                placeholder="Medical Registration">
+
+            <div class="droppable-file-action-container">
+
+                <label>Drag and drop or upload the file</label>
+
+                <div class="position-relative mt-2 upload-file-container">
+                    <div class="upload-img-container">
+                        <input type="file" 
+                            id="medical-registration-file" 
+                            class="form-control">
+                        <div class="btn btn-success input-overlay small">Upload File</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="droppable-file-preview-container">
+                <div class="droppable-file-preview-content"></div>
+                <div class="droppable-file-preview-remove">
+                    <i class="material-icons">clear</i>
+                </div>
+            </div>
+
+        </div>
+        </div>
+        <div class="mt-2 text-right pointer">
+            <div class="btn btn-primary">
+                <label class="m-0 pointer">Done</label>
+            </div>
+        </div>
+    </div>
+    <script type="module">
+        import {formjs, bindFormControlEvents, insertValues} from '/gfs/utilities/lib/js/form.js';
+
+        let _bindEvents=new bindFormControlEvents();
+        let userInfo={};
+
+        _bindEvents.container = $('#edit-medical-registration-number');
+        _bindEvents.dragDropFileContainer();
+
+        //insert values 
+        //-- Get user information -- 
+        $.getJSON('/account/api/user/get',{
+            "_id":$('#edit-medical-registration-number').attr('userid')
+        }).then(user=>{
+
+            userInfo=user[0];
+
+            //-- insert value 
+            let _insert=new insertValues({
+                "container":$('#edit-medical-registration-number')
+            }).insert(user[0]);
+
+        });
+
+
+    </script>
+</div>

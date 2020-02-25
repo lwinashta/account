@@ -1,0 +1,107 @@
+<div id="edit-medical-registration-council" class="form" userid="<%=user_info._id%>">
+
+    <h3 class="mt-2">
+        <div class="pointer d-inline-block mr-2 btn-rounded align-middle bg-default cancel-go-back"
+            style=" line-height: 42px;width: 40px;height: 40px;">
+            <i class="material-icons align-middle text-white">keyboard_arrow_left</i>
+        </div>
+        <span>Medical Registration Council</span>
+    </h3>
+
+    <div class="tile white-tile rounded mt-2">
+        <p class="text-muted">
+            Updating the medical registration council will update the information everywhere in our applications and apps.
+        </p>
+        <div class="form-group mt-2">
+
+            <div id="medical-registration-council-search-container" 
+            name="medical_registration_council"
+            class="multi-select-container hide-off-focus-outer-container entry-field" 
+            data-required="1" placeholder="Medical Registration Council">
+            <div class="selected-items mb-2" id="medical-registration-council" ></div>
+            <div class="position-relative search-outer-container">
+                <input type="text" class="form-control search-box" 
+                    placeholder="Search Medical Council">
+                <div class="search-results-container hide-off-focus-inner-container"></div>
+            </div>
+        </div>
+
+        </div>
+        <div class="mt-2 text-right pointer done-button">
+            <div class="btn btn-primary">
+                <label class="m-0 pointer">Done</label>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+
+        import {healthcareProviderActions as actions} from '../../../../src/js/healthcare-provider-form-actions.js';
+        import {formjs,insertValues} from '/gfs/utilities/lib/js/form.js';
+
+        let _formjs=new formjs();
+        let userInfo={};
+
+        let form=$('#edit-medical-registration-council');
+        
+        actions.bindFields.setMedicalCouncilComboField($('#medical-registration-council-search-container')).then(r=>{
+            
+            //-- Get user information -- 
+            return $.getJSON('/account/api/user/get',{
+                "_id":$(form).attr('userid')
+            });
+            
+        }).then(user=>{
+
+            userInfo=user[0];
+
+            //-- insert value 
+            let _insert=new insertValues({
+                "container":$(form),
+                "fieldCallbacks":actions.fieldCallbacks//callback especially for the onselect multi select field
+            }).insert(user[0]);
+
+        }).catch(err=>{
+            coonsole.error(err);
+        });
+
+        $('#edit-medical-registration-council .done-button').click(function(){
+            
+            try {
+
+                //-- validate form -- 
+                let errCount=_formjs.validateForm($(form),'entry-field');
+                
+                if(errCount===0){
+                    //-- save the information 
+                    let formData={};
+
+                    $(form).find('.entry-field').each(function(){
+                        formData=Object.assign(formData,_formjs.getFieldData(this));
+                    });
+
+                    //save this information in the db
+                    let data = _formjs.convertJsonToFormdataObject(formData);
+                    data.append("_id",$(form).attr('userid'));
+
+                    $.ajax({
+                        "url": '/account/api/user/update',
+                        "processData": false,
+                        "contentType": false,
+                        "data": data,
+                        "method": "POST"
+                    }).done(res=>{
+                        window.location.reload();
+                    });
+
+                }else{
+                    throw "validation error";
+                }
+
+            } catch (error) {
+                console.error(error);
+            }
+        });
+
+    </script>
+</div>

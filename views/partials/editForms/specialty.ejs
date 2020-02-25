@@ -15,12 +15,7 @@
         <div class="form-group mt-2">
             <select id="specialty" name="specialty" 
                 class='form-control specialty-option-list entry-field'
-                data-required="1" placeholder="Specialty">
-                <option value=""></option>
-                <% specialties.forEach(s=>{ %>
-                <option value="<%=s._id%>"><%=s.name%></option>
-                <% }) %>
-            </select>
+                data-required="1" placeholder="Specialty"></select>
         </div>
         <div class="mt-2 text-right pointer done-button">
             <div class="btn btn-primary">
@@ -30,12 +25,15 @@
     </div>
     <script type="module">
         
+        import {healthcareProviderActions as actions} from '../../../../src/js/healthcare-provider-form-actions.js';
         import {formjs} from '/gfs/utilities/lib/js/form.js';
+        
         let _formjs=new formjs();
 
-        //set dial code for the phone number 
-        $('#edit-specialty select[name="specialty"]')
-            .val('<%=user_info.specialty._id%>');
+        actions.bindFields.setMedicalSpecialtiesDropDownField($('#edit-specialty').find('.specialty-option-list')).then(dd=>{
+            //set specialty 
+            $('#edit-specialty select[name="specialty"]').val('<%=user_info.specialty._id%>');
+        });
         
         //send the update information to the server 
         $('#edit-specialty .done-button').click(function(){
