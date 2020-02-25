@@ -1,4 +1,5 @@
-<div id="edit-medical-registration-number" class="form" userid="<%=user_info._id%>">
+<div id="edit-medical-registration-number" class="form form-content-container" 
+    name="edit-medical-registration-number" userid="<%=user_info._id%>">
     <h3 class="mt-2">
         <div class="pointer d-inline-block mr-2 btn-rounded align-middle bg-default cancel-go-back"
             style=" line-height: 42px;width: 40px;height: 40px;">
@@ -9,66 +10,69 @@
 
     <div class="tile white-tile rounded mt-2">
         <p class="text-muted">
-            Updating medical registration number will hide your profile until our compliance team validates your registration number. 
-            Feel free to contact us if there are any concerns. 
+            Updating medical registration number will hide your profile until our compliance team validates your
+            registration number.
+            Feel free to contact us if there are any concerns.
         </p>
         <div class="form-group mt-2">
-            <input type="text" name="medical_registration_number" 
-            id="medical-registration-number" 
-            class="form-control entry-field" data-required="1"
-            placeholder="Medical Registration Number">
-            
+            <input type="text" name="medical_registration_number" id="medical-registration-number"
+                class="form-control entry-field" data-required="1" placeholder="Medical Registration Number">
+
         </div>
         <div class="form-group mt-2">
-            <div id="medical-registration-file-container"
-                name="medical_registration_file" 
-                class="mt-2 p-2 position-relative text-center droppable-file-container entry-field" 
-                data-required="1"
+            <div id="medical-registration-file-container" name="medical_registration_file"
+                class="mt-2 p-2 position-relative text-center droppable-file-container entry-field" data-required="1"
                 placeholder="Medical Registration">
 
-            <div class="droppable-file-action-container">
+                <div class="droppable-file-action-container">
 
-                <label>Drag and drop or upload the file</label>
+                    <label>Drag and drop or upload the file</label>
 
-                <div class="position-relative mt-2 upload-file-container">
-                    <div class="upload-img-container">
-                        <input type="file" 
-                            id="medical-registration-file" 
-                            class="form-control">
-                        <div class="btn btn-success input-overlay small">Upload File</div>
+                    <div class="position-relative mt-2 upload-file-container">
+                        <div class="upload-img-container">
+                            <input type="file" id="medical-registration-file" class="form-control">
+                            <div class="btn btn-success input-overlay small">Upload File</div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="droppable-file-preview-container">
+                    <div class="droppable-file-preview-content"></div>
+                    <div class="droppable-file-preview-remove">
+                        <i class="material-icons">clear</i>
                     </div>
                 </div>
 
             </div>
-
-            <div class="droppable-file-preview-container">
-                <div class="droppable-file-preview-content"></div>
-                <div class="droppable-file-preview-remove">
-                    <i class="material-icons">clear</i>
-                </div>
-            </div>
-
         </div>
-        </div>
-        <div class="mt-2 text-right pointer">
-            <div class="btn btn-primary">
+        <div class="mt-2 text-right">
+            <div class="btn btn-primary d-inline-block pointer done-button">
                 <label class="m-0 pointer">Done</label>
             </div>
         </div>
     </div>
     <script type="module">
+
+        let form=$('#edit-medical-registration-number');
+
         import {formjs, bindFormControlEvents, insertValues} from '/gfs/utilities/lib/js/form.js';
 
-        let _bindEvents=new bindFormControlEvents();
+        let _formjs=new formjs();
+
+        let _bindEvents=new bindFormControlEvents({
+            "formData": _formjs.formData//reference variable
+        });
+
         let userInfo={};
 
-        _bindEvents.container = $('#edit-medical-registration-number');
+        _bindEvents.container = form;
         _bindEvents.dragDropFileContainer();
 
         //insert values 
         //-- Get user information -- 
         $.getJSON('/account/api/user/get',{
-            "_id":$('#edit-medical-registration-number').attr('userid')
+            "_id":$(form).attr('userid')
         }).then(user=>{
 
             userInfo=user[0];
@@ -80,6 +84,48 @@
 
         });
 
+        $(form).find('.done-button').click(async function(){
+
+            popup.onScreen("Updating Information");
+
+            try {
+
+                //-- validate form -- 
+                let errCount=_formjs.validateForm($(form),'entry-field');
+
+                if(errCount>0)  throw "validation error";
+
+                //-- save the information 
+                let formData={};
+
+
+
+                // $(form).find('.entry-field').each(function(){
+                //     _formjs.formData=Object.assign(_formjs.formData,_formjs.getFieldData(this));
+                // });
+
+                // console.log(_formjs.formData);
+
+                // //save this information in the db
+                // let data = _formjs.convertJsonToFormdataObject(_formjs.formData);
+                // data.append("_id",$(form).attr('userid'));
+
+                // let updateInfo=await $.ajax({
+                //     "url": '/account/api/user/update',
+                //     "processData": false,
+                //     "contentType": false,
+                //     "data": data,
+                //     "method": "POST"
+                // });
+
+                //window.location.reload();
+
+            } catch (error) {
+                console.error(error);
+                popup.remove();
+            }
+
+        });
 
     </script>
 </div>

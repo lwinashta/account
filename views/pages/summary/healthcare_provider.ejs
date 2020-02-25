@@ -127,7 +127,7 @@
                                 </div>
                                 <div class="d-inline-block text-lower ml-5 w-90">
                                     <% if ('personal_address_street_address_1' in user_info) { %>
-                                        <span><%=user_info.personal_address_street_address_1 %></span>
+                                        <span><%=user_info.personal_address_street_address_1 %>,</span>
                                         <span><%=user_info.personal_address_street_address_2 %></span>
                                         <span><%=user_info.personal_address_city %>, 
                                                 <%=user_info.personal_address_state %>, <%=user_info.personal_address_zip_code %>, </span>
@@ -197,6 +197,21 @@
                                     <div class="text-muted small">Medical council</div>
                                 </div>
                                 <div class="push-right pointer p-1 edit-item-button" edititem="medical_registration_council">
+                                    <i class="material-icons align-middle small-icon">edit</i>
+                                </div>
+                            </div>
+                            <% } %>
+
+                            <% if("known_languages" in user_info && user_info.known_languages.length>0) {%>
+                                <div class="mt-2 p-2 border-bottom position-relative">
+                                <div class="align-top pull-left">
+                                    <i class="material-icons align-middle">voicemail</i>
+                                </div>
+                                <div class="d-inline-block text-lower ml-5 w-90">
+                                    <div><%- user_info.known_languages.map(m=>{ return m.name; }).join(', ') %></div>
+                                    <div class="text-muted small">Known Languages</div>
+                                </div>
+                                <div class="push-right pointer p-1 edit-item-button" edititem="languages">
                                     <i class="material-icons align-middle small-icon">edit</i>
                                 </div>
                             </div>

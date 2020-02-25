@@ -10,6 +10,7 @@ const countries=require('@oi/utilities/lib/lists/countries.json');
 const specialties=require('@oi/utilities/lib/lists/medical-specialties.json');
 const degrees=require('@oi/utilities/lib/lists/medical-degrees.json');
 const councils=require('@oi/utilities/lib/lists/medical-councils.json');
+const languages=require('@oi/utilities/lib/lists/languages.json');
 
 //const parser=require('body-parser');
 
@@ -48,7 +49,7 @@ app.use('/',async function(req,res,next){
         //-- get the user info from token ---
         app.locals.user_info=await userToken.verifyToken(req,res);//checks if user token is set
 
-        if(Object.keys(app.locals.user_info).length===0){
+        if(typeof app.locals.user_info==="undefined" || Object.keys(app.locals.user_info).length===0){
             throw "no user logged in";
         }
 
@@ -74,7 +75,13 @@ app.use('/',async function(req,res,next){
 
         if("medical_registration_council" in app.locals.user_info && app.locals.user_info.medical_registration_council.length>0){
             app.locals.user_info.medical_registration_council=app.locals.user_info.medical_registration_council.map(c=>{
-                return councils.filter(deg=>deg._id===c)[0];
+                return councils.filter(council=>council._id===c)[0];
+            });
+        }
+
+        if("known_languages" in app.locals.user_info && app.locals.user_info.known_languages.length>0){
+            app.locals.user_info.known_languages=app.locals.user_info.known_languages.map(c=>{
+                return languages.filter(lng=>lng._id===c)[0];
             });
         }
 

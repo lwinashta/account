@@ -14,13 +14,89 @@
             new email id.
         </p>
         <div class="form-group mt-2">
-            <input type="email" id="personal-email-id" name="email_id" class='form-control entry-field'
-                data-required="1" placeholder="Email Id" autocomplete="off" value="<%=user_info.email_id %>">
+            <input type="email" id="personal-email-id" 
+                name="email_id" class='form-control entry-field'
+                data-required="1" placeholder="Email Id" 
+                autocomplete="off" value="<%=user_info.email_id %>">
         </div>
-        <div class="mt-2 text-right pointer">
-            <div class="btn btn-primary">
+        <div class="mt-2 text-right">
+            <div class="btn btn-primary d-inline-block pointer done-button">
                 <label class="m-0 pointer">Done</label>
             </div>
         </div>
     </div>
+
+    <script type="module">
+        import {formjs,insertValues} from '/gfs/utilities/lib/js/form.js';
+        let _formjs=new formjs();
+
+        let form=$('#edit-personal-email-id');
+
+        $(form).find('.done-button').click(async function(){
+
+            try {
+
+                //-- on screen loader --- 
+                popup.onScreen("Updating Email");
+
+                //perform validation 
+                let errCount=_formjs.validateForm($(form),'entry-field');
+
+                if(errCount>0) throw "validation error"; 
+
+                let user=await $.getJSON('/account/api/user/get',{
+                    "_id":$(form).attr('userid')
+                });
+
+                user=user[0];//get first element of the returned element 
+
+                let entered_email_id=$(form).find('input[name="email_id"]').val();
+
+                //check if it same email id for the user 
+                if(user.email_id===entered_email_id){
+                    
+                    //if yes - dont do anything just trigger back button
+                    $(form).find('.cancel-go-back').trigger('click');
+                    throw "user email id - no change";
+
+                }
+
+                //if no - check if duplicate email id has been entered 
+                let checkDupUser=await $.getJSON('/account/api/user/get',{
+                    "email_id":entered_email_id
+                });
+
+                if(checkDupUser.length>0){
+                    //-- duplicate user found
+                    $(form).find('input[name="email_id"]').closest('.form-group')
+                        .append(`<div class="required-err">Duplicate Email Id found.</div>`);
+
+                    throw "duplicate email id";
+                }
+
+                //if not duplicate emaild id - update the email id and logout
+                //update this information in the db
+                let data = new FormData();
+
+                data.append("email_id",entered_email_id);
+                data.append("_id",$(form).attr('userid'));
+
+                let updateEmail=$.ajax({
+                    "url": '/account/api/user/update',
+                    "processData": false,
+                    "contentType": false,
+                    "data": data,
+                    "method": "POST"
+                });
+                
+                //--- logout successful --
+                 window.location.reload();
+
+            } catch (error) {
+                console.log(error);
+                popup.remove();
+            }
+        }); 
+
+    </script>
 </div>

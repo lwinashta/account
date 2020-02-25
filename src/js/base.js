@@ -157,4 +157,11 @@ export var runtime={
 
 $('document').ready(function(){
     $('#app-header-user-info-container').hideOffFocus();
+
+    //--- bind logout button 
+    $('#app-header-logout').click(function(){
+        $.post('/account/api/user/logout').done(loggedout=>{
+            window.location.reload();
+        });
+    });
 });

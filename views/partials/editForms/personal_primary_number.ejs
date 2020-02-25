@@ -1,4 +1,4 @@
-<div id="edit-personal-primary-number">
+<div id="edit-personal-primary-number" class="form" userid="<%=user_info._id%>">
     <h3 class="mt-2">
         <div class="pointer d-inline-block mr-2 btn-rounded align-middle bg-default cancel-go-back" 
             style=" line-height: 42px;width: 40px;height: 40px;">
@@ -37,16 +37,118 @@
             </div>
         </div>
         <div class="mt-2 text-right">
-            <div class="btn btn-primary pointer">
+            <div class="btn btn-primary pointer done-button">
                 <label class="m-0 pointer">Done</label>
             </div>
         </div>
         
     </div>
-    <script>
+    <script type="module">
+
         //set dial code for the phone number 
         $('#edit-personal-primary-number select[name="country_code"]')
             .val('<%=user_info.country_code%>');
+
+        import {formjs,insertValues} from '/gfs/utilities/lib/js/form.js';
+        import {listjs} from '/gfs/utilities/lib/js/list.js';
+
+        let _formjs=new formjs();
+        let _lists=new listjs();
+
+        let form=$('#edit-personal-primary-number');
+
+        $(form).find('.done-button').click(async function(){
+
+            try {
+
+                //-- on screen loader --- 
+                popup.onScreen("Updating Phone Number");
+
+                //1. perform validation 
+                let errCount=_formjs.validateForm($(form),'entry-field');
+
+                if(errCount>0) throw "validation error"; 
+
+                //2. Get user information 
+                let user=await $.getJSON('/account/api/user/get',{
+                    "_id":$(form).attr('userid')
+                });
+
+                user=user[0];//get first element of the returned element 
+                
+                let selected_country=$(form).find('select[name="country_code"]').val();
+                let entered_phone_number=$(form).find('input[name="personal_primary_number"]').val();
+
+                //3. Check if phoner number updated. If not then go back to summary screen
+                if(user.country_code===selected_country && user.personal_primary_number===entered_phone_number){
+                    
+                    //if yes - dont do anything just trigger back button
+                    $(form).find('.cancel-go-back').trigger('click');
+                    throw "phone number - no change";
+
+                }
+
+                //4. Check if same number already exists --- 
+                let checkDupUser=await $.getJSON('/account/api/user/get',{
+                    "country_code":selected_country,
+                    "personal_primary_number":entered_phone_number
+                });
+
+                if(checkDupUser.length>0){
+                    //-- duplicate user found
+                    $(form).find('input[name="country_code"]')
+                        .closest('.form-group')
+                        .append(`<div class="required-err">Duplicate user found with same phone number</div>`);
+
+                    throw "duplicate phone number";
+                }
+
+                //5. if not duplicate emaild id - update the email id and logout
+                //update this information in the db
+                let data = new FormData();
+
+                data.append("country_code",selected_country);
+                data.append("personal_primary_number",entered_phone_number);
+                data.append("verified.$boolean","false");
+                data.append("_id",$(form).attr('userid'));
+
+                let updatePhone=$.ajax({
+                    "url": '/account/api/user/update',
+                    "processData": false,
+                    "contentType": false,
+                    "data": data,
+                    "method": "POST"
+                });
+
+                //6. Send SMS 
+                //6.1 - Get dial code for the country 
+                let countries=await _lists.getCountries();
+                let countryCode=countries.filter(c=>c._id===selected_country)[0].dial_code;
+
+                //6.2 - Get otp nnumber for the user 
+                let otp=await $.post('/account/api/user/getotp',{
+                    "verification_number":user.verification_number
+                });
+
+                //6.3 - Send SMS 
+                let sms=await $.getJSON('/aws/sendsms',{
+                    "otp":otp.otp,
+                    "phone_number":`${countryCode}${entered_phone_number}`,
+                    "message":`Owninvention verification code: ${otp.otp}. Please enter this code to verify your account.\n Code expires in 30 minutes.`
+                });
+                
+                //7. Logout -- 
+                //let logout=$.post('/account/api/user/logout');
+
+                //--- logout successful --
+                window.location.reload();
+
+            } catch (error) {
+                console.log(error);
+                popup.remove();
+            }
+        }); 
+
     </script>
 </div>
 

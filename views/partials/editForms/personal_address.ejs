@@ -1,4 +1,4 @@
-<div id="edit-personal-primary-number">
+<div id="edit-personal-address" class="form" userid="<%=user_info._id%>">
     <h3 class="mt-2">
         <div class="pointer d-inline-block mr-2 btn-rounded align-middle bg-default cancel-go-back" 
             style=" line-height: 42px;width: 40px;height: 40px;">
@@ -8,29 +8,37 @@
     </h3>
     
     <div class="tile white-tile rounded mt-2">
+        
         <div class="form-group mt-2">
             <input type="text" name="personal_address_street_address_1"
-             id="personal-address-street-address-1" 
-            class="form-control mt-2 entry-field" 
-            placeholder="Street Address line #1" value="<%=user_info.personal_address_street_address_1%>">
+                id="personal-address-street-address-1" 
+                class="form-control mt-2 entry-field" 
+                data-required="1" 
+                placeholder="Street Address line #1" 
+                value="<%=user_info.personal_address_street_address_1%>">
 
         <input type="text" name="personal_address_street_address_2"
             id="personal-address-street-address-2" 
             class="form-control mt-2 entry-field" 
-            placeholder="Street Address line #2" value="<%=user_info.personal_address_street_address_2%>">
+            placeholder="Street Address line #2" 
+            value="<%=user_info.personal_address_street_address_2%>">
         
         <div class="row mt-2">
             <div class="col">
                 <input type="text" name="personal_address_city" 
                     id="personal-address-city" 
                     class="form-control entry-field" 
-                    placeholder="City" value="<%=user_info.personal_address_city%>">
+                    data-required="1" 
+                    placeholder="City" 
+                    value="<%=user_info.personal_address_city%>">
             </div>
             <div class="col">
                 <input type="text" name="personal_address_zip_code" 
                     id="personal-address-zip-code" 
                     class="form-control entry-field" 
-                    placeholder="Zip/Postal code"  value="<%=user_info.personal_address_zip_code%>">
+                    placeholder="Zip/Postal code" 
+                    data-required="1"  
+                    value="<%=user_info.personal_address_zip_code%>">
             </div>
         </div>
 
@@ -39,12 +47,15 @@
                 <input type="text" name="personal_address_state" 
                     id="personal-address-state" 
                     class="form-control entry-field" 
-                    placeholder="State"  value="<%=user_info.personal_address_state%>">
+                    data-required="1" 
+                    placeholder="State" 
+                    value="<%=user_info.personal_address_state%>">
             </div>
             <div class="col">
                 <select name="personal_address_country" 
                     id="personal-address-country" 
-                    class="form-control country-name-option-list entry-field">
+                    class="form-control country-name-option-list entry-field" 
+                    data-required="1" placeholder="country">
                     <option value=""></option>
                     <% countries.forEach(c=>{ %>
                         <option value="<%=c._id%>"><%=c.name%></option>
@@ -54,16 +65,61 @@
         </div>
         </div>
         <div class="mt-2 text-right">
-            <div class="btn btn-primary pointer">
+            <div class="btn btn-primary pointer done-button">
                 <label class="m-0 pointer">Done</label>
             </div>
         </div>
         
     </div>
-    <script>
-        //set dial code for the phone number 
-        $('#edit-personal-primary-number select[name="personal_address_country"]')
+    <script type="module">
+
+        let form=$('#edit-personal-address');
+
+        //set dial code for the phone number
+        $(form).find('select[name="personal_address_country"]')
             .val('<%=user_info.personal_address_country._id%>');
+
+        import {formjs} from '/gfs/utilities/lib/js/form.js';
+
+        let _formjs=new formjs();
+        let userInfo={};
+
+        $(form).find('.done-button').click(async function(){
+        
+            try {
+
+                //-- validate form --
+                let errCount=_formjs.validateForm($(form),'entry-field');
+                
+                if(errCount>0) throw "validation error";
+
+                //-- save the information
+                let formData={};
+
+                $(form).find('.entry-field').each(function(){
+                    formData=Object.assign(formData,_formjs.getFieldData(this));
+                });
+
+                //save this information in the db
+                let data = _formjs.convertJsonToFormdataObject(formData);
+                data.append("_id",$(form).attr('userid'));
+
+                let updateInfo=$.ajax({
+                    "url": '/account/api/user/update',
+                    "processData": false,
+                    "contentType": false,
+                    "data": data,
+                    "method": "POST"
+                });
+
+                window.location.reload();
+                
+            } catch (error) {
+                console.error(error);
+            }
+
+        });
+
     </script>
 </div>
 
