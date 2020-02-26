@@ -85,7 +85,7 @@
         let userInfo={};
 
         $(form).find('.done-button').click(async function(){
-        
+            popup.onScreen("Updating");
             try {
 
                 //-- validate form --
@@ -115,6 +115,7 @@
                 window.location.reload();
                 
             } catch (error) {
+                popup.remove();
                 console.error(error);
             }
 

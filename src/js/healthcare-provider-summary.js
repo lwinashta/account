@@ -2,14 +2,13 @@ import {
     runtime
 } from "./base.js";
 
-import {listjs} from '/gfs/utilities/lib/js/list.js';
-import {formjs, bindFormControlEvents, insertValues} from '/gfs/utilities/lib/js/form.js';
+import {formjs} from '/gfs/utilities/lib/js/form.js';
+import {managePractices} from './manage-practices.js';
 
 const _formjs=new formjs();
-const _lists=new listjs();
+const _managePractice=new managePractices();
 
 /** UPLOAD PROFILE IMAGE */
-
 const uploadProfileImg = () => {
     $('#update-profile-img-input').on('change', function (e) {
         
@@ -45,24 +44,6 @@ const uploadProfileImg = () => {
     });
 }
 
-const setSVGPie = function (progress) {
-    console.log(progress);
-    var circle = document.querySelector('.progress-ring-circle');
-    var radius = circle.r.baseVal.value;
-    var circumference = radius * 2 * Math.PI;
-
-    circle.style.strokeDasharray = `${circumference} ${circumference}`;
-    circle.style.strokeDashoffset = `${circumference}`;
-
-    var setProgress=function(percent) {
-        const offset = circumference - percent / 100 * circumference;
-        circle.style.strokeDashoffset = offset;
-    }
-    
-    setProgress(progress);
-    
-}
-
 //INITIAL DATA LOAD 
 async function dataLoad() {
 
@@ -88,23 +69,34 @@ $('document').ready(function () {
 
         uploadProfileImg();//bind upload profile image 
 
-        $('.edit-item-button').on('click',function(){
-            let itemtype=$(this).attr('edititem');
+        //EventHandler: Edit button on the individual edit items
+        $('#app-right-pane-container').on('click', '.edit-item-button', function () {
+            let itemtype = $(this).attr('edititem');
 
             //hide all pg sections and show only editfom-container section
-            $.get(`/edit/${itemtype}`).done(function(ly){
+            $.get(`/edit/${itemtype}`).done(function (ly) {
                 $('.pg-section').addClass('d-none');
                 $('#editform-container').removeClass('d-none').html(ly);
             });
+            
         });
 
-        $('#editform-container').on('click','.cancel-go-back',function(){
+        //EventHandler: Go back button when user is editing the information 
+        $('#app-right-pane-container').on('click', '#editform-container .cancel-go-back', function () {
+             
             //-- remove the form 
-            $(this).closest('.form').remove();
+             $(this).closest('.form').remove();
 
-            $('.pg-section').addClass('d-none');
-            
-            $('#summary-container').removeClass('d-none');
+             $('.pg-section').addClass('d-none');
+             
+             $('#summary-container').removeClass('d-none');
+           
+        });
+
+        //load practices 
+        _managePractice.container=$('#practices-outer-container');
+        _managePractice.init().then(d=>{
+            console.log('practices loaded');
         });
         
     });    

@@ -126,19 +126,21 @@
                 let countryCode=countries.filter(c=>c._id===selected_country)[0].dial_code;
 
                 //6.2 - Get otp nnumber for the user 
-                let otp=await $.post('/account/api/user/getotp',{
+                let getOtp=await $.post('/account/api/user/getotp',{
                     "verification_number":user.verification_number
                 });
 
+                console.log(getOtp);
+
                 //6.3 - Send SMS 
                 let sms=await $.getJSON('/aws/sendsms',{
-                    "otp":otp.otp,
+                    "otp":getOtp.otp.otp,
                     "phone_number":`${countryCode}${entered_phone_number}`,
-                    "message":`Owninvention verification code: ${otp.otp}. Please enter this code to verify your account.\n Code expires in 30 minutes.`
+                    "message":`Owninvention verification code: ${getOtp.otp.otp}. Please enter this code to verify your account.\n Code expires in 30 minutes.`
                 });
                 
                 //7. Logout -- 
-                //let logout=$.post('/account/api/user/logout');
+                let logout=$.post('/account/api/user/logout');
 
                 //--- logout successful --
                 window.location.reload();

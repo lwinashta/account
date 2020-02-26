@@ -1,0 +1,164 @@
+<div id="manage-practice-form" class="form mb-4" userid="<%=user_info._id%>">
+    
+    <h3 class="mt-2">
+        <div class="pointer d-inline-block mr-2 btn-rounded align-middle bg-default cancel-go-back"
+            style=" line-height: 42px;width: 40px;height: 40px;">
+            <i class="material-icons align-middle text-white">keyboard_arrow_left</i>
+        </div>
+        <span>Manage Practice</span>
+    </h3>
+
+    <div class="p-3 border rounded  bg-white">
+        
+        <div class="form-group">
+            <label for="private-practice-name" data-required="1">Type </label>
+            <select name="medical_facility_country" id="private-practice-country"
+                        class="form-control country-name-option-list entry-field" 
+                        data-required="1"
+                        placeholder="country">
+                
+                <option value=''></option> 
+                <option value='affiliated_to_facility'>Affiliated to Healthcare Facility</option>   
+                <option value='private_practice'>Private Practice</option>            
+            </select>
+
+        </div>
+
+        <div class="form-group">
+            <div>
+                <label for="private-practice-name" data-required="1">Name </label>
+                <div class="ctooltip"
+                    content="The facility name, if exists, will be visible to patients or users searching your profile.">
+                    <i class="material-icons align-middle">info</i>
+                </div>
+            </div>
+            <input type="text" id="private-practice-name" 
+                name="medical_facility_name" 
+                class="form-control entry-field" data-required="1"
+                placeholder="Name of the establishment">
+        </div>
+
+        <div class="form-group">
+            <div>
+                <label for="private-practice-type" data-required="1">Practice Facility Type </label>
+                <div class="ctooltip"
+                    content="The facility type will be visible to patients or users searching your profile.">
+                    <i class="material-icons align-middle">info</i>
+                </div>
+            </div>
+            <select name="medical_facility_type" id="private-practice-type"
+                class='form-control medical-facility-type-list entry-field' data-required="1"
+                placeholder="Facility type"></select>
+        </div>
+
+        <div class="form-group">
+            <div>
+                <label for="private-practice-description">Practice Description/ Services Available <i
+                        class="small text-muted">(Optional)</i></label>
+                <div class="ctooltip"
+                    content="The facility type will be visible to patients or users searching the facility or your profile.">
+                    <i class="material-icons align-middle">info</i>
+                </div>
+            </div>
+            <textarea class="form-control" name="medical_facility_description" id="private-practice-description"
+                placeholder="Description"></textarea>
+
+            <p class="text-muted mt-2 small"> Please provide brief description about the facility and services provided
+                (e.g., general and specialty surgical services, x ray/radiology services, laboratory services)</p>
+
+        </div>
+
+        <div class="form-group mt-2">
+            <div>
+                <label data-required="1">Practice Address </label>
+                <div class="ctooltip"
+                    content="The address will be visible to patients or users searching your profile.">
+                    <i class="material-icons align-middle">info</i>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <input type="text" name="medical_facility_street_address_1" id="private-practice-street-address-1"
+                    data-required="1" class="form-control mt-2 entry-field" placeholder="Street Address line #1">
+            </div>
+
+            <div class="form-group">
+                <input type="text" name="medical_facility_street_address_2" id="private-practice-street-address-2"
+                    class="form-control mt-2 entry-field" placeholder="Street Address line #2 (Optional)">
+            </div>
+
+            <div class="row mt-2">
+                <div class="col">
+                    <input type="text" name="medical_facility_city" id="private-practice-city" data-required="1"
+                        class="form-control entry-field" placeholder="City">
+                </div>
+                <div class="col">
+                    <input type="text" name="medical_facility_zip_code" id="private-practice-zip-code" data-required="1"
+                        class="form-control entry-field" placeholder="Zip/Postal code">
+                </div>
+            </div>
+
+            <div class="row mt-2">
+
+                <div class="col">
+                    <input type="text" name="medical_facility_state" id="private-practice-address-state"
+                        class="form-control entry-field" data-required="1" placeholder="State">
+                </div>
+
+                <div class="col">
+                    <select name="medical_facility_country" id="private-practice-country"
+                        class="form-control country-name-option-list entry-field" data-required="1"
+                        placeholder="country"></select>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div>
+                <label data-required="1">Practice Contact </label>
+                <div class="ctooltip"
+                    content="The contact information will be visible to patients and users searching your profile.">
+                    <i class="material-icons align-middle">info</i>
+                </div>
+            </div>
+
+            <div class="mt-2 multiple-contact-info-outer-container">
+                <div class="multiple-contact-info-inner-container multiple-data-entry" data-required="1" data-level="1"
+                    name="medical_facility_contact_information"></div>
+                <div class="mt-2 add-contact d-inline-block">
+                    <div class="btn btn-success">
+                        <label class="pointer m-0">Add Contact</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-5">
+            <h3 class="d-inline-block">Your Availability At Above Location</h3>
+            <div class="ctooltip" content="The availability information will be visible to all users or patients viewing your profile. 
+            System will determine the next available appointments per the availability provided here.">
+                <i class="material-icons">info</i>
+            </div>
+        </div>
+
+        <div class="mt-2">
+            <div class="multiple-availability-outer-container">
+        
+                <div class="multiple-availability-inner-container multiple-data-entry"  
+                    data-level="1" data-required="1" name="availability_information"></div>
+            
+                <div class="mt-2 add-availability-days">
+                    <div class="btn btn-success"><label class="m-0 pointer">Add Days</label></div>
+                </div>
+            
+            </div>
+        </div>
+
+        <div style="height: 40px;" class="mt-4 pt-2 border-top">
+            <div class="btn btn-primary pointer ml-3 float-right done-button">
+                <label class="mb-0 pointer"> Done</label>
+            </div>
+        </div>
+
+    </div>
+</div>

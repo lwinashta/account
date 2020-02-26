@@ -51,13 +51,13 @@ app.use('/',async function(req,res,next){
         app.locals.user_info=await userToken.verifyToken(req,res);//checks if user token is set
 
         if(typeof app.locals.user_info==="undefined" || Object.keys(app.locals.user_info).length===0){
-            throw "no user logged in";
+            throw "not-logged-in";
         }
 
         //check if the account is verified. 
         //If account is not verified send user to verification screen 
         if(!('verified' in app.locals.user_info) || !app.locals.user_info.verified){
-            res.redirect(`${globalSettings.website}/otp-verification/${app.locals.user_info.verification_number}`);
+            throw "account-not-verified";
         }
 
         //-- get countries --   
@@ -96,8 +96,15 @@ app.use('/',async function(req,res,next){
     } catch (error) {
         console.log(error);
 
-        let param=encodeURIComponent(`${req.headers.host}${req.path}`);
-        res.redirect(`${globalSettings.website}/login?goto=${param}`);
+        //--- if the error is account-not-verified then navigate to otp verificatin page 
+        if(error==='account-not-verified'){
+            res.redirect(`${globalSettings.website}/otp-verification/${app.locals.user_info.verification_number}`);
+        
+        }else{
+            let param=encodeURIComponent(`${req.headers.host}${req.path}`);
+            res.redirect(`${globalSettings.website}/login?goto=${param}`);
+        }
+        
     }
     
 
@@ -109,10 +116,6 @@ app.get('/',(req,res)=>{
 
 app.get('/summary',(req,res)=>{
     res.render(`pages/summary/${app.locals.user_info.user_type}`);
-});
-
-app.get('/practices',(req,res)=>{
-    res.render(`pages/practices`);
 });
 
 app.get('/enroll/:accounttype/:accountid',(req,res)=>{
