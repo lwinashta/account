@@ -341,8 +341,15 @@ $('document').ready(function () {
 
     _bindEvents.container = $('#form-parent-content-container');
 
+    //callback when file is dropped or slected 
+    _bindEvents.onFileSelection=function(elm, name, files){
+        _bindEvents.injectFileOnSelectionInFormData(elm, name, files);
+    };
+
+    //bind the drag and drop file field
     _bindEvents.dragDropFileContainer();
 
+    //Following BindFields are for specific fields for the enrollment
     //bind fields
     actions.bindFields.addMedicalFacilityMultipleContact($('.multiple-contact-info-outer-container'));
     $('.multiple-contact-info-outer-container').find('.add-contact').trigger('click');

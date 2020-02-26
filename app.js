@@ -40,6 +40,7 @@ const globalRoutes=require(globalFsPath+'/routes')(app);
 const googleRoutes = require(globalFsPath + '/google-services/routes')(app);
 const paymentRoutes=require(globalFsPath+'/payment/routes')(app);
 const accountRoutes=require(globalFsPath+'/account/routes')(app);
+const awsRoutes = require(globalFsPath + '/aws/routes')(app);
 
 //** MIDDLEWARE USER LOGIN */
 app.use('/',async function(req,res,next){

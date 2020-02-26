@@ -21,7 +21,8 @@
         </div>
         <div class="form-group mt-2">
             <div id="medical-registration-file-container" name="medical_registration_file"
-                class="mt-2 p-2 position-relative text-center droppable-file-container entry-field" data-required="1"
+                class="mt-2 p-2 position-relative text-center droppable-file-container entry-field" 
+                data-required="1"
                 placeholder="Medical Registration">
 
                 <div class="droppable-file-action-container">
@@ -67,6 +68,20 @@
         let userInfo={};
 
         _bindEvents.container = form;
+        _bindEvents.onFileSelection=function(elm, name, files){
+
+            $.each(files, (indx, file) => {
+                let fileObj = {};
+                fileObj[name + '-' + indx] = file;
+                fileObj[name + '-' + indx].fieldname = name;
+
+                _bindEvents.formData= Object.assign(_bindEvents.formData, fileObj);
+
+            });
+        };
+
+        console.log(_bindEvents.formData);
+
         _bindEvents.dragDropFileContainer();
 
         //insert values 
@@ -96,29 +111,25 @@
                 if(errCount>0)  throw "validation error";
 
                 //-- save the information 
-                let formData={};
+                $(form).find('.entry-field').each(function(){
+                    _formjs.formData=Object.assign(_formjs.formData,_formjs.getFieldData(this));
+                });
 
+                console.log(_formjs.formData);
 
+                //save this information in the db
+                let data = _formjs.convertJsonToFormdataObject(_formjs.formData);
+                data.append("_id",$(form).attr('userid'));
 
-                // $(form).find('.entry-field').each(function(){
-                //     _formjs.formData=Object.assign(_formjs.formData,_formjs.getFieldData(this));
-                // });
+                let updateInfo=await $.ajax({
+                    "url": '/account/api/user/update',
+                    "processData": false,
+                    "contentType": false,
+                    "data": data,
+                    "method": "POST"
+                });
 
-                // console.log(_formjs.formData);
-
-                // //save this information in the db
-                // let data = _formjs.convertJsonToFormdataObject(_formjs.formData);
-                // data.append("_id",$(form).attr('userid'));
-
-                // let updateInfo=await $.ajax({
-                //     "url": '/account/api/user/update',
-                //     "processData": false,
-                //     "contentType": false,
-                //     "data": data,
-                //     "method": "POST"
-                // });
-
-                //window.location.reload();
+                window.location.reload();
 
             } catch (error) {
                 console.error(error);
