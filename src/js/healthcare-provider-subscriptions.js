@@ -12,6 +12,23 @@ const getCurrenyConversion = function () {
     });
 };
 
+var userPaymentInformation={};
+const getUserPaymentInformation=function(){
+    return new Promise((resolve,reject)=>{
+        //check if customer information exists 
+        $.post('/payment/api/customer/get', {
+            "registration_number": userInfo.registration_number
+        }).done(customer=>{
+            userPaymentInformation=customer;
+            resolve(userPaymentInformation);
+
+        }).catch(err=>{
+            console.log(err);
+            reject(err);
+        });
+    });
+};
+
 const setAppLayout = function (info,details) {
     
     return `<div class="p-3 mt-3 bg-white rounded shadow subscription-tile position-relative border" itemid="${info._id}" itemtype="${info.type}">
@@ -20,7 +37,7 @@ const setAppLayout = function (info,details) {
                 <img style="width:30px" class="mx-auto" src="/gfs/apps/icons/${info._id}.png">
             </div>
             <div class="d-inline-block align-top">
-                <div>${info.name}</div>
+                <div class="text-capitalize">${info.name}</div>
                 <div>
                     <b>$${currencyFormat(info.subscriptions.monthly.usd)} or ₹${currencyFormat(Math.round(info.subscriptions.monthly.usd*currConversions.rates.INR))}/ month</b>
                     <b class="dot-seprator">$${currencyFormat(info.subscriptions.yearly.usd)} or ₹${currencyFormat(Math.round(info.subscriptions.yearly.usd*currConversions.rates.INR))}/ year</b>
@@ -35,12 +52,19 @@ const setAppLayout = function (info,details) {
             </div>
         </div>
 
-        <div class="mt-1 small">
-            ${details}    
-        </div>
+        <div class="mt-1 small app-details"></div>
         
     </div>`;
 }
+
+const setDetails=function(appid,container){
+     $.get(`/gfs/apps/details/${appid}.html`).done(details=>{
+         $(container)
+            .find(`.subscription-tile[itemid="${appid}"]`)
+            .find('.app-details').html(details); 
+     });
+     
+};
 
 const setApps = function () {
 
@@ -49,17 +73,17 @@ const setApps = function () {
         return 1;
     });
 
-    apps.filter(a => a.user_types.indexOf("healthcare-provider") > -1 && a.type==="app").forEach(async (element, indx) => {
+    apps.filter(a => a.user_types.indexOf("healthcare-provider") > -1 && a.type==="app").forEach((element, indx) => {
 
         let details = "";
 
         try {
 
-            details = await $.get(`/gfs/apps/details/${element._id}.html`);
-
-            let html = setAppLayout(element,details);
+            let html = setAppLayout(element);
 
             $('#subscriptions-per-app-container').append(html);
+
+            setDetails(element._id,$('#subscriptions-per-app-container'));
 
         } catch (error) {
             console.log(error);
@@ -75,15 +99,13 @@ const setPackages=function(){
 
     pkgs.forEach(async (element, indx) => {
 
-        let details = "";
+        try {        
 
-        try {
-
-            details = await $.get(`/gfs/apps/details/${element._id}.html`);
-
-            let html = setAppLayout(element,details);
+            let html = setAppLayout(element);
 
             $('#subscriptions-per-package-container').append(html);
+
+            setDetails(element._id,$('#subscriptions-per-package-container'));
 
         } catch (error) {
             console.log(error);
@@ -93,16 +115,22 @@ const setPackages=function(){
     });
 };
 
-const showPaymentMethodEntryPopUp=function(){
-    let html=`<div class="p-2 text-center"><img style="width:100px;" src="/gfs/images/payments/payment_method.png"></div>
-        <b class="mt-2">No Payment Method found</b>
-        <div class="mt-2">
-            Click 
-            <a href="/payments">here <i class="material-icons small-icon align-middle">launch</i></a> 
-            to add payment method, or contact us for any questions.
-        </div>`;
+const showNoPaymentMethodPopUp = function () {
+    let html = `<div class="p-2 text-center"><img style="width:100px;" src="/gfs/images/payments/payment_method.png"></div>
+                <b class="mt-2">No Payment Method found</b>
+                <div class="mt-2">
+                    Click 
+                    <a href="/payments">here <i class="material-icons small-icon align-middle">launch</i></a> 
+                    to add payment method, or contact us for any questions.
+                </div>`;
+
     popup.onScreenAllowClose(html);
-}
+
+};
+
+const showConfirmationChargePopUp=function(info){
+    console.log(info);
+};
 
 //bind subscribe button 
 $('body').on('click','.subscribe-button',function(){
@@ -110,22 +138,21 @@ $('body').on('click','.subscribe-button',function(){
     let _id=$(this).closest('.subscription-tile').attr('itemid');
     let info=apps.filter(a=>a._id===_id)[0];    
 
-    popup.onScreen("checking for payment method");
+    popup.onScreen("Checking for payment method");
 
-    //check if customer credit information is saved 
-    $.post('/payment/api/customer/get', {
-        "registration_number": userInfo.registration_number
-    }).then(customer=>{
-        if(customer==="customer-not-found"){
-            popup.remove();
+    //check if customer credit information is saved
+    getUserPaymentInformation().then(pym=>{
+        popup.remove();
+        if(pym==="customer-not-found"){   
 
             //if account doesnt exists - point user to payment method page and ask to add payment method 
-            showPaymentMethodEntryPopUp();
+            showNoPaymentMethodPopUp();
+
         }else{
-            //show the confirmation messgae on how much amount will be charged 
-            showConfirmationChargePopUp();
+            //show the confirmation message on how much amount will be charged 
+            showConfirmationChargePopUp(info);
         }
-    }).fail(err=>{
+    }).catch(err=>{
         popup.remove();
     });
 

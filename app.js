@@ -122,6 +122,10 @@ app.get('/subscriptions',(req,res)=>{
     res.render(`pages/subscriptions/${app.locals.user_info.user_type}`);
 });
 
+app.get('/subscriptions/subscribe/:appid',(req,res)=>{
+    res.render(`pages/subscriptions/${app.locals.user_info.user_type}`);
+});
+
 app.get('/payments',(req,res)=>{
     res.render(`pages/payment`);
 });
