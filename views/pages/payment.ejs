@@ -2,71 +2,158 @@
 <html>
 
 <head>
-    <% include ../partials/load-scripts %>
+    <% include ../partials/common/load-scripts %>
+
+    <!-- BRAINTREE: PAYPAL SERVICE --->
+    <script src="https://js.braintreegateway.com/web/dropin/1.6.1/js/dropin.js"></script>
+
 </head>
 
 <body>
-    <% include ../partials/header %>
-    <section id="summary" class="container-fluid" style="margin-top: 100px;">
+    <% include ../partials/common/left-pane %>
+    <% include ../partials/common/header %>
 
-        <div class="row">
-            <!-- row1 / col 1: outer columns -->
-            <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
-                <!-- ACCOUNT INFORMATION -->
-                <div class="tile white-tile">
-                    <div class="tile-header">
-                        <i class="material-icons align-middle">group</i> Account
+    <div id="app-right-pane-container">
+
+        <div class="pg-section container-fluid mt-3" id="associated-payment-methods-container">
+
+            <div class="p-3 border-bottom">
+                <div class="d-inline-block text-medium">Payment Methods</div>
+                <div class="float-right" style="margin-top: -8px;">
+                    <div class="btn btn-primary add-payment-method switch-pg-section"
+                        showel="add-payment-method-container">
+                        <label class="m-0 pointer">Add Payment Method</label>
                     </div>
-
-                    <div id="account-info-container">
-                        <div class="text-center mgB-T-L">
-                            <img src="/src/images/loading.gif" style="width:40px;">
-                        </div>
-                    </div>
-
                 </div>
-
-                <!-- PAYMENT INFORMATION -->
-                <div class="tile white-tile mgB-T-L">
-                    <div class="tile-header">
-                        <div class="d-inline-block">
-                            <i class="material-icons align-middle">payment</i> Payment Methods
-                        </div>
-                        <div class="pos-a btn btn-primary sm-txt" style="right:5px;top:0px;"> Add Payment</div>
-                    </div>
-                
-                    <div id="payment-method-info-container">
-                        <div class="text-center mgB-T-L">
-                            <img src="/src/images/loading.gif" style="width:40px;">
-                        </div>
-                    </div>
-                
-                </div>
-                
             </div>
-            <!-- row1 / col 2: outer columns -->
-            <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
 
-                <!-- TRANSACTIONS INFORMATION -->
-                <div class="tile white-tile">
-                    <div class="tile-header">
-                        <i class="material-icons align-middle">group</i> Transactions
-                    </div>
+            <div id="payment-method-content-outer-container"></div>
 
-                    <div id="payment-transactions-info-container">
-                        <div class="text-center mgB-T-L">
-                            <img src="/src/images/loading.gif" style="width:40px;">
-                        </div>
-                    </div>
-
-                </div>
-
-            </div>
         </div>
 
-    </section>
-    
-    <script src="/src/js/payment.js"></script>
+        <div class="pg-section container-fluid mt-3 d-none" id="add-payment-method-container">
+
+            <div id="user-payment-billing-information" class="p-3 mb-2 rounded bg-white" style="border: 1px solid #B5B5B5;">
+                <p>Please verify your billing information</p>
+                <div id="user-billing-information-form">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col">
+                                <label for="first-name" data-required="1">First Name </label>
+                                <input type="text" name="first_name" id="first-name" 
+                                    class="form-control entry-field"
+                                    data-required="1" 
+                                    placeholder="First name" value="<%=user_info.first_name%>">
+                            </div>
+                            <div class="col">
+                                <label for="last-name" data-required="1">Last Name </label>
+                                <input type="text" name="last_name" id="last-name" class="form-control entry-field"
+                                    data-required="1" 
+                                    placeholder="Last name" value="<%=user_info.last_name%>">
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div>
+                            <label data-required="1">BILLING Address </label>
+                        </div>
+
+                        <% if("personal_address_street_address_1" in user_info && user_info.personal_address_street_address_1.length>0) { %>
+                        <div>
+                            <div class="d-inline-block align-top">
+                                <input type="checkbox" id="same-as-address-personal-address">
+                            </div>
+                            <div class="d-inline-block ml-1">
+                                <label for="same-as-address-personal-address" class="m-0">Same as billing address
+                                    <div class="text-muted">
+                                        <span><%=user_info.personal_address_street_address_1%></span>
+                                        <% if("personal_address_street_address_2" in user_info && user_info.personal_address_street_address_2.length>0){%>
+                                        <span>,<%=user_info.personal_address_street_address_2%></span>
+                                        <% } %>
+                                        <span>, <%=user_info.personal_address_city%></span>
+                                        <span>, <%=user_info.personal_address_state%></span>
+                                        <span>, <%=user_info.personal_address_zip_code%></span>
+                                        <span>, <%=user_info.personal_address_country.name%></span>
+                                    </div>
+                                </label>
+                                
+                            </div>
+
+                        </div>
+
+                        <% } %>
+                        <div class="mt-3" id="billing-address">
+                            <div class="form-group ">
+                                <input type="text" name="billing_address_street_address_1"
+                                id="billing-address-street-address-1" 
+                                class="form-control mt-2 entry-field"
+                                placeholder="Street Address line #1" 
+                                data-required="1">
+                            </div>
+                            
+                            <div class="form-group ">
+                               <input type="text" name="billing_address_street_address_2"
+                                id="billing-address-street-address-2" 
+                                class="form-control mt-2 entry-field"
+                                placeholder="Street Address line #2" > 
+                            </div>
+                            
+                            <div class="row mt-2">
+                                <div class="col">
+                                    <input type="text" name="billing_address_city" 
+                                        id="billing-address-city"
+                                        class="form-control entry-field" 
+                                        placeholder="City" 
+                                        data-required="1">
+                                </div>
+                                <div class="col">
+                                    <input type="text" name="billing_address_zip_code" 
+                                        id="billing-address-zip-code"
+                                        class="form-control entry-field" 
+                                        placeholder="Zip/Postal code" 
+                                        data-required="1">
+                                </div>
+                            </div>
+
+                            <div class="row mt-2">
+                                <div class="col">
+                                    <input type="text" name="billing_address_state" 
+                                        id="billing-address-state"
+                                        class="form-control entry-field" 
+                                        placeholder="State" data-required="1">
+                                </div>
+                                <div class="col">
+                                    <select name="billing_address_country" 
+                                        id="billing-address-country"
+                                        class="form-control country-name-option-list entry-field" 
+                                        placeholder="Country" data-required="1">
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div id="payment-dropin-container"></div>
+            <div class="position-relative mt-2 mb-3" style="height: 50px;">
+                <div class="push-right" style="top: 0;">
+                    <div class="btn btn-warning pointer" id="save-payment-method" >
+                        <label class="m-0 pointer">Save Payment Method</label>
+                    </div>
+                    <div class="btn btn-danger pointer ml-3" id="cancel-payment-method">
+                        <label class="m-0 pointer">Cancel</label>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+    </div>
+
+    <script type="module" src="/src/js/payment.js"></script>
 
 </body>
 

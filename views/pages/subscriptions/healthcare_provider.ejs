@@ -11,121 +11,27 @@
 
     <div id="app-right-pane-container">
 
-        <div class="pg-section container-fluid mt-3">
-
-            <h2>Packages</h2>
-
-            <div class="p-3 bg-white rounded shadow membership-tiles position-relative border">
-                <div>
-                    <div class="d-inline-block mr-2 align-top">
-                        <img style="width:30px" class="mx-auto" src="/gfs/images/membership-icons/membership-free.png">
-                    </div>
-                    <div class="d-inline-block align-top">
-                        <div>Membership Plus</div>
-                        <div><b>$29.99 or ₹2,999 / Month</b></div>
-                    </div>
-                </div>
-
-                <div class="push-right">
-                    <div class="btn btn-primary pointer">
-                        <label class="m-0 pointer">Subscribe</label>
-                    </div>
-                </div>
-
-                <div class="mt-1 small">
-                    <ul>
-                        <li>
-                            <div>
-                                <div>
-                                    <b>Access to top 3 apps included</b>
-                                </div>
-                                <ul>
-                                    <li><b>Public Web:</b> Makes your profile more public on web</li>
-                                    <li><b>Timely:</b> Ability for users to book appointments with your practice online</li>
-                                    <li><b>Practice Right:</b> get access to best practice strategies and articles on how to make your practice
-                                        great to help patients effectively</li>
-                                </ul>
-                                <p class="mt-1">Other apps can be subscribed with additional charges</p>
-                            </div>
-                        </li>
-
-                        <li>
-                            <div>
-                                <b>Limited storage</b>
-                                 <div class="text-muted">get storage on cloud, upto 20GB, for easy access and scalibility</div>
-                            </div>
-                        </li>
-
-                    </ul>
-                </div>
-                
+        <div class="pg-section container-fluid mt-3 tab-parent-container">
+            
+            <div class="tab-container">
+                <div class="tab text-tab" showel="subscriptions-per-package-container">Packages</div>
+                <div class="tab text-tab" showel="subscriptions-per-app-container">Individual Apps</div>
             </div>
 
-            <div class="p-3 mt-3 bg-white rounded shadow membership-tiles position-relative border">
-                <div>
-                    <div class="d-inline-block mr-2 align-top">
-                        <img style="width:30px" class="mx-auto" src="/gfs/images/membership-icons/membership-multiply.png">
-                    </div>
-                    <div class="d-inline-block align-top">
-                        <div>Membership Multiply</div>
-                        <div><b>$59.99 or ₹4,999 / Month</b></div>
-                    </div>
-                </div>
-
-                <div class="push-right">
-                    <div class="btn btn-primary pointer">
-                        <label class="m-0 pointer">Subscribe</label>
-                    </div>
-                </div>
-
-                <div class="mt-1 small">
-                    <ul>
-                        <li>
-                            <div>
-                                <b>Membership plus privileges</b>
-                                <div class="text-muted">get all what you get in membership plus, in additon to following</div>
-                            </div>
-                        </li>
-
-                        <li class="mt-2">
-                            <div>
-                                <b>Access to all apps included</b>
-                                <div class="text-muted">get access to all our apps with no subscription fees and upgrade fees. </div>
-                            </div>
-                        </li>
-
-                        <li class="mt-2">
-                            <div>
-                                <b>Sponsored Ad</b>
-                                <div class="text-muted">Your profile will be appeared on top in search results</div>
-                            </div>
-                        </li>
-
-                        <li class="mt-2">
-                            <div>
-                                <b>Unlimited storage</b>
-                                 <div class="text-muted">get unlimited storage on cloud for easy access and scalibility</div>
-                            </div>
-                        </li>
-
-                    </ul>
-                </div>
-                
+            <div class="tab-content-container">
+                <div id="subscriptions-per-package-container" class="mb-4 tab-content"></div>
+                <div id="subscriptions-per-app-container" class="mb-4 tab-content"></div>
             </div>
-
-        
-            <h2 class="mt-4">Individual App Subscriptions</h2>
-            <div>
-                If you dont want to subscribe for a package, we provide subscriptions per app. <b style="color:coral">No contracts no cancellation fees.</b> Change or cancel
-                the subscriptions as you desire. Please see the list of apps below.
-            </div>
-
-            <div id="subscriptions-per-app-container" class="mb-4"></div>
 
         </div>
 
     </div>
 
+    <script>
+        //Bind tabs
+        $('.tab').tab();
+        $('.tab[showel="subscriptions-per-package-container"]').trigger('click');
+    </script>
 
     <script type="module" src="/src/js/healthcare-provider-subscriptions.js"></script>
 
