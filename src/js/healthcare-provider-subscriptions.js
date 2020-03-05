@@ -15,21 +15,46 @@ const getCurrenyConversion = function () {
 var userPaymentInformation={};
 const getUserPaymentInformation=function(){
     return new Promise((resolve,reject)=>{
-        //check if customer information exists 
-        $.post('/payment/api/customer/get', {
-            "registration_number": userInfo.registration_number
-        }).done(customer=>{
-            userPaymentInformation=customer;
+        if(Object.keys(userPaymentInformation).length>0 || userPaymentInformation==='customer-not-found'){
             resolve(userPaymentInformation);
+        }else{
+            //check if customer information exists 
+            $.post('/payment/api/customer/get', {
+                "registration_number": userInfo.registration_number
+            }).done(customer=>{
+                userPaymentInformation=customer;
+                resolve(userPaymentInformation);
 
-        }).catch(err=>{
-            console.log(err);
-            reject(err);
-        });
+            }).catch(err=>{
+                console.log(err);
+                reject(err);
+            });
+        }
+        
     });
 };
 
+const createSubscription=function(params){
+    return $.post('/payment/api/subscription/create',params);
+}
+
+const getSubscription=function(params){
+    $.post('/payment/api/subscription/get',params).done(function(){
+
+    });
+}
+
 const setAppLayout = function (info,details) {
+
+    let setSubscribebuttonLayout=`<div class="btn btn-primary pointer subscribe-button">
+            <label class="m-0 pointer">Subscribe</label>
+        </div>`;
+
+    let checkSubscription=function(){
+        //check if user has any of the package subscriptions 
+
+        //${userSubscriptions.length>0?userSubscriptions.filter(s=>s.planId===info.subscriptions.monthly._id || s.planId===info.subscriptions.yearly._id).length>0?`<div>subscribed</div>`:setSubscribebuttonLayout:setSubscribebuttonLayout}
+    };
     
     return `<div class="p-3 mt-3 bg-white rounded shadow subscription-tile position-relative border" itemid="${info._id}" itemtype="${info.type}">
         <div>
@@ -47,9 +72,7 @@ const setAppLayout = function (info,details) {
         </div>
 
         <div class="push-right">
-            <div class="btn btn-primary pointer subscribe-button">
-                <label class="m-0 pointer">Subscribe</label>
-            </div>
+            
         </div>
 
         <div class="mt-1 small app-details"></div>
@@ -163,13 +186,13 @@ const showConfirmationChargePopUp=function(info){
                 <div>
                     <input id="monthly-subscription" class="align-top monthly-subscription" value="${info.subscriptions.monthly._id}" type="radio" name="subscription-frequency">
                     <label for="monthly-subscription" style="font-size:1rem;margin-top: -4px;">
-                        <div>${currencyIcon}${monthlyCharge}/ month</div> 
+                        <div>${currencyIcon}${currencyFormat(monthlyCharge)}/ month</div> 
                     </label>
                 </div>
                 <div>
                     <input id="yearly-subscription" class="align-top yearly-subscription" value="${info.subscriptions.monthly._id}" type="radio" name="subscription-frequency">
                     <label for="yearly-subscription" style="font-size:1rem;margin-top: -4px;">
-                        <div><div>${currencyIcon}${yearlyCharge}/ yearly</div> </div>
+                        <div><div>${currencyIcon}${currencyFormat(yearlyCharge)}/ yearly</div> </div>
                         <div class="small text-muted">10% discount for yearly susbcriptions</div>
                     </label>
                 </div>
@@ -183,7 +206,17 @@ const showConfirmationChargePopUp=function(info){
 
     $('#subscribe-confirmation-modal').find('.modal-body').html(html);
 
-    $('#subscribe-confirmation-modal').find('input[name="subscription-frequency"]').change(function(){
+    //disable subscribe button on load 
+    $('#subscribe-confirmation-modal')
+        .find('#subscribe-button')
+        .attr('disabled','disabled')
+        .addClass('btn-light')
+        .removeClass('btn-primary');
+
+    $('#subscribe-confirmation-modal')
+        .find('input[name="subscription-frequency"]')
+        .change(function(){
+
         if($(this).prop('checked')){
             //update the html for the  
             let html="";
@@ -193,14 +226,16 @@ const showConfirmationChargePopUp=function(info){
             
             if($(this).hasClass('yearly-subscription')){        
                 html=`<div>
-                    <div>You will be charged <b style="color:red">${currencyIcon}${yearlyCharge}</b> yearly. This amount will be charged immediately</div>
-                    <div>The next billing date will be ${window.moment().add(1,'year').format('DD MMM YYYY')}</div>
+                    <div>You will be charged <b style="color:red">${currencyIcon}${currencyFormat(yearlyCharge)}</b> yearly. This amount will be charged immediately to activate your subscription.
+                    The next billing date will be <b style="color:coral">${window.moment().add(1,'year').format('DD MMM YYYY')}</b>
+                    </div>
                 </div>`;
 
             }else if($(this).hasClass('monthly-subscription')){
                 html=`<div>
-                    <div>You will be charged <b style="color:red">${currencyIcon}${monthlyCharge}</b> monthly. This amount will be charged immediately</div>
-                    <div>The next billing date will be ${window.moment().add(1,'month').format('DD MMM YYYY')}</div>
+                    <div>You will be charged <b style="color:red">${currencyIcon}${currencyFormat(monthlyCharge)}</b> monthly. This amount will be charged immediately to activate your subscription.
+                        The next billing date will be <b style="color:coral">${window.moment().add(1,'month').format('DD MMM YYYY')}</b>
+                    </div>
                 </div>`;
             }
             $('#subscribe-confirmation-modal')
@@ -214,6 +249,29 @@ const showConfirmationChargePopUp=function(info){
                 .find('#selected-subscription-details')
                 .html(html);
         }
+    });
+
+    $('#subscribe-confirmation-modal').on('click','#subscribe-button',function(){
+        
+        let id=$('#subscribe-confirmation-modal').find('input[name="subscription-frequency"]:checked').val();
+        let userDefaultCardInfo=userPaymentInformation.paymentMethods.filter(pym=>pym.default===true)[0];
+        let token=userDefaultCardInfo.token;
+
+        popup.onScreen("Subscribing...");
+
+        createSubscription({
+            "planId":id,
+            "paymentMethodToken":token
+        }).then(subscribed=>{
+            console.log(subscribed);
+            popup.remove();
+            popup.onScreenAllowClose("<div>Successfully subscribed </div>");
+        
+        }).fail(err=>{
+            popup.remove();
+            popup.onScreenAllowClose("<div> Error occured while subscribing. Please try again or contact us.</div>");
+        });
+
     });
 };
 
@@ -248,20 +306,26 @@ $('body').on('click','.subscribe-button',function(){
 var currConversions={};
 var apps=[];
 var userInfo={};
+var userSubscriptions=[];
 
 $.post('/account/api/user/verifytoken').then(user => {
     userInfo=user;
-    return getCurrenyConversion();
 
-}).then(curr => {
-    return $.getJSON("/gfs/apps/apps.json");
+    return $.when(getCurrenyConversion(),getUserPaymentInformation(),$.getJSON("/gfs/apps/apps.json"));
 
-}).then(sysApps => {
+}).then((curr,userPym,sysApps) => {
 
-    apps = sysApps;
+    console.log(curr,userPym,sysApps);
+    apps = sysApps[0];
+
+    userSubscriptions=userPym.creditCards.map(c=>c.subscriptions).flat()
 
     setApps();
     setPackages();
+
+}).fail(err => {
+
+    console.log(err);
 
 });
 

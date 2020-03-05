@@ -15,6 +15,11 @@ const refreshPaymentMethods=function(){
         }).done(customer=>{
             userPaymentInformation=customer;
 
+            if(userPaymentInformation==="customer-not-found"){
+                resolve(userPaymentInformation);
+                return false;
+            }
+
             //-- push the default credit card on top 
             let getDefaultCCIndx=userPaymentInformation.creditCards.findIndex(cc=>cc.default===true);
             let getDefaultCCInfo=userPaymentInformation.creditCards.filter(cc=>cc.default===true)[0];
