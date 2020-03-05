@@ -34,6 +34,22 @@ const getUserPaymentInformation=function(){
     });
 };
 
+const getPackages=function(){
+    return apps.filter(a => a.user_types.indexOf("healthcare-provider") > -1 && a.type==="package");
+}
+
+const getUserSubscriptions=function(){
+
+    let subs=userPaymentInformation.creditCards.map(c=>c.subscriptions).flat();
+    let activeSubs=subs.filter(s=>s.status==="Active");
+
+    return activeSubs;
+}
+
+const getSubscriptionPlans=function(){
+    return $.post('/payment/api/plans/getall')
+}
+
 const createSubscription=function(params){
     return $.post('/payment/api/subscription/create',params);
 }
@@ -72,7 +88,7 @@ const setAppLayout = function (info,details) {
         </div>
 
         <div class="push-right">
-            
+            ${setSubscribebuttonLayout}
         </div>
 
         <div class="mt-1 small app-details"></div>
@@ -118,7 +134,7 @@ const setApps = function () {
 
 const setPackages=function(){
 
-    let pkgs=apps.filter(a => a.user_types.indexOf("healthcare-provider") > -1 && a.type==="package");
+    let pkgs=getPackages();
 
     pkgs.forEach(async (element, indx) => {
 
@@ -260,14 +276,16 @@ const showConfirmationChargePopUp=function(info){
         popup.onScreen("Subscribing...");
 
         createSubscription({
-            "planId":id,
-            "paymentMethodToken":token
+            "planId":"APP_MO_US_1499",
+            "paymentMethodToken":token,
+            "billingCycle":2
         }).then(subscribed=>{
             console.log(subscribed);
             popup.remove();
             popup.onScreenAllowClose("<div>Successfully subscribed </div>");
         
         }).fail(err=>{
+            console.log(err);
             popup.remove();
             popup.onScreenAllowClose("<div> Error occured while subscribing. Please try again or contact us.</div>");
         });
@@ -311,14 +329,15 @@ var userSubscriptions=[];
 $.post('/account/api/user/verifytoken').then(user => {
     userInfo=user;
 
-    return $.when(getCurrenyConversion(),getUserPaymentInformation(),$.getJSON("/gfs/apps/apps.json"));
+    return $.when(getCurrenyConversion(),getUserPaymentInformation(),$.getJSON("/gfs/apps/apps.json"),getSubscriptionPlans());
 
-}).then((curr,userPym,sysApps) => {
+}).then((curr,userPym,sysApps,plans) => {
 
-    console.log(curr,userPym,sysApps);
+    console.log(plans);
     apps = sysApps[0];
 
-    userSubscriptions=userPym.creditCards.map(c=>c.subscriptions).flat()
+    userSubscriptions=getUserSubscriptions(userPym);
+
 
     setApps();
     setPackages();
