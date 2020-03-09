@@ -1,22 +1,6 @@
 export var runtime={
     "userInfo":{},
     "months":['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'],
-    "registrationtypes":[{
-        "code":"oi_standard_free",
-        "name":"30 days free trial "
-    },{
-        "code":"oi_standard_monthly",
-        "name":"Standard Account - Monthly Subscription"
-    },{
-        "code":"oi_standard_yearly",
-        "name":"Standard Account - Yearly Subscription"
-    },{
-        "code":"oi_enterprise_yearly",
-        "name":"Enterprise Account - Yearly Subscription"
-    },{
-        "code":"oi_enterprise_monthly",
-        "name":"Enterprise Account - Monthly Subscription"
-    }],
     "getSysSettings":()=>{
         return $.getJSON('/gfs/sys-settings/config/config.json');
     },
@@ -152,6 +136,9 @@ export var runtime={
         }
     
         return html;
+    },
+    "getIpLocation":function(){
+        return $.getJSON('https://api.ipdata.co/es?api-key=071be21a2b0139997678d23a3fa5303040ada726a0dfaa55c817da21');
     }
 };
 

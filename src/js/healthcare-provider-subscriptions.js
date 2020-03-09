@@ -1,3 +1,4 @@
+import {runtime} from './base.js';
 
 const getCurrenyConversion = function () {
     return new Promise((resolve, reject) => {
@@ -34,11 +35,7 @@ const getUserPaymentInformation=function(){
     });
 };
 
-const getPricePerBillingCountry=function(appInfo){
-
-    let userDefaultCardInfo=userPaymentInformation.paymentMethods.filter(pym=>pym.default===true)[0];
-    let userDefaultAddress=userDefaultCardInfo.billingAddress;
-    let defaultPaymentBillingCountry=userDefaultAddress.countryCodeAlpha2;
+const getPricePerIpLocation=function(appInfo){
 
     let billingInfo={
         price:0,
@@ -48,16 +45,16 @@ const getPricePerBillingCountry=function(appInfo){
         planInfo:{}
     }
 
-    if(defaultPaymentBillingCountry==="US"){
+    if(clientIpLocation.country_code==="US"){
         billingInfo.planInfo=subscriptionPlans.filter(p=>p.id===appInfo.subscriptions.monthly.us)[0];
         billingInfo.merchantAccountId="owninvention";
-        billingInfo.currencyIcon="$";
+        billingInfo.currencyIcon=clientIpLocation.currency.symbol;
         billingInfo.price=parseInt(billingInfo.planInfo.price);
 
-    }else if(defaultPaymentBillingCountry==="IN"){
+    }else if(clientIpLocation.country_code==="IN"){
         billingInfo.planInfo=subscriptionPlans.filter(p=>p.id===appInfo.subscriptions.monthly.india)[0];
         billingInfo.merchantAccountId="owninvention_India";
-        billingInfo.currencyIcon="₹";
+        billingInfo.currencyIcon=clientIpLocation.currency.symbol;
         billingInfo.price=parseInt(billingInfo.planInfo.price);
 
     }
@@ -172,7 +169,7 @@ const setAppLayout = function (info) {
     let planInfo = subscriptionPlans.filter(p => p.id === usPlanId || p.id === indiaPlanId);
 
     //set the price of the plan per the country
-    let billing=getPricePerBillingCountry(info);
+    let billing=getPricePerIpLocation(info);
 
     //console.log(planInfo);
     const getPlanInfo=function(){
@@ -190,7 +187,7 @@ const setAppLayout = function (info) {
                 </div>`;
         }else{
             html+=`<div>
-                    <b>${billing.currencyIcon}${currencyFormat(billing.price)} / month </b>
+                    <b>${billing.currencyIcon} ${currencyFormat(billing.price)} / month </b>
                     ${planInfo[0].trialPeriod?`<span> after trial period.</span>`:``}
                 </div>`;
         }
@@ -216,8 +213,8 @@ const setAppLayout = function (info) {
                 </div>
                 ${"includedWithPackage" in subsInfo && subsInfo.includedWithPackage?`<div class="mt-2 small text-muted">
                     Subscription cannot be canceled. Apps subcribed via package.
-                </div>`:`<div class="mt-2" subscriptionid="${subsInfo.subscriptionId}">
-                    <div class="btn btn-danger cancel-subscription pointer">
+                </div>`:`<div class="mt-2">
+                    <div class="btn btn-danger cancel-subscription-button pointer" subscriptionid="${subsInfo.subscriptionId}">
                         <label class="m-0 pointer">Cancel subscription</label>
                     </div>
                 </div>`}
@@ -332,73 +329,142 @@ const showNoPaymentMethodPopUp = function () {
 
 };
 
-const calcProratedAmount=function(oldSub,newSub){
+//------------------------------
+//-------- calculate refund or sale for updated subscription -- 
+// --- subscription can be updated only if the last trasaction is settled or settling and is NOT a refund trasaction 
+// -- if the last trasaction is refund trasaction and is settled - user will be charged for the updated subscription only -- 
+const calcProratedAmount=function(currentSubscription,newSubscription){
     
     var td = window.moment();// todays date 
-    var nxtMonthBillDate = window.moment();
 
-    nxtMonthBillDate.add(0, 'days');// change the next bill date to be today+1 day 
+    var currentSubscriptionPrice = parseFloat(currentSubscription.price);
+    var currentSubscriptionBalance = parseFloat(currentSubscription.balance);
+    var newSubscriptionPrice = parseFloat(newSubscription.price);
 
-    var currentSubscriptionPrice = CacheSelectedValues.subscriptionDetails.price;
-    var currentSubscriptionBalance = parseFloat(CacheSelectedValues.subscriptionDetails.balance);
-    var updatedSubscriptionPrice = parseFloat(CacheSelectedValues.planPrice);
+    var currentSubscriptionPlanId = currentSubscription.planId;
 
-    var currentSubscriptionPlanId = CacheSelectedValues.subscriptionDetails.planId;
+    //-- calculate the prorated amount -- 
+    //prorate calculation = (newSusPrice - currentSubPrice)/ (Number of days left in the billing cycle/Total number of days in the billing cycle)
+    //suppose subscription was updated on 3/23/2020.
+    //old subscriptin price = 29.99 for month and new subs 59.99 
+    //calc -> (59.99-29.99)*(7/30) = -7, $7 will be refunded from transaction and 59.99 will be charged from next month. 
+    
+    var nxtBd = window.moment(currentSubscription.nextBillingDate);
+    var lastMonthDate = window.moment(nxtBd).subtract(1, 'months');// calculate total number of days for subscription
 
-    if (currentSubscriptionPlanId !== CacheSelectedValues.planId) {// --- check if selected plan is not same as previous plan -- 
-        //-- calculate the prorated amount -- 
-        var nxtBd = window.moment(CacheSelectedValues.subscriptionDetails.nextBillingDateUnformated.date);
-        var lastMonthDate = window.moment(nxtBd).subtract(1, 'months');// calculate total number of days for subscription
+    var diff1 = nxtBd.diff(td, 'days');// Number of days left in the billing cycle
+    var diff2 = nxtBd.diff(lastMonthDate, 'days'); //-- Total number of days in the billing cycle             
 
-        var diff1 = nxtBd.diff(td, 'days');// Number of days left in the billing cycle
-        var diff2 = nxtBd.diff(lastMonthDate, 'days'); //-- Total number of days in the billing cycle             
+    var calcProratedAmount = (newSubscriptionPrice - currentSubscriptionPrice) * (diff1 / diff2);
 
-        var calcProratedAmount = (updatedSubscriptionPrice - currentSubscriptionPrice) * (diff1 / diff2);
+    calcProratedAmount=parseFloat(calcProratedAmount.toFixed(2))
 
-        if (calcProratedAmount > 0) {// -- upgrade amount 
-            //-- charge/ debit the amount -- 
-            //-- if balance exists and balance is less than the charge a
+    if (calcProratedAmount > 0) {// -- upgrade amount 
+        
+        //-- charge/ debit the amount -- 
+        //-- if balance exists - The amount of outstanding charges associated with a subscription. 
+        //calcProratedAmount = calcProratedAmount+currentSubscriptionBalance ;
 
-            if (currentSubscriptionBalance >= calcProratedAmount) {
-                calcProratedAmount = currentSubscriptionBalance - calcProratedAmount;
-            }
-
-            var chargeImmediately = updatedSubscriptionPrice > currentSubscriptionPrice ? true : false;
-
-            return {
-                "updateSubscriptionAction": "charge",
-                "proratedAmount": calcProratedAmount.toFixed(2),
-                "chargeImmediately": chargeImmediately
-            };
-
-        } else {
-            //-- refund or credit
-            return {
-                "updateSubscriptionAction": "refund",
-                "proratedAmount": calcProratedAmount.toFixed(2),
-                "chargeImmediately": false
-            };
-        }
+        return {
+            "action": "charge",
+            "outstandingBalance":currentSubscriptionBalance,
+            "amount": calcProratedAmount
+        };
 
     } else {
+        //-- refund or credit
         return {
-            "updateSubscriptionAction": "notallowed"
+            "action": "refund",
+            "outstandingBalance":currentSubscriptionBalance,
+            "amount": calcProratedAmount
         };
     }
 }
 
 const showConfirmationChargePopUp=function(info){
 
-    let billing=getPricePerBillingCountry(info);
+    let billing=getPricePerIpLocation(info);
     let planInfo=billing.planInfo;
 
     let isPkgSubscribed=Object.keys(userAppsPkgsSubscribed).filter(k=>userAppsPkgsSubscribed[k].type==="package");
     let subscribedPkgInfo=isPkgSubscribed.length>0?apps.filter(a=>a._id===isPkgSubscribed[0])[0]:null;
     let subscriptionInfo=userSubscriptions.filter(u=>u.planId===userAppsPkgsSubscribed[isPkgSubscribed[0]].planId)[0];
 
-    console.log(subscriptionInfo);
+    const updatePackageChargesLayout=function(){
+        let proratedAmount=calcProratedAmount(subscriptionInfo,planInfo);
+        let outstanding=proratedAmount.amount+proratedAmount.outstandingBalance;
 
-    let html=`<div class="text-center p-2 mt-2">
+        return `<div>
+            <h4>Charges:</h4>
+            <div class="border-bottom pt-2 pb-2">
+                <div>
+                    ${proratedAmount.action==="refund"?`<div>
+                        <div class="position-relative mt-2">
+                            <div class="text-danger d-inline-block">
+                                <b>Refund</b>
+                            </div>
+                            <div class="text-muted w-75 small">Refund will be adjusted in the next billing cycle</div>
+                            <div class="push-right t-0">${billing.currencyIcon}${proratedAmount.amount}</div>
+                    </div>`:`<div>
+                    <div class="position-relative mt-2">
+                        <div class="text-danger d-inline-block">
+                            <b>Additonal Charges</b>
+                        </div>
+                        <div class="text-muted w-75 small">Balance amount will be charged today: <b>${window.moment().format('DD MMM YYYY')}</b>.</div>
+                        <div class="push-right t-0">${billing.currencyIcon}${proratedAmount.amount}</div>
+                </div>`} 
+                <div class="position-relative mt-2">
+                    <div class="text-danger d-inline-block">
+                        <b>Current Subscription Balance</b>
+                    </div>
+                    <div class="text-muted w-75 small">The amount of outstanding charges associated with current subscription.</div>
+                    <div class="push-right t-0">${billing.currencyIcon}${proratedAmount.outstandingBalance}</div>
+                </div>
+                <div class="position-relative bottom-top pb-2 mt-2">
+                    <div class="text-danger d-inline-block">
+                        <b class="text-success">Total</b>
+                    </div>
+                    <div class="text-muted w-75 small">Total amount to be ${proratedAmount.action==="refund"?' refunded. Refund takes 3-5 business days to show up on your statement.':' charged'}</div>
+                    <div class="push-right t-0">${billing.currencyIcon}${outstanding}</div>
+                </div>
+                </div>
+            </div>
+        </div>`;
+
+    };
+
+    const updatePackageWithNoTransactionsLayout=function(){
+        return `<div>
+            <h4>Charges:</h4>
+            <div>The trail period is still in progress for your subscription.</div>
+            <div class="position-relative">
+                <div class="text-danger">Payment</div>
+                <div class="w-75 text-muted">You account will be charged on next billing cycle <b style="color:coral">${window.moment(subscriptionInfo.nextBillingDate).format('DD MMM YYYY')}</b> for new subscription</div>
+                <div class="push-right t-0">${billing.currencyIcon}${currencyFormat(billing.price)}</div>
+            </div>`;
+    };  
+
+    const newSubscriptionLayout=function(){
+        return `<div>
+            <h4>Charges:</h4>
+            <div class="position-relative">
+                <div class="w-75 text-muted">
+                    ${planInfo.trialPeriod ? 
+                        `<b style="color:dodgerblue">${planInfo.trialDuration} ${planInfo.trialDurationUnit}</b> 
+                        free trial and after that you will be charged` 
+                        : `You will be charged `}
+                    the subscription amount. 
+                    <div>You next billing date -  
+                        <b style="color:coral">${planInfo.trialPeriod ?`${window.moment().add(1,'months').format('DD MMM YYYY')}`:` today, ${window.moment().format('DD MMM YYYY')}`}</b>
+                    </div>
+                </div>
+                <div class="push-right t-0">${billing.currencyIcon}${currencyFormat(billing.price)}</div>
+            </div>`;
+    }; 
+
+    try {
+
+        let html=`<div class="text-center p-2 mt-2">
             <div>
                 <img src="/gfs/apps/icons/${info._id}.png" style="width:80px">
             </div>
@@ -424,21 +490,21 @@ const showConfirmationChargePopUp=function(info){
             </div>
         </div>
         <div class="mt-2 p-3 border-top" id="selected-subscription-details">
-            ${subscriptionInfo.transactions.length>0?`<div>calcuateprorated amount </div>`:`<div>The trail period is still in progress for your subscription. 
-            The next billing date will be <b style="color:coral">${window.moment(subscriptionInfo.nextBillingDate).format('DD MMM YYYY')}</b> for  amount <b style="color:red">${billing.currencyIcon}${currencyFormat(billing.price)}</b> for new subscription</div>`}
+            ${subscriptionInfo.transactions.length>0?`<div>${updatePackageChargesLayout()} </div>`:`${updatePackageWithNoTransactionsLayout()}`}
         </div>`:`<div class="mt-2 p-3 border-top" id="selected-subscription-details">
-            <div>${planInfo.trialPeriod ? `<b style="color:dodgerblue">${planInfo.trialDuration} ${planInfo.trialDurationUnit}</b> free trial and after that you will be charged` : `You will be charged `}  
-                <b style="color:red">${billing.currencyIcon}${currencyFormat(billing.price)}</b>. 
-                The subscription amount of ${billing.currencyIcon}${currencyFormat(billing.price)} will be automatically deducted on <b style="color:coral">${window.moment().add(1,'month').format('DD MMM YYYY')}</b>. 
-            </div>
+            ${newSubscriptionLayout()}
         </div>`} 
-        <div class="mt-2 p-3 border-top">
+        <div class="mt-2 pt-2 pb-2 border-top">
             <input type="checkbox" id="terms-conditions-agreement">
             <label for="terms-conditions-aggreement" style="text-transform:inherit">Agree with subscription terms and condition. Click <a href="#">here</a> to read more.</label>
         </div>`;
 
-    $('#subscribe-confirmation-modal').find('.modal-body').html(html);
+        $('#subscribe-confirmation-modal').find('.modal-body').html(html);
 
+    } catch (error) {
+        console.log(error);
+    }
+    
     $('#subscribe-confirmation-modal').modal({
         backdrop:'static'
     });
@@ -484,6 +550,10 @@ const showConfirmationChargePopUp=function(info){
     
 };
 
+const showCancelSubscriptionPopUp=function(info,proratedAmount){
+
+};
+
 //bind subscribe button 
 $('body').on('click','.subscribe-button',function(){
     
@@ -510,6 +580,21 @@ $('body').on('click','.subscribe-button',function(){
 
 });
 
+$('body').on('click','.cancel-subscription-button',function(){
+
+    //get subscription id 
+    let subscriptionid =$(this).attr('subscriptionid');
+    let subscriptionInfo=userSubscriptions.filter(s=>s.id===subscriptionid)[0];
+    let proratedAmount=calcProratedAmount(subscriptionInfo,{
+        price:0
+    });
+
+        
+
+});
+
+
+
 //********************* */
 //EXECUTE METHODS 
 //var currConversions={};
@@ -520,21 +605,25 @@ var userSubscriptions=[];
 var userAppsPkgsSubscribed=[];
 var subscriptionPlans=[];
 var userPaymentInformation={};
+var clientIpLocation={};
 
 popup.onScreen("Loading...");
 
 $.post('/account/api/user/verifytoken').then(user => {
     userInfo=user;
 
-    return $.when(getUserPaymentInformation(),$.getJSON("/gfs/apps/apps.json"),getPlans());
+    return $.when(runtime.getIpLocation(),getUserPaymentInformation(),$.getJSON("/gfs/apps/apps.json"),getPlans());
 
-}).then((userPym,sysApps,plans) => {
+}).then((ipLocation,userPym,sysApps,plans) => {
+
+    clientIpLocation=ipLocation[0];
     subscriptionPlans=plans[0].plans;
 
-    console.log(subscriptionPlans);
     apps = sysApps[0].filter(a=>a.active);
 
     userSubscriptions=getUserSubscriptions(userPym);
+    console.log(userSubscriptions);
+
 
     userAppsPkgsSubscribed=getUserSubscribedAppsPkgs();
 
@@ -550,9 +639,4 @@ $.post('/account/api/user/verifytoken').then(user => {
 
 
 });
-
-//------------------------------
-//-------- calculate refund or sale for updated subscription -- 
-// --- subscription can be updated only if the last trasaction is settled or settling and is NOT a refund trasaction 
-// -- if the last trasaction is refund trasaction and is settled - user will be charged for the updated subscription only -- 
 
