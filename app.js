@@ -29,6 +29,7 @@ app.locals.globalFsPath=globalFsPath;
 app.use('/src',express.static('src'));
 app.use('/gfs',express.static(globalFsPath));
 app.use('/node_modules',express.static('node_modules'));
+app.use('/layout',express.static('views/partials'));
 app.use(formidable());
 // app.use(session({secret:'secretkey',saveUninitialized:true,resave:true,cookie:{maxAge:60000,domain:'locahost'}}));
 
