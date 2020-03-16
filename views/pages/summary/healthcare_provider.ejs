@@ -126,7 +126,7 @@
                                     <i class="material-icons align-middle">home</i>
                                 </div>
                                 <div class="d-inline-block text-lower ml-5 w-90">
-                                    <% if ('personal_address_street_address_1' in user_info) { %>
+                                    <% if ('personal_address_street_address_1' in user_info && user_info.personal_address_street_address_1.length>0) { %>
                                         <span><%=user_info.personal_address_street_address_1 %>,</span>
                                         <span><%=user_info.personal_address_street_address_2 %></span>
                                         <span><%=user_info.personal_address_city %>, 

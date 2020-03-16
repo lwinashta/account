@@ -60,6 +60,7 @@
                     <% countries.forEach(c=>{ %>
                         <option value="<%=c._id%>"><%=c.name%></option>
                     <% }) %>
+                    
                 </select>
             </div>
         </div>
@@ -77,7 +78,7 @@
 
         //set dial code for the phone number
         $(form).find('select[name="personal_address_country"]')
-            .val('<%=user_info.personal_address_country._id%>');
+            .val('<%=user_info.personal_address_country%>');
 
         import {formjs} from '/gfs/utilities/lib/js/form.js';
 

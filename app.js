@@ -65,8 +65,8 @@ app.use('/',async function(req,res,next){
         app.locals.user_info.country_dial_code=countries.filter(c=>c._id===app.locals.user_info.country_code)[0].dial_code;
         app.locals.user_info.specialty=specialties.filter(s=>s._id===app.locals.user_info.specialty)[0];
 
-        if("personal_address_country" in app.locals.user_info){
-            app.locals.user_info.personal_address_country=countries.filter(c=>c._id===app.locals.user_info.personal_address_country)[0]
+        if("personal_address_country" in app.locals.user_info && app.locals.user_info.personal_address_country.length>0){
+            app.locals.user_info.personal_address_country=countries.filter(c=>c._id===app.locals.user_info.personal_address_country)[0];
         }
         
         if("medical_degree" in app.locals.user_info && app.locals.user_info.medical_degree.length>0){
@@ -153,6 +153,7 @@ app.get('/edit/:edititem',(req,res)=>{
     app.locals.specialties=specialties;
 
     app.render(`partials/editForms/${itemname}`,app.locals,function(err, html){
+        console.log(err);
         if(err) res.status('404').send('layout not found');
         res.status(200).send(html);
     });

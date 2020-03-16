@@ -73,7 +73,12 @@ const createSubscription=function(params){
 }
 
 const updateSubscription=function(params){
+
+    //step 1 - update the payment gateway woth subscription information 
     return $.post('/payment/api/subscription/update',params);
+
+    //step 2 - update the subscription is 
+
 };
 
 const cancelSubscription=function(params){
@@ -772,11 +777,13 @@ $.post('/account/api/user/verifytoken').then(user => {
     subscriptionPlans=plans[0].plans;
 
     apps = sysApps[0].filter(a=>a.active);
-    
-    userSubscriptions=getUserActiveSubscriptions(userPym);
-    console.log(userPym,subscriptionPlans);
 
-    userAppsPkgsSubscribed=getUserSubscribedAppsPkgs();
+    if(userPym!=="customer-not-found"){
+        userSubscriptions=getUserActiveSubscriptions(userPym);
+        console.log(userPym,subscriptionPlans);
+
+        userAppsPkgsSubscribed=getUserSubscribedAppsPkgs();
+    }
 
     setApps();
     setPackages();
