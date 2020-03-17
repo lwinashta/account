@@ -68,20 +68,23 @@ const getPlans=function(){
 
 //********************** */
 /** SUBSCRIBTION */
-const createSubscription=function(params){
+const createGatewaySubscription=function(params){
     return $.post('/payment/api/subscription/create',params);
 }
 
-const updateSubscription=function(params){
-
-    //step 1 - update the payment gateway woth subscription information 
-    return $.post('/payment/api/subscription/update',params);
-
-    //step 2 - update the subscription is 
-
+const createAccountSubscription=function(params){
+    return $.post('/account/api/subscription/create',params);
 };
 
-const cancelSubscription=function(params){
+const updateGatewaySubscription=function(params){
+    return $.post('/payment/api/subscription/update',params);
+};
+
+const updateAccountSubscription=function(params){
+    return $.post('/account/api/subscription/update',params);
+};
+
+const cancelGatewaySubscription=function(params){
     return $.post('/payment/api/subscription/cancel',params);
 };
 
@@ -211,7 +214,7 @@ const getUserSubscribedAppsPkgs=function(){
 
             subscriptions[appId]={
                 "planId":app.planId,
-                "nextBillingDate":pkg.nextBillingDate,
+                "nextBillingDate":app.nextBillingDate,
                 "type":"package"
             };
     
@@ -402,7 +405,11 @@ const showConfirmationChargePopUp=function(info){
 
     let billing=getPricePerIpLocation(info);
     let planInfo=billing.planInfo;
-    let wasUserSubscribed= getAllSubscriptions().filter(s=>s.planId===planInfo.id).length>0;
+
+    let checkIfPkg=new RegExp('\_PKG\_');
+
+    let wasUserSubscribed= getAllSubscriptions().filter(s=>s.planId===planInfo.id 
+            || (info.type==="package" && checkIfPkg.test(s.planId))).length>0;
 
     let isPkgSubscribed=Object.keys(userAppsPkgsSubscribed).filter(k=>userAppsPkgsSubscribed[k].type==="package");
     let subscribedPkgInfo=isPkgSubscribed.length>0?apps.filter(a=>a._id===isPkgSubscribed[0])[0]:null;
@@ -537,14 +544,15 @@ const showConfirmationChargePopUp=function(info){
             //charge the default payment method 
             let userDefaultCardInfo=userPaymentInformation.paymentMethods.filter(pym=>pym.default===true)[0];
             let token=userDefaultCardInfo.token;
-            let subscribed={};
+            let gSubscribed={};
+            let aSubscribed={};
             
             if(isPkgSubscribed.length>0){
                 //update the subscriptions instead of creating new 
                 //once subscribed the charge will be executed autmatically by the gateway
                 //if the charge is to be issued - transaction will be created for that amount 
                 //if refund needs to be done, refund will be processed for the transaction 
-                subscribed=await updateSubscription({
+                gSubscribed=await updateGatewaySubscription({
                     "subscriptionId":subscriptionInfo.id,
                     "planId":planInfo.id,
                     "price":planInfo.price,
@@ -552,10 +560,17 @@ const showConfirmationChargePopUp=function(info){
                     "merchantAccountId":billing.merchantAccountId
                 });
 
+                aSubscribed=await updateAccountSubscription({
+                    "registration_number":userPaymentInformation.id,
+                    "subscription_id":subscriptionInfo.id,
+                    "plan_id":planInfo.id,
+                    "status":subscriptionInfo.status
+                });
+
             }else if (wasUserSubscribed){
                 //was user subscribed for the subscription in past and perhaps canceled the request
                 //if yes - 1 month free trial is not allowed for these users
-                subscribed=await createSubscription({
+                gSubscribed=await createGatewaySubscription({
                     "planId":planInfo.id,
                     "paymentMethodToken":token,
                     "merchantAccountId":billing.merchantAccountId,
@@ -563,15 +578,31 @@ const showConfirmationChargePopUp=function(info){
                     "trialDuration":0
                 });
 
+                aSubscribed=await createAccountSubscription({
+                    "registration_number":userPaymentInformation.id,
+                    "subscription_id":gSubscribed.subscription.id,
+                    "plan_id":gSubscribed.subscription.planId,
+                    "plan_type":info.type,
+                    "status":gSubscribed.subscription.status
+                });
+
             }else{
-                subscribed=await createSubscription({
+                gSubscribed=await createGatewaySubscription({
                     "planId":planInfo.id,
                     "paymentMethodToken":token,
                     "merchantAccountId":billing.merchantAccountId
                 });
+
+                aSubscribed=await createAccountSubscription({
+                    "registration_number":userPaymentInformation.id,
+                    "subscription_id":gSubscribed.subscription.id,
+                    "plan_id":gSubscribed.subscription.planId,
+                    "plan_type":info.type,
+                    "status":gSubscribed.subscription.status
+                });
             }
             
-            console.log(subscribed);
+            //console.log(gSubscribed,aSubscribed);
     
             popup.remove();
             popup.onBottomCenter(`<div>
@@ -607,7 +638,7 @@ const showConfirmationChargePopUp=function(info){
  * @param {*} subscriptionInfo - Subscription info
  * @param {*} proratedAmount 
  */
-const showCancelSubscriptionPopUp=function(subscriptionInfo,appInfo,proratedAmount){
+const showcancelGatewaySubscriptionPopUp=function(subscriptionInfo,appInfo,proratedAmount){
     let billing=getPricePerIpLocation(appInfo);
     try {
 
@@ -661,7 +692,7 @@ const showCancelSubscriptionPopUp=function(subscriptionInfo,appInfo,proratedAmou
 
             popup.onScreen("Cancelling Subscription...");
 
-            let canceled=await cancelSubscription({
+            let canceled=await cancelGatewaySubscription({
                 "subscriptionId":subscriptionInfo.id
             });
             
@@ -742,7 +773,7 @@ $('body').on('click','.cancel-subscription-button',function(){
     
     $.get('/layout/subscription/subscription-cancellation-popup.html').done(ly=>{
         $('body').append(ly);
-        showCancelSubscriptionPopUp(subscriptionInfo,appInfo);
+        showcancelGatewaySubscriptionPopUp(subscriptionInfo,appInfo);
 
     }).catch(err=>{
         popup.remove();
