@@ -1,16 +1,18 @@
 //** IMPORT DEPENDENCIES 
 const process=require("process");
 const formidable = require('express-formidable');
-const globalSettings=require("../global-modules/sys-settings/config/config.json");
 const express = require('express');
-const userToken=require('@oi/account/lib/token'); 
 const path=require('path');
 
-const countries=require('@oi/utilities/lib/lists/countries.json');
-const specialties=require('@oi/utilities/lib/lists/medical-specialties.json');
-const degrees=require('@oi/utilities/lib/lists/medical-degrees.json');
-const councils=require('@oi/utilities/lib/lists/medical-councils.json');
-const languages=require('@oi/utilities/lib/lists/languages.json');
+const userToken=require('../efs/accountManager/lib/token'); 
+const efsPaths = require("../efs/core/config/efspath.json");
+const domains = require("../efs/core/config/domains.json");
+const countries=require('../efs/utilities/lib/lists/countries.json');
+const degrees=require('../efs/utilities/lib/lists/medical-degrees.json');
+const councils=require('../efs/utilities/lib/lists/medical-councils.json');
+const languages=require('../efs/utilities/lib/lists/languages.json');
+
+const specialties=require('../efs/healthcare/lib/specialties');
 
 //const parser=require('body-parser');
 
@@ -19,15 +21,16 @@ const languages=require('@oi/utilities/lib/lists/languages.json');
 const app = express();
 const port=8081;
 const os=process.platform;
-const globalFsPath=globalSettings.globalFs[os];
+const efsPath = efsPaths[os];
+const _specialties=new specialties();
 
 //** LOCAL ASSIGNEMENTS */
-app.locals.sysSettings=globalSettings;
-app.locals.globalFsPath=globalFsPath;
+//app.locals.sysSettings=globalSettings;
+app.locals.efsPath=efsPath;
 
 //** ASSIGN MIDDLEWARES */
 app.use('/src',express.static('src'));
-app.use('/gfs',express.static(globalFsPath));
+app.use('/efs',express.static(efsPath));
 app.use('/node_modules',express.static('node_modules'));
 app.use('/layout',express.static('views/partials'));
 app.use(formidable());
@@ -37,11 +40,10 @@ app.use(formidable());
 app.set('view engine', 'ejs');
 
 //** SET GLOBAL ROUTES */
-const globalRoutes=require(globalFsPath+'/routes')(app);
-const googleRoutes = require(globalFsPath + '/google-services/routes')(app);
-const paymentRoutes=require(globalFsPath+'/payment/routes')(app);
-const accountRoutes=require(globalFsPath+'/account/routes')(app);
-const awsRoutes = require(globalFsPath + '/aws/routes')(app);
+const googleRoutes = require(efsPath + '/google/routes')(app);
+const paymentRoutes=require(efsPath+'/payment/routes')(app);
+const accountRoutes=require(efsPath+'/accountManager/routes')(app);
+const awsRoutes = require(efsPath + '/aws/routes')(app);
 
 //** MIDDLEWARE USER LOGIN */
 app.use('/',async function(req,res,next){
@@ -50,6 +52,8 @@ app.use('/',async function(req,res,next){
         //console.log(req);
         //-- get the user info from token ---
         app.locals.user_info=await userToken.verifyToken(req,res);//checks if user token is set
+        app.locals.specialties=await _specialties.getAll();
+        app.locals.countries=countries;
 
         if(typeof app.locals.user_info==="undefined" || Object.keys(app.locals.user_info).length===0){
             throw "not-logged-in";
@@ -63,7 +67,7 @@ app.use('/',async function(req,res,next){
 
         //-- get countries --   
         app.locals.user_info.country_dial_code=countries.filter(c=>c._id===app.locals.user_info.country_code)[0].dial_code;
-        app.locals.user_info.specialty=specialties.filter(s=>s._id===app.locals.user_info.specialty)[0];
+        app.locals.user_info.specialty=app.locals.specialties.filter(s=>s._id===app.locals.user_info.specialty)[0];
 
         if("personal_address_country" in app.locals.user_info && app.locals.user_info.personal_address_country.length>0){
             app.locals.user_info.personal_address_country=countries.filter(c=>c._id===app.locals.user_info.personal_address_country)[0];
@@ -90,7 +94,8 @@ app.use('/',async function(req,res,next){
         process.env["user_info"]=JSON.stringify(app.locals.user_info);
 
         //Serving static files using the static express path from the server
-        app.use('/fs',express.static(path.join(`../filesystem/${app.locals.user_info.registration_number}`)));
+        const fsPath = `../efs/filesystem`;
+        app.use('/fs',express.static(path.join(`${fsPath}/${app.locals.user_info.registration_number}`)));
 
         next();
         
@@ -99,16 +104,15 @@ app.use('/',async function(req,res,next){
 
         //--- if the error is account-not-verified then navigate to otp verificatin page 
         if(error==='account-not-verified'){
-            res.redirect(`${globalSettings.website}/otp-verification/${app.locals.user_info.verification_number}`);
+            res.redirect(`${domains.web}/otp-verification/${app.locals.user_info.verification_number}`);
         
         }else{
             let param=encodeURIComponent(`${req.headers.host}${req.path}`);
-            res.redirect(`${globalSettings.website}/login?goto=${param}`);
+            res.redirect(`${domains.web}/login?goto=${param}`);
         }
         
     }
     
-
 });
 
 app.get('/',(req,res)=>{
@@ -148,9 +152,6 @@ app.get('/enroll/:accounttype/:accountid',(req,res)=>{
 app.get('/edit/:edititem',(req,res)=>{
 
     let itemname = req.params.edititem.toLowerCase(); 
-
-    app.locals.countries=countries;
-    app.locals.specialties=specialties;
 
     app.render(`partials/editForms/${itemname}`,app.locals,function(err, html){
         console.log(err);

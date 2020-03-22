@@ -1,5 +1,5 @@
 import {healthcareProviderActions as actions} from './healthcare-provider-form-actions.js';
-import {formjs} from '/gfs/utilities/lib/js/form.js';
+import {formjs} from '/efs/utilities/lib/js/form.js';
 
 var userPaymentInformation={};
 var userInfo={};
@@ -123,7 +123,7 @@ const setUserCreditCardsLayout=function(data){
     let html="";
     if(data==="customer-not-found"){
         html=`<div class="mt-3 text-center">
-            <img style="width:100px;" src="/gfs/images/payments/payment_method.png">
+            <img style="width:100px;" src="/efs/core/images/payments/payment_method.png">
             <div class="mt-3">
                 <div class="text-medium">No Payment Methods are associated to your account. </div>
                 <div class="btn btn-primary mt-2 add-payment-method switch-pg-section"

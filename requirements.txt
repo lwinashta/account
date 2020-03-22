@@ -1,4 +1,0 @@
-pending: 
-1. add/delete/ make default payment method
-2. update susbscription
-3. show and download apps 

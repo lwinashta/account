@@ -300,7 +300,7 @@ const setAppLayout = function (info) {
         return `<div class="p-3 mt-3 bg-white rounded shadow subscription-tile position-relative border" itemid="${info._id}" itemtype="${info.type}">
             <div>
                 <div class="d-inline-block mr-2 align-top">
-                    <img style="width:30px" class="mx-auto" src="/gfs/apps/icons/${info._id}.png">
+                    <img style="width:30px" class="mx-auto" src="/efs/core/apps/icons/${info._id}.png">
                 </div>
                 <div class="d-inline-block align-top">
                     <div class="text-capitalize">${info.name}</div>
@@ -325,7 +325,7 @@ const setAppLayout = function (info) {
 }
 
 const setAppDetails=function(appid,container){
-     $.get(`/gfs/apps/details/${appid}.html`).done(details=>{
+     $.get(`/efs/core/apps/details/${appid}.html`).done(details=>{
          $(container)
             .find(`.subscription-tile[itemid="${appid}"]`)
             .find('.app-details').html(details); 
@@ -389,7 +389,7 @@ const setPackages=function(){
 //********************** */
 //*** pop ups */
 const showNoPaymentMethodPopUp = function () {
-    let html = `<div class="p-2 text-center"><img style="width:100px;" src="/gfs/images/payments/payment_method.png"></div>
+    let html = `<div class="p-2 text-center"><img style="width:100px;" src="/efs/core/images/payments/payment_method.png"></div>
                 <b class="mt-2">No Payment Method found</b>
                 <div class="mt-2">
                     Click 
@@ -492,7 +492,7 @@ const showConfirmationChargePopUp=function(info){
 
         let html=`<div class="text-center p-2 mt-2">
             <div>
-                <img src="/gfs/apps/icons/${info._id}.png" style="width:80px">
+                <img src="/efs/core/apps/icons/${info._id}.png" style="width:80px">
             </div>
             <div class="mt-2 text-medium">${info.name} (${info.type})</div>
         </div>
@@ -644,7 +644,7 @@ const showcancelGatewaySubscriptionPopUp=function(subscriptionInfo,appInfo,prora
 
         let html=`<div class="text-center p-2 mt-2">
             <div>
-                <img src="/gfs/apps/icons/${appInfo._id}.png" style="width:80px">
+                <img src="/efs/core/apps/icons/${appInfo._id}.png" style="width:80px">
             </div>
             <div class="mt-2 text-medium">${appInfo.name} (${appInfo.type})</div>
         </div>
@@ -800,7 +800,7 @@ popup.onScreen("Loading...");
 $.post('/account/api/user/verifytoken').then(user => {
     userInfo=user;
 
-    return $.when(runtime.getIpLocation(),getUserPaymentInformation(),$.getJSON("/gfs/apps/apps.json"),getPlans());
+    return $.when(runtime.getIpLocation(),getUserPaymentInformation(),$.getJSON("/efs/core/apps/apps.json"),getPlans());
 
 }).then((ipLocation,userPym,sysApps,plans) => {
 

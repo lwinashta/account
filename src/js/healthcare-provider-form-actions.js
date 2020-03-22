@@ -1,12 +1,12 @@
 import {
     listjs
-} from '/gfs/utilities/lib/js/list.js';
+} from '/efs/utilities/lib/js/list.js';
 
 import {
     formjs,
     bindFormControlEvents,
     insertValues
-} from '/gfs/utilities/lib/js/form.js';
+} from '/efs/utilities/lib/js/form.js';
 
 const _bindEvents=new bindFormControlEvents();
 

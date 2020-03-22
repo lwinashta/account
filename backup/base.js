@@ -18,7 +18,7 @@ export var runtime={
         "name":"Enterprise Account - Monthly Subscription"
     }],
     "getSysSettings":()=>{
-        return $.getJSON('/gfs/sys-settings/config/config.json');
+        return $.getJSON('/efs/sys-settings/config/config.json');
     },
     "getUserInfo":()=>{
         return $.post('/api/account/user/verifytoken')

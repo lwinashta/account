@@ -1,5 +1,5 @@
-@import url("/gfs/styles/core.css");
-@import url("/gfs/styles/app-layout.css");
+@import url("/efs/core/styles/core.css");
+@import url("/efs/core/styles/app-layout.css");
 
 /* summary page */
 #summary .profile-img{

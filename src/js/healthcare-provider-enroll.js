@@ -1,7 +1,7 @@
 //import {runtime} from '../base/base.js';
 import {healthcareProviderActions as actions} from './healthcare-provider-form-actions.js';
-import {formjs, bindFormControlEvents, insertValues} from '/gfs/utilities/lib/js/form.js';
-import {listjs} from '/gfs/utilities/lib/js/list.js';
+import {formjs, bindFormControlEvents, insertValues} from '/efs/utilities/lib/js/form.js';
+import {listjs} from '/efs/utilities/lib/js/list.js';
 
 //*** INITIALIZE VARIABLES */
 const _formjs=new formjs();

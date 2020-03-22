@@ -4,9 +4,9 @@ import {
 
 import {
     listjs
-} from '/gfs/utilities/lib/js/list.js';
+} from '/efs/utilities/lib/js/list.js';
 
-import {formjs, insertValues} from '/gfs/utilities/lib/js/form.js';
+import {formjs, insertValues} from '/efs/utilities/lib/js/form.js';
 
 import {healthcareProviderActions as actions} from './healthcare-provider-form-actions.js';
 

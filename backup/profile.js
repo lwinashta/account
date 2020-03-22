@@ -233,7 +233,7 @@ $.post('/api/global/account/user/bytoken').then(function(userinfo){
     console.log(userinfo);
     runtime.userInfo=userinfo;
     
-    return $.get('/gfs/utilities/countries.json');
+    return $.get('/efs/utilities/countries.json');
     
 }).then(function(countries){
 

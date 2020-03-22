@@ -2,7 +2,7 @@ export var runtime={
     "userInfo":{},
     "months":['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'],
     "getSysSettings":()=>{
-        return $.getJSON('/gfs/sys-settings/config/config.json');
+        return $.getJSON('/efs/core/config/config.json');
     },
     "getUserInfo":()=>{
         return $.post('/account/api/user/verifytoken');
