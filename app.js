@@ -5,14 +5,16 @@ const express = require('express');
 const path=require('path');
 
 const userToken=require('../efs/accountManager/lib/token'); 
-const efsPaths = require("../efs/core/config/efspath.json");
-const domains = require("../efs/core/config/domains.json");
 const countries=require('../efs/utilities/lib/lists/countries.json');
 const degrees=require('../efs/utilities/lib/lists/medical-degrees.json');
 const councils=require('../efs/utilities/lib/lists/medical-councils.json');
 const languages=require('../efs/utilities/lib/lists/languages.json');
 
 const specialties=require('../efs/healthcare/lib/specialties');
+
+const config = require("../efs/core/config/config.json");
+const domains = config.domains;
+const efsPaths=config.efsPaths;
 
 //const parser=require('body-parser');
 
@@ -104,11 +106,11 @@ app.use('/',async function(req,res,next){
 
         //--- if the error is account-not-verified then navigate to otp verificatin page 
         if(error==='account-not-verified'){
-            res.redirect(`${domains.web}/otp-verification/${app.locals.user_info.verification_number}`);
+            res.redirect(`${domains[domains.domain].web}/otp-verification/${app.locals.user_info.verification_number}`);
         
         }else{
             let param=encodeURIComponent(`${req.headers.host}${req.path}`);
-            res.redirect(`${domains.web}/login?goto=${param}`);
+            res.redirect(`${domains[domains.domain].web}/login?goto=${param}`);
         }
         
     }
