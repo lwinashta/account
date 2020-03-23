@@ -106,11 +106,11 @@ app.use('/',async function(req,res,next){
 
         //--- if the error is account-not-verified then navigate to otp verificatin page 
         if(error==='account-not-verified'){
-            res.redirect(`${domains[domains.domain].web}/otp-verification/${app.locals.user_info.verification_number}`);
+            res.redirect(`//${domains[config.host][config.env].web}/otp-verification/${app.locals.user_info.verification_number}`);
         
         }else{
             let param=encodeURIComponent(`${req.headers.host}${req.path}`);
-            res.redirect(`${domains[domains.domain].web}/login?goto=${param}`);
+            res.redirect(`//${domains[config.host][config.env].web}/login?goto=${param}`);
         }
         
     }
