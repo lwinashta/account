@@ -24,6 +24,22 @@
                 </div>
             </div>
         </div>
+
+        <div class="form-group">
+            <label for="medical-degree-year-of-completion">Year of Completion <i class="small text-muted">(Optional)</i></label>
+            <select name="medical_degree_year_of_completion" 
+                id="medical-degree-year-of-completion" 
+                class="form-control years-dropdown entry-field" 
+                placeholder="Year of Completion"></select>
+        </div>
+    
+        <div class="form-group">
+            <label for="medical-years-of-experience" >Years of Experience <i class="small text-muted">(Optional)</i></label>
+            <input type="number"  name="medical_years_of_experience" 
+                id="medical-years-of-experience"
+                class="form-control entry-field" placeholder="Years of Experience" />
+        </div>
+
         <div class="mt-2 text-right">
             <div class="btn btn-primary d-inline-block pointer done-button">
                 <label class="m-0 pointer">Done</label>
@@ -33,7 +49,7 @@
 
     <script type="module">
 
-        import {healthcareProviderActions as actions} from '../../../../src/js/healthcare-provider-form-actions.js';
+        import {healthcareProviderActions as actions} from '/src/js/healthcare-provider-form-actions.js';
         import {formjs,insertValues} from '/efs/utilities/lib/js/form.js';
 
         let _formjs=new formjs();
@@ -41,6 +57,9 @@
 
         let form=$('#edit-medical-degree');
         let userid=$(form).attr('userid');
+
+        //-- Year Drop down --- 
+        actions.bindFields.setYearDropDownField($(form).find('.years-dropdown'));
         
         actions.bindFields.setMedicalDegressComboField($('#medical-degree-search-container')).then(r=>{
             

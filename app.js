@@ -133,23 +133,23 @@ app.get('/payments',(req,res)=>{
     res.render(`pages/payment`);
 });
 
-app.get('/enroll/:accounttype/:accountid',(req,res)=>{
+// app.get('/enroll/:accounttype/:accountid',(req,res)=>{
 
-    let accounttype = req.params.accounttype.toLowerCase(); 
-    let accountid = req.params.accountid.toLowerCase(); 
+//     let accounttype = req.params.accounttype.toLowerCase(); 
+//     let accountid = req.params.accountid.toLowerCase(); 
 
-    switch (accounttype) {
-        case 'healthcare_provider':
-            //get the provider information using the account id
-            res.render(`pages/enrollment/healthcare-provider`);
-            break;
+//     switch (accounttype) {
+//         case 'healthcare_provider':
+//             //get the provider information using the account id
+//             res.render(`pages/enrollment/healthcare-provider`);
+//             break;
         
-        case 'healthcare_facility':
-                break;
-        default:
-            break;
-    }
-});
+//         case 'healthcare_facility':
+//                 break;
+//         default:
+//             break;
+//     }
+// });
 
 app.get('/edit/:edititem',(req,res)=>{
 

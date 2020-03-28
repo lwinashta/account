@@ -4,9 +4,12 @@ import {
 
 import {formjs} from '/efs/utilities/lib/js/form.js';
 import {managePractices} from './manage-practices.js';
+import {providerQualification} from './provider-qualification-details.js';
+
 
 const _formjs=new formjs();
 const _managePractice=new managePractices();
+const _providerQualificationEntry=new providerQualification();
 
 /** UPLOAD PROFILE IMAGE */
 const uploadProfileImg = () => {
@@ -93,7 +96,15 @@ $('document').ready(function () {
            
         });
 
-        //load practices 
+        //PROVIDER qualification 
+        if($('#provider-qualification-entry-container').length>0){
+            _providerQualificationEntry.container=$('#provider-qualification-container');
+            _providerQualificationEntry.init().then(d=>{
+                console.log('qualification entry binded');
+            });
+        }
+        
+        //Ppractices 
         _managePractice.container=$('#practices-outer-container');
         _managePractice.init().then(d=>{
             console.log('practices loaded');

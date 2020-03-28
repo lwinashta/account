@@ -34,7 +34,7 @@ export class managePractices {
 
         self.practices = await self.getUserPractices();
 
-        console.log(self.practices);
+        //console.log(self.practices);
 
         let html = "";
         self.practices.forEach(p => {

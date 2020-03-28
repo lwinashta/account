@@ -19,6 +19,22 @@
                 class="form-control entry-field" data-required="1" placeholder="Medical Registration Number">
 
         </div>
+
+        <div class="form-group">
+            <div>
+                <label for="medical-registration-year" data-required="1">Registration Year </label>
+                <div class="ctooltip"
+                    content="The medical registration year is not viewable to users or patients. 
+                    The medical registration helps us validate your profile and proof of right to practice.">
+                    <i class="material-icons align-middle">info</i>
+                </div>
+            </div>
+            <select  name="medical_registration_year" 
+                id="medical-registration-year" data-required="1"
+                class="form-control years-dropdown entry-field" 
+                placeholder="Year of Medical Registration"></select>
+        </div>
+
         <div class="form-group mt-2">
             <div id="medical-registration-file-container" name="medical_registration_file"
                 class="mt-2 p-2 position-relative text-center droppable-file-container entry-field" 
@@ -57,6 +73,7 @@
 
         let form=$('#edit-medical-registration-number');
 
+        import {healthcareProviderActions as actions} from '/src/js/healthcare-provider-form-actions.js';
         import {formjs, bindFormControlEvents, insertValues} from '/efs/utilities/lib/js/form.js';
 
         let _formjs=new formjs();
@@ -79,6 +96,9 @@
 
             });
         };
+
+        //-- Year Drop down --- 
+        actions.bindFields.setYearDropDownField($(form).find('.years-dropdown'));
 
         console.log(_bindEvents.formData);
 
