@@ -46,6 +46,7 @@ const googleRoutes = require(efsPath + '/google/routes')(app);
 const paymentRoutes=require(efsPath+'/payment/routes')(app);
 const accountRoutes=require(efsPath+'/accountManager/routes')(app);
 const awsRoutes = require(efsPath + '/aws/routes')(app);
+const healthcareRoutes = require(efsPath + '/healthcare/routes')(app);
 
 //** MIDDLEWARE USER LOGIN */
 app.use('/',async function(req,res,next){

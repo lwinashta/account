@@ -1,5 +1,9 @@
 <div id="app-left-pane-container">
     
+    <div class="push-right mobileview-container pointer" id="hide-left-pane-mobile-button">
+        <i class="material-icons">format_indent_decrease</i>
+    </div>
+
     <a href="/">
         <div id="app-left-pane-logo" class="bor-B-g-1px p-2">
             <img src="/efs/core/images/ownInventionIcon.png" style="width:30px">
@@ -47,4 +51,11 @@
         <i class="material-icons align-middle">alarm_on</i>
         <div class="d-inline-block ml-2 small">Tasks</div>
     </div> -->
+
+    <script>
+        $('#hide-left-pane-mobile-button').click(function () {
+            $('#app-left-pane-container').slideUp(100);
+        });
+    </script>
+    
 </div>

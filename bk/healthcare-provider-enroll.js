@@ -1,5 +1,5 @@
 //import {runtime} from '../base/base.js';
-import {healthcareProviderActions as actions} from './healthcare-provider-form-actions.js';
+import {healthcareProviderActions as actions} from '../src/js/healthcare-provider-form-actions.js';
 import {formjs, bindFormControlEvents, insertValues} from '/efs/utilities/lib/js/form.js';
 import {listjs} from '/efs/utilities/lib/js/list.js';
 

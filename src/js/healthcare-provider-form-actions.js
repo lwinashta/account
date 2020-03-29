@@ -152,7 +152,7 @@ let providerActions={};
 
                     if(!('specialties' in thisModule.lists)){
                     
-                        let specialties = await thisModule._lists.getMedicalSpecialties();
+                        let specialties = await $.getJSON('/healthcare/api/specialties/getall');
                         specialties = specialties.sort(function (a, b) {
                             if (a.name > b.name) return 1;
                             return -1;

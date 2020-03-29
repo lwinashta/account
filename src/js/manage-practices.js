@@ -201,7 +201,8 @@ export class managePractices {
             const _formjs = new formjs();
 
             //-- validate the form 
-            let validate = _formjs.validateForm(form);
+            let validate = _formjs.validateForm(form,'entry-field');
+            validate+=_formjs.validateForm($(form).find('.multiple-data-entry'),'each-entry-field');
 
             if (validate > 0) throw "validation error";
 
@@ -248,6 +249,7 @@ export class managePractices {
 
         } catch (error) {
             console.error(error);
+            throw "validation error";
         }
 
     }
@@ -342,7 +344,8 @@ export class managePractices {
 
                 $(form).find('.done-button').click(function(){
                     popup.onScreen("Updating practice");
-                   self.updatePracticeInformation(info[0],form).then(d=>{
+                    
+                    self.updatePracticeInformation(info[0],form).then(d=>{
                        window.location.reload();
 
                    }).catch(err=>{
@@ -381,7 +384,8 @@ export class managePractices {
                         window.location.reload();
  
                     }).catch(err=>{
-                        console.log(error);
+                        console.log(err);
+                        popup.remove();
                     });
  
                  });
