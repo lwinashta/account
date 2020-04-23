@@ -211,7 +211,7 @@ export class managePractices {
 
             //get user id
             let userid = $(form).attr('userid');
-            console.log(userid);
+            //console.log(userid);
             // --- get user information --- 
             let userInfo = await $.getJSON('/account/api/user/get', {
                 "_id": userid
@@ -237,6 +237,7 @@ export class managePractices {
             //get updated cordinates of facility
             let getCordinates = await self.getCordinates(_formjs.formData);
             _formjs.formData["medical_facility_cordinates.$object"] = JSON.stringify(getCordinates);
+            _formjs.formData.registration_number=userInfo.registration_number;
 
             let healthcareFacility = await self.sendAjaxReq("/account/api/heathcarefacility/create", _formjs.convertJsonToFormdataObject(_formjs.formData));
 

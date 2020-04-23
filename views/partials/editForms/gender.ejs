@@ -1,0 +1,76 @@
+<div id="edit-gender" class="form" userid="<%=user_info._id%>">
+
+    <h3 class="mt-2">
+        <div class="pointer d-inline-block mr-2 btn-rounded align-middle bg-default cancel-go-back"
+            style=" line-height: 42px;width: 40px;height: 40px;">
+            <i class="material-icons align-middle text-white">keyboard_arrow_left</i>
+        </div>
+        <span>Gender</span>
+    </h3>
+
+    <div class="tile white-tile rounded mt-2">
+        <p class="text-muted">
+            Updating the gender helps the patients to effectively search for doctors per their need
+        </p>
+        <div class="form-group mt-2">
+            <select id="gender" name="gender" 
+                class='form-control gender-option-list entry-field'
+                data-required="1" placeholder="Gender">
+                <option value=""></option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+            </select>
+        </div>
+        <div class="mt-2 text-right pointer done-button">
+            <div class="btn btn-primary">
+                <label class="m-0 pointer">Done</label>
+            </div>
+            <div class="btn btn-link ml-3 cancel-go-back">
+                <label class="m-0 pointer">Cancel</label>
+            </div>
+        </div>
+    </div>
+    <script type="module">
+        
+        import {healthcareProviderActions as actions} from '/src/js/healthcare-provider-form-actions.js';
+        import {formjs} from '/efs/utilities/lib/js/form.js';
+        
+        let _formjs=new formjs();
+        
+        //send the update information to the server 
+        $('#edit-gender .done-button').click(function(){
+            let form=$(this).closest('.form');
+            try {
+
+                //-- validate form -- 
+                let errCount=_formjs.validateForm($(form),'entry-field');
+                
+                if(errCount===0){
+
+                    let data=new FormData();
+
+                    data.append("gender",$('#edit-gender select[name="gender"]').val());
+                    data.append("_id",$('#edit-gender').attr('userid'));
+
+                    $.ajax({
+                        "url": '/account/api/user/update',
+                        "processData": false,
+                        "contentType": false,
+                        "data": data,
+                        "method": "POST"
+                    }).done(res=>{
+                        window.location.reload();
+                    });
+
+                }else{
+                    throw "validation error";
+                }
+
+            } catch (error) {
+                console.error(error);
+            }
+            
+        });
+        
+    </script>
+</div>
