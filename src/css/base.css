@@ -1,5 +1,6 @@
 @import url("/efs/core/styles/core.css");
 @import url("/efs/core/styles/app-layout.css");
+@import url('/efs/core/images/fontawesome/css/all.css');
 
 /* summary page */
 #summary .profile-img{

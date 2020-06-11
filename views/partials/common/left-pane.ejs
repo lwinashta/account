@@ -1,5 +1,5 @@
 <div id="app-left-pane-container">
-    
+
     <div class="push-right mobileview-container pointer" id="hide-left-pane-mobile-button">
         <i class="material-icons">format_indent_decrease</i>
     </div>
@@ -12,50 +12,81 @@
             </div>
         </div>
     </a>
-
-    <a href="/">
+    <div>
+        <a href="/">
+            <div class="p-2 app-left-pane-menu-item">
+                <i class="fas fa-user"></i>
+                <div class="d-inline-block ml-2 small">Profile</div>
+            </div>
+        </a>
         <div class="p-2 app-left-pane-menu-item">
-            <i class="material-icons align-middle">person</i>
-            <div class="d-inline-block ml-2 small">Summary</div>
+            <i class="fas fa-fingerprint"></i>
+            <div class="d-inline-block ml-2 small">Security</div>
         </div>
-    </a>
+        <% if ('user_type' in userInfo && userInfo.user_type.indexOf('healthcare-provider')>-1) {%>
+        <a href="/subscriptions">
+            <div class="p-2 app-left-pane-menu-item">
+                <i class="fas fa-user"></i>
+                <div class="d-inline-block ml-2 small">Subscriptions</div>
+            </div>
+        </a>
+        <a href="/payments">
+            <div class="p-2 app-left-pane-menu-item">
+                <i class="material-icons align-middle">credit_card</i>
+                <div class="d-inline-block ml-2 small">Payment Methods</div>
+            </div>
+        </a>
+        <% } %>
 
-    <a href="/subscriptions">
+        <% if ('user_type' in userInfo && userInfo.user_type.indexOf('patient')>-1) {%>
+        <a href="/#">
+            <div class="p-2 app-left-pane-menu-item">
+                <i class="fas fa-vial"></i>
+                <div class="d-inline-block ml-2 small">My Tests</div>
+            </div>
+        </a>
+        <a href="/#">
+            <div class="p-2 app-left-pane-menu-item">
+                <i class="fas fa-notes-medical"></i>
+                <div class="d-inline-block ml-2 small">My Visits</div>
+            </div>
+        </a>
+        <a href="/#">
+            <div class="p-2 app-left-pane-menu-item">
+                <i class="fas fa-prescription-bottle-alt"></i>
+                <div class="d-inline-block ml-2 small">My Medications</div>
+            </div>
+        </a>
+        <% } %>
+
         <div class="p-2 app-left-pane-menu-item">
-            <i class="material-icons align-middle">touch_app</i>
-            <div class="d-inline-block ml-2 small">Subscriptions</div>
+            <i class="far fa-calendar-check"></i>
+            <div class="d-inline-block ml-2 small">My Appointments</div>
         </div>
-    </a>
-    
-    <!-- <div class="p-2 app-left-pane-menu-item">
-        <i class="material-icons align-middle">web</i>
-        <div class="d-inline-block ml-2 small">Website</div>
-    </div> -->
-    <div class="p-2 app-left-pane-menu-item">
-        <i class="material-icons align-middle">fingerprint</i>
-        <div class="d-inline-block ml-2 small">Security</div>
+
+        <!-- <div class="p-2 app-left-pane-menu-item">
+            <i class="material-icons align-middle">web</i>
+            <div class="d-inline-block ml-2 small">Website</div>
+        </div> -->
+
+
+
+
+        <!-- <div class="p-2 app-left-pane-menu-item">
+            <i class="material-icons align-middle">alarm</i>
+            <div class="d-inline-block ml-2 small">Appointments</div>
+        </div>
+        <div class="p-2 app-left-pane-menu-item">
+            <i class="material-icons align-middle">alarm_on</i>
+            <div class="d-inline-block ml-2 small">Tasks</div>
+        </div> -->
+
     </div>
-
-    <a href="/payments">
-        <div class="p-2 app-left-pane-menu-item">
-            <i class="material-icons align-middle">credit_card</i>
-            <div class="d-inline-block ml-2 small">Payment Methods</div>
-        </div>
-    </a>
-
-    <!-- <div class="p-2 app-left-pane-menu-item">
-        <i class="material-icons align-middle">alarm</i>
-        <div class="d-inline-block ml-2 small">Appointments</div>
-    </div>
-    <div class="p-2 app-left-pane-menu-item">
-        <i class="material-icons align-middle">alarm_on</i>
-        <div class="d-inline-block ml-2 small">Tasks</div>
-    </div> -->
 
     <script>
         $('#hide-left-pane-mobile-button').click(function () {
             $('#app-left-pane-container').slideUp(100);
         });
     </script>
-    
+
 </div>

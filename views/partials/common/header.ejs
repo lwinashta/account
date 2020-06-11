@@ -1,44 +1,11 @@
-<header id="app-header" class="border-bottom p-2 bg-white">
+<header id="app-header" class="border-bottom bg-white">
     
     <div class="mobileview-container float-left pointer" id="show-left-pane-mobile-button">
         <i class="material-icons">format_indent_increase</i>
     </div>
 
-    <div id="app-header-user-info-container"
-        class="float-right d-inline-block position-relative hide-off-focus-outer-container">
-
-        <div id="app-header-user-img" class="pointer" onclick="$('#app-header-user-menu').show();">
-            <% if('personal_profile_image' in user_info && user_info.personal_profile_image.length>0){ %>
-            <img src="<%=user_info.personal_profile_image[0].location%>" />
-            <% } else { %>
-            <img src="/efs/core/images/noimage-icon-x225.png" />
-            <% } %>
-        </div>
-
-        <div id="app-header-user-menu" class="shadow border hide-off-focus-inner-container">
-
-            <div class="p-2 app-header-menu-item">
-                <i class="material-icons align-middle">person</i>
-                <div class="d-inline-block small"> Manage Account</div>
-            </div>
-
-            <div class="p-2 app-header-menu-item">
-                <i class="material-icons align-middle">apps</i>
-                <div class="d-inline-block small"> Manage Subscriptions</div>
-            </div>
-
-            <div class="p-2 app-header-menu-item">
-                <i class="material-icons align-middle">alarm</i>
-                <div class="d-inline-block small"> Manage Appointments</div>
-            </div>
-
-            <div class="p-2 app-header-menu-item border-top" id="app-header-logout">
-                <i class="material-icons align-middle">logout</i>
-                <div class="d-inline-block small"> Logout</div>
-            </div>
-
-        </div>
-
+    <div class="float-right display-inline-block">
+        <% include ../../../../efs/utilities/layouts/login-header-button %>
     </div>
     <script>
         $('#show-left-pane-mobile-button').click(function () {
