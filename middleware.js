@@ -2,6 +2,8 @@ const path=require('path');
 const express = require('express');
 const session=require('express-session');
 
+const formidable = require('express-formidable');
+
 const googleRouter=require('../efs/google/router');
 const awsRouter=require('../efs/aws/router');
 const appointmentRouter=require('../efs/appointments/router');
@@ -29,6 +31,8 @@ module.exports = function (app) {
     const fsPath = `../efs/filesystem`;
     app.use(`/fs`, express.static(path.join(fsPath)));
 
+    app.use(formidable());
+
     //app.use(session({secret:'secretkey',saveUninitialized:true,resave:true,cookie:{maxAge:60000,domain:'locahost'}}));
     app.use(session({ secret: 'secretkey', saveUninitialized: true, resave: true }));
 
@@ -41,7 +45,7 @@ module.exports = function (app) {
         try {
 
             app.locals.userInfo=await userToken.verifyToken(req,res);//checks if user token is set
-
+            
             if(typeof app.locals.userInfo==="undefined" || Object.keys(app.locals.userInfo).length===0){
                 throw "not-logged-in";
             }
@@ -74,7 +78,5 @@ module.exports = function (app) {
     app.use('/aws',awsRouter);
     app.use('/appointment',appointmentRouter);
     app.use('/',accountRouter);
-
-    const accountManagementRoutes=require(efsPath+'/accountManager/routes')(app);
 
 }
