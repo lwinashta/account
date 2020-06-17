@@ -210,16 +210,6 @@ export const ManagePhoneNumbers = () => {
 
     const handleDeleteContactNumber=function(_id){
 
-        let indx=params.userInfo.user_phone_numbers.findIndex(c=>c._id===_id);
-        let contacts=params.userInfo.user_phone_numbers.splice(indx,1);
-
-        let data={
-            "user_phone_numbers":params.userInfo.user_phone_numbers,
-            "_id": params.userInfo._id
-        }
-
-        let fdata = _formjs.convertJsonToFormdataObject(data);
-
         popup.messageBox({
             message: "Are you sure to remove this contact information?",
             buttons: [{
@@ -229,6 +219,16 @@ export const ManagePhoneNumbers = () => {
                     "callback": function () {
                         popup.remove(); //remove the confirmation pop up 
                         popup.onScreen("Deleting...");
+
+                        let indx=params.userInfo.user_phone_numbers.findIndex(c=>c._id===_id);
+                        let contacts=params.userInfo.user_phone_numbers.splice(indx,1);
+
+                        let data={
+                            "user_phone_numbers":params.userInfo.user_phone_numbers,
+                            "_id": params.userInfo._id
+                        }
+
+                        let fdata = _formjs.convertJsonToFormdataObject(data);
 
                         //verified and correct 
                         //Add the phone number to user contacts 

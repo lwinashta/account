@@ -1,6 +1,6 @@
 const process = require("process");
 const express = require('express');
-const user = require('../efs/accountManager/lib/user');
+const userToken=require('../efs/accountManager/lib/token'); 
 const fs=require('fs');
 const filesystem = require('../efs/utilities/lib/js/filesystem');
 const path=require('path');
@@ -40,21 +40,34 @@ accountRouter.get('/edit/:edititem',(req,res)=>{
 /**
  * IMAGE Source
  */
-accountRouter.get('/fs/:filename', (req, res) => {
+accountRouter.get('/fs/:fileid', (req, res) => {
     //get the information about the 
     //console.log(req.params.filename);
     let fi = new filesystem();
 
-    fi.getFileInfo({
-        filename: req.params.filename
-    }).then(info => {
+    //Get the file information and user information 
+    Promise.all([fi.getFileInfo({
+        "_id.$_id": req.params.fileid
+    }),userToken.verifyToken(req,res)]).then(values => {
+        
         //console.log(info);
+        let fileInfo=values[0];
+        let userInfo=values[1];
+
+        if(Object.keys(userInfo).length===0){
+            throw new Error("unauthorized user");
+        }
+
+        if(fileInfo.length===0){
+            throw new Error("file not found ");
+        }
 
         //find the req-number
-        let registration_number = info[0].destinationFolder.match(/reg-+\d+\-\d/)[0];
+        let registration_number = userInfo.registration_number;
+        let filename=fileInfo[0].file_name;
 
         //Serving static files using the static express path from the server
-        let src = path.join(__dirname, `${fsPath}/${registration_number}/${req.params.filename}`);
+        let src = path.join(__dirname, `${fsPath}/${registration_number}/${filename}`);
 
         if (fs.existsSync(src)) {
             res.sendFile(src);
@@ -64,7 +77,7 @@ accountRouter.get('/fs/:filename', (req, res) => {
 
     }).catch(err => {
         console.log(err);
-
+        res.status(404).send(err);
     });
 
 });

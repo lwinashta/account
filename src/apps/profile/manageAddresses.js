@@ -145,16 +145,6 @@ export const ManageAddresses = () => {
 
     const handleDeleteAddress=function(_id){
 
-        let indx=params.userInfo.user_addresses.findIndex(a=>a._id===_id);
-        let address=params.userInfo.user_addresses.splice(indx,1);
-
-        let data={
-            "user_addresses":params.userInfo.user_addresses,
-            "_id": params.userInfo._id
-        }
-
-        let fdata = _formjs.convertJsonToFormdataObject(data);
-
         popup.messageBox({
             message: "Are you sure to remove this Address?",
             buttons: [{
@@ -165,6 +155,18 @@ export const ManageAddresses = () => {
                         popup.remove(); //remove the confirmation pop up 
                         popup.onScreen("Deleting...");
 
+                        let indx=params.userInfo.user_addresses.findIndex(a=>a._id===_id);
+
+                        let addresses=[...params.userInfo.user_addresses];
+                        let address=addresses.splice(indx,1);
+
+                        let data={
+                            "user_addresses":addresses,
+                            "_id": params.userInfo._id
+                        }
+
+                        let fdata = _formjs.convertJsonToFormdataObject(data);
+                        
                         //verified and correct 
                         //Add the phone number to user contacts 
 

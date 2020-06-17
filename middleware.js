@@ -6,8 +6,10 @@ const formidable = require('express-formidable');
 
 const googleRouter=require('../efs/google/router');
 const awsRouter=require('../efs/aws/router');
+const pokitdotRouter=require('../efs/pokitdot/router');
 const appointmentRouter=require('../efs/appointments/router');
 const accountRouter=require('./router');
+const globalRouter=require('../efs/utilities/lib/router/global');
 
 const userToken=require('../efs/accountManager/lib/token'); 
 
@@ -76,7 +78,9 @@ module.exports = function (app) {
     /** Routers */
     app.use('/google',googleRouter);
     app.use('/aws',awsRouter);
+    app.use('/pokitdot',pokitdotRouter);
     app.use('/appointment',appointmentRouter);
+    app.use('/g',globalRouter);
     app.use('/',accountRouter);
 
 }
