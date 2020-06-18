@@ -1,26 +1,33 @@
 import React, { useEffect, useContext, useState } from "react";
 import { UserInfo } from "../../contexts/userInfo";
-import { Modal } from "@oi/reactcomponents";
+import { Modal,FilePreview } from "@oi/reactcomponents";
 import { formjs,insertValues,fileUploadField } from "@oi/utilities/lib/js/form";
 const relations = require('@oi/utilities/lib/lists/relationships.json');
+
+const _manageFiles=new fileUploadField();
+const _formjs=new formjs();
+const _insertValues=new insertValues();
 
 export const Insurance = () => {
 
     let params = useContext(UserInfo);
     let insuranceFormRef=React.createRef();
-    let _formjs=new formjs();
-    let _fileUpload=new fileUploadField();
-    let _insertValues=new insertValues();
-
+    
     const [userInsurances, setUserInsurances] = useState([]);
     const [insuraceFiles,setInsuranceFiles]=useState({});
+    const [deletedInsuranceFiles,setDeletedInsuranceFiles]=useState([]);
 
     const [showInsuranceEntryForm, setInsuranceEntryFormFlag] = useState(false);
+    const [insuranceEntryFormFieldsBinded,setInsuranceEntryFormFieldBindFlag]=useState(false);
+
     const [insuranceProviders, setInsuranceProviders] = useState([]);
     const [loader, setLoader] = useState(true);
     const [policyHolder, setPolicyHolder] = useState("");
 
     const [editInsuranceInfoId,setEditInsuranceId]=useState("");
+
+    const [showPreviewFilesModal,setShowPreviewFilesModalFlag]=useState(false);
+    const [previewFilesArray,setPreviewFilesArray]=useState([]);
 
     // const getInsuranceProviders = function () {
     //     return $.post('/pokitdot/tradingpartners');
@@ -51,26 +58,19 @@ export const Insurance = () => {
 
     //Triggered when form is open and closed
     useEffect(()=>{
-        if(showInsuranceEntryForm){
-            _fileUpload.container=$(insuranceFormRef.current).find('.droppable-file-container');
-            _fileUpload.multiple=true;
-            _fileUpload.name=$(insuranceFormRef.current).find('.droppable-file-container').attr('name');
-            _fileUpload.onFileSelectionCallback=function(file,allUploaded){
+        if(showInsuranceEntryForm && !insuranceEntryFormFieldsBinded){
+            _manageFiles.container=$(insuranceFormRef.current).find('.droppable-file-container');
+            _manageFiles.multiple=true;
+            _manageFiles.name=$(insuranceFormRef.current).find('.droppable-file-container').attr('name');
+            _manageFiles.onFileSelectionCallback=function(file,allUploaded){
                 setInsuranceFiles(allUploaded);
-            }
-            _fileUpload.bind();//bind file drg and drop 
+            };
+            _manageFiles.bind();//bind file drg and drop
+            setInsuranceEntryFormFieldBindFlag(true);  
         }
 
-        if(!showInsuranceEntryForm){
-            setEditInsuranceId("");
-            setInsuranceFiles({});
-        }
-
-    },[showInsuranceEntryForm]);
-
-    //Triggered in Edit Insurance
-    useEffect(()=>{
-        if(showInsuranceEntryForm && editInsuranceInfoId.length>0){
+        if(showInsuranceEntryForm && editInsuranceInfoId.length>0 && insuranceEntryFormFieldsBinded){
+            
             //get insurance information 
             let insuranceInfo=userInsurances.filter(insurance=>insurance._id===editInsuranceInfoId)[0];
             
@@ -78,8 +78,41 @@ export const Insurance = () => {
             _insertValues.container=$(insuranceFormRef.current);
             _insertValues.insert(insuranceInfo);
 
+            //insert files
+            _manageFiles.fileData=insuranceInfo.files;
+            _manageFiles.insertFiles();
+            _manageFiles.onFileDeletionCallback=function(deletedFile){
+                let insurances=[...userInsurances];
+
+                //find the file 
+                insurances.forEach(insurance=>{
+                    insurance.files.forEach((f,indx)=>{
+                        if(f._id===deletedFile._id){
+                            let removedFile=insurance.files.splice(indx,1);
+                        }
+                    })
+                });
+
+                setUserInsurances(insurances);
+            };
         }
-    },[showInsuranceEntryForm,editInsuranceInfoId])
+
+        //clean up 
+        if(!showInsuranceEntryForm){
+            setEditInsuranceId("");
+            setInsuranceFiles({});
+            setDeletedInsuranceFiles([]);
+            setInsuranceEntryFormFieldBindFlag(false);
+        }
+
+    },[showInsuranceEntryForm,editInsuranceInfoId,insuranceEntryFormFieldsBinded]);
+
+    //Triggered when user clicks on file preview 
+    useEffect(()=>{
+        if(!showPreviewFilesModal){
+            setPreviewFilesArray([]);
+        }
+    },[showPreviewFilesModal])
 
     const addNewUserInsuranceState=(data,files)=>{
         if(files.length>0){
@@ -89,11 +122,11 @@ export const Insurance = () => {
     }
 
     const updateUserInsuranceState=(data,files)=>{
-        if(files.length>0){
-            data.files=files;
-        }
         let insurances=[...userInsurances];
         let indx=insurances.findIndex(insurance=>insurance._id===data._id);
+
+        data.files=insurances[indx].files.concat(files);
+        
         insurances[indx]=data;
 
         setUserInsurances(insurances);
@@ -148,10 +181,6 @@ export const Insurance = () => {
         })
     }
 
-    const deleteInsuranceFile=(fileId)=>{
-        
-    }
-
     const handleSubmission=(e)=>{
         
         popup.onScreen("Saving Information ...");
@@ -171,7 +200,7 @@ export const Insurance = () => {
             });
 
             editInsuranceInfoId.length===0?data['deleted.$boolean']=false:null;
-            editInsuranceInfoId.length>0?data['_id.$_id']=editInsuranceInfoId:null;
+            editInsuranceInfoId.length>0?data._id=editInsuranceInfoId:null;
             editInsuranceInfoId.length===0?data['user_mongo_id.$_id']=params.userInfo._id:null;
 
             let insuranceFields={};
@@ -187,7 +216,7 @@ export const Insurance = () => {
                 }
 
             }).then((uploadedFiles=[])=>{
-                console.log(uploadedFiles);
+                //console.log(uploadedFiles);
                 if(editInsuranceInfoId.length>0){
                     updateUserInsuranceState(insuranceFields,uploadedFiles);
                 }else{
@@ -199,8 +228,8 @@ export const Insurance = () => {
 
                 popup.remove();
                 popup.onBottomCenter(`<div>
-                    <span class="material-icons text-success">check_circle</span> 
-                    <span class="ml-2">Insurance saved</span>
+                    <span class="material-icons text-success align-middle">check_circle</span> 
+                    <span class="ml-2 align-middle">Insurance saved</span>
                 </div>`);
             });
 
@@ -214,6 +243,11 @@ export const Insurance = () => {
     const handleInsuranceEdit=(_id)=>{
         setEditInsuranceId(_id);
         setInsuranceEntryFormFlag(true);
+    }
+
+    const handlePreviewInsuranceFile=(files)=>{
+        setShowPreviewFilesModalFlag(true);
+        setPreviewFilesArray(files);
     }
 
     return (<div>
@@ -232,7 +266,7 @@ export const Insurance = () => {
                                             <div>{insurance.insurance_member_id}</div>
                                             {
                                                 insurance.files.length>0?<div className="btn-link pointer ml-2">
-                                                    <div>{insurance.files.length} attachments</div>
+                                                    <div onClick={()=>{handlePreviewInsuranceFile(insurance.files)}}>{insurance.files.length} attachments</div>
                                                 </div>:null
                                             }
                                         </div>
@@ -356,6 +390,10 @@ export const Insurance = () => {
                     
                     </form>
                 </Modal> : null
+        }
+        {
+            showPreviewFilesModal?
+            <FilePreview files={previewFilesArray}></FilePreview>:null
         }
     </div>)
 }

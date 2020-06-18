@@ -67,7 +67,7 @@ accountRouter.get('/fs/:fileid', (req, res) => {
         let filename=fileInfo[0].file_name;
 
         //Serving static files using the static express path from the server
-        let src = path.join(__dirname, `${fsPath}/${registration_number}/${filename}`);
+        let src = path.join(__dirname, `${fsPath}/${registration_number}/files/${filename}`);
 
         if (fs.existsSync(src)) {
             res.sendFile(src);
