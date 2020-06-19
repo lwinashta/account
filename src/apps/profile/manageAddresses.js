@@ -246,7 +246,9 @@ export const ManageAddresses = () => {
                                         </div>
                                         <div className="push-right">
                                             <div className="d-inline-block btn-link pointer" onClick={()=>{handleEditAddress(addr._id)}}>Edit</div>
-                                            <div className="d-inline-block ml-2 btn-link text-success pointer" onClick={()=>{handleSetDefaultAddress(addr._id)}}>Set default</div>
+                                            {
+                                                !addr.default?<div className="d-inline-block ml-2 btn-link text-success pointer" onClick={()=>{handleSetDefaultAddress(addr._id)}}>Set default</div>:null
+                                            }
                                             <div className="d-inline-block ml-2 btn-link text-danger pointer" onClick={()=>{handleDeleteAddress(addr._id)}}>Delete</div>
                                         </div>
                                     </div>)

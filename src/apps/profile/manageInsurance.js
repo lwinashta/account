@@ -47,7 +47,7 @@ export const Insurance = () => {
             'user_mongo_id.$_id': params.userInfo._id,
             'deleted.$boolean': false
         }), getInsuranceProviders()]).then(values => {
-            console.log(values);
+            //console.log(values);
             setUserInsurances(values[0]);
             //setInsuranceProviders(values[1].data);
             setInsuranceProviders(values[1]);
@@ -104,7 +104,6 @@ export const Insurance = () => {
             setDeletedInsuranceFiles([]);
             setInsuranceEntryFormFieldBindFlag(false);
         }
-
     },[showInsuranceEntryForm,editInsuranceInfoId,insuranceEntryFormFieldsBinded]);
 
     //Triggered when user clicks on file preview 
@@ -148,7 +147,7 @@ export const Insurance = () => {
                 "data": fdata,
                 "method": "POST"
             }).then(response=>{
-                console.log(mode,response);
+                //console.log(mode,response);
                 if(mode==="create"){
                     resolve(response.ops[0]);
                 }else if(mode==="update"){
@@ -161,7 +160,7 @@ export const Insurance = () => {
     }
 
     const addInsuranceFiles=(files,insuranceInfo)=>{
-        console.log(files);
+        //console.log(files);
         let fileData=new FormData();
 
         Object.keys(files).forEach(key=>{
@@ -181,7 +180,7 @@ export const Insurance = () => {
         })
     }
 
-    const handleSubmission=(e)=>{
+    const handleEntrySubmission=(e)=>{
         
         popup.onScreen("Saving Information ...");
 
@@ -250,6 +249,70 @@ export const Insurance = () => {
         setPreviewFilesArray(files);
     }
 
+    const handleDeleteInsurance = (_id) => {
+
+        popup.messageBox({
+            message: `<p>Are you sure to delete the Insurance?</p>`,
+            buttons: [{
+                "label": "Yes",
+                "class": "btn-danger",
+                "id": "yes-button",
+                "callback": function () {
+                    popup.onScreen("Deleting...");
+                    let getInsuranceInfo = userInsurances.filter(insurance => insurance._id === _id)[0];
+                    let getInsuranceFiles = getInsuranceInfo.files;
+
+                    let setPromises = [];
+
+                    //Delete insurance Files first 
+                    getInsuranceFiles.forEach(file => {
+                        setPromises.push($.ajax({
+                            "url": '/g/deletefile',
+                            "data": JSON.stringify(file),
+                            "processData": false,
+                            "contentType": "application/json; charset=utf-8",
+                            "method": "POST"
+                        }));
+                    });
+
+                    setPromises.push($.ajax({
+                        "url": '/account/api/user/updateinsurance',
+                        "data": JSON.stringify({
+                            "_id":getInsuranceInfo._id,
+                            "deleted.$boolean":true
+                        }),
+                        "processData": false,
+                        "contentType": "application/json; charset=utf-8",
+                        "method": "POST"
+                    }));
+
+                    Promise.all(setPromises).then(values => {
+                        popup.remove();
+                        popup.onBottomCenter("Insurance Deleted");
+
+                        let insurances=[...userInsurances];
+                        let indx=insurances.findIndex(insurance=>insurance._id===_id);
+                        
+                        let removedInsurance=insurances.splice(indx,1);
+
+                        setUserInsurances(insurances);
+                    });
+
+                }
+            },
+            {
+                "label": "No",
+                "class": "btn-link",
+                "id": "no-button",
+                "callback": function () {
+                    popup.remove(); //remove the confirmation pop up 
+                }
+            }
+            ]
+        });
+
+    }
+
     return (<div>
         {
             loader ?
@@ -272,7 +335,7 @@ export const Insurance = () => {
                                         </div>
                                         <div className="push-right d-flex small">
                                             <div className="btn-link pointer" onClick={()=>{handleInsuranceEdit(insurance._id)}}>Edit</div>
-                                            <div className="btn-link ml-2 text-danger pointer">Delete</div>
+                                            <div className="btn-link ml-2 text-danger pointer" onClick={()=>{handleDeleteInsurance(insurance._id)}}>Delete</div>
                                         </div>
                                     </div>
                             }) :
@@ -291,7 +354,7 @@ export const Insurance = () => {
             showInsuranceEntryForm ?
                 <Modal header={<h3>Insurance Entry</h3>}
                     onCloseHandler={() => { setInsuranceEntryFormFlag(false) }}>
-                    <form ref={insuranceFormRef} onSubmit={(e)=>{handleSubmission(e)}} encType="multipart/form-data">
+                    <form ref={insuranceFormRef} onSubmit={(e)=>{handleEntrySubmission(e)}} encType="multipart/form-data">
                         <div className="form-group">
                             <label data-required="1">Insurance Provider</label>
                             <input name="insurance_provider" list="insurance-providers-datalist"
@@ -393,7 +456,7 @@ export const Insurance = () => {
         }
         {
             showPreviewFilesModal?
-            <FilePreview files={previewFilesArray}></FilePreview>:null
+            <FilePreview files={previewFilesArray} onCloseHandler={()=>{setShowPreviewFilesModalFlag(false)}}></FilePreview>:null
         }
     </div>)
 }

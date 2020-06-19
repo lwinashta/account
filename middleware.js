@@ -79,7 +79,7 @@ module.exports = function (app) {
     app.use('/google',googleRouter);
     app.use('/aws',awsRouter);
     app.use('/pokitdot',pokitdotRouter);
-    app.use('/appointment',appointmentRouter);
+    app.use('/appointments',appointmentRouter);
     app.use('/g',globalRouter);
     app.use('/',accountRouter);
 

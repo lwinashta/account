@@ -3,7 +3,7 @@ import { UserInfo } from "./../../contexts/userInfo";
 import { Demographics } from './demographics';
 import { Insurance } from './manageInsurance';
 import { Dependents } from './manageDependents';
-
+import {UpcomingAppointments} from './../appointments/upcomingAppointments'
 export const App = () => {
 
     const [userInfo,setUserInfo]=useState({});
@@ -74,7 +74,7 @@ export const App = () => {
                     }
                     <div className="tile white-tile mb-2">
                         <h4>My Upcoming Appointments</h4>
-                        <div>Test</div>
+                        <UpcomingAppointments></UpcomingAppointments>
                     </div>
                 </div>
             </div>
