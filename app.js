@@ -14,6 +14,4 @@ const efsPath = efsPaths[os];
 //** Middleware Settings */
 const middleware=require('./middleware')(accountApp);
 
-const accountManagementRoutes=require(efsPath+'/accountManager/routes')(accountApp);
-
 accountApp.listen(port,console.log("listening port "+port));

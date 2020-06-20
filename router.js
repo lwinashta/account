@@ -17,6 +17,10 @@ accountRouter.get('/',(req,res)=>{
     res.render(`pages/profile`);
 });
 
+accountRouter.get('/practice-management',(req,res)=>{
+    res.render(`pages/practice-management`);
+});
+
 accountRouter.get('/subscriptions',(req,res)=>{
     res.render(`pages/subscriptions/${accountRouter.locals.user_info.user_type}`);
 });

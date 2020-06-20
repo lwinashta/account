@@ -4,7 +4,6 @@ import { ManagePhoneNumbers } from "./managePhoneNumber";
 import { ManageAddresses } from "./manageAddresses";
 import {ManageEmail} from './manageEmail';
 
-
 export const Demographics = () => {
     
     return (
@@ -26,6 +25,7 @@ export const Demographics = () => {
         
                     <div className="mt-4 text-center">
                         <h4 className="text-capitalize">Welcome, {userInfo.first_name} {userInfo.last_name}</h4>
+                        <div className="small text-muted"> as <i className="text-capitalize">{'login_user_type' in userInfo? userInfo.login_user_type.replace(/\_/i," "):""}</i></div>
                     </div>
 
                     <div className="mt-2 p-2 border-bottom position-relative">

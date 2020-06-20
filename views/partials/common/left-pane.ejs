@@ -20,10 +20,16 @@
             </div>
         </a>
         <div class="p-2 app-left-pane-menu-item">
-            <i class="fas fa-fingerprint"></i>
-            <div class="d-inline-block ml-2 small">Security</div>
+            <i class="far fa-calendar-check"></i>
+            <div class="d-inline-block ml-2 small">My Appointments</div>
         </div>
-        <% if ('user_type' in userInfo && userInfo.user_type.indexOf('healthcare_provider')>-1) {%>
+        <% if ('login_user_type' in userInfo && userInfo.login_user_type=='healthcare_provider') {%>
+        <a href="/practice-management">
+            <div class="p-2 app-left-pane-menu-item">
+                <i class="fas fa-clinic-medical"></i>
+                <div class="d-inline-block ml-2 small">Practice Management</div>
+            </div>
+        </a>
         <a href="/subscriptions">
             <div class="p-2 app-left-pane-menu-item">
                 <i class="fas fa-user"></i>
@@ -32,13 +38,13 @@
         </a>
         <a href="/payments">
             <div class="p-2 app-left-pane-menu-item">
-                <i class="material-icons align-middle">credit_card</i>
+                <i class="fas fa-credit-card"></i>
                 <div class="d-inline-block ml-2 small">Payment Methods</div>
             </div>
         </a>
         <% } %>
 
-        <% if ('user_type' in userInfo && userInfo.user_type.indexOf('patient')>-1) {%>
+        <% if ('login_user_type' in userInfo && userInfo.login_user_type=='patient') {%>
         <a href="/#">
             <div class="p-2 app-left-pane-menu-item">
                 <i class="fas fa-vial"></i>
@@ -58,10 +64,9 @@
             </div>
         </a>
         <% } %>
-
         <div class="p-2 app-left-pane-menu-item">
-            <i class="far fa-calendar-check"></i>
-            <div class="d-inline-block ml-2 small">My Appointments</div>
+            <i class="fas fa-fingerprint"></i>
+            <div class="d-inline-block ml-2 small">Security</div>
         </div>
 
         <!-- <div class="p-2 app-left-pane-menu-item">

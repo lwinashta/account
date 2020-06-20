@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { UserInfo } from "./../../contexts/userInfo";
-import { Modal } from "../../components/common/modal";
+import { Modal } from "@oi/reactcomponents";
 const countries=require('@oi/utilities/lib/lists/countries.json');
 import { formjs } from "@oi/utilities/lib/js/form";
 

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect,useState } from 'react';
 import { UserInfo } from "./../../contexts/userInfo";
 import { formjs } from "@oi/utilities/lib/js/form";
-import { Modal } from "../../components/common/modal";
+import { Modal } from "@oi/reactcomponents";
 
 
 export const ManageEmail = () => {

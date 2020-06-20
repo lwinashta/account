@@ -75,6 +75,11 @@ module.exports = function (app) {
         
     });
 
+    app.locals.config=config;
+
+    const accountManagementRoutes=require(efsPath+'/accountManager/routes')(app);
+    const healthcareRoutes = require(efsPath + '/healthcare/routes')(app);
+
     /** Routers */
     app.use('/google',googleRouter);
     app.use('/aws',awsRouter);
