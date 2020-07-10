@@ -177,7 +177,7 @@ export const Insurance = () => {
             "contentType": false,
             "data": fileData,
             "method": "POST"
-        })
+        });
     }
 
     const handleEntrySubmission=(e)=>{

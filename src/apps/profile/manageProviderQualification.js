@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import { UserInfo } from "../../contexts/userInfo";
-import { Modal } from "@oi/reactcomponents";
-import { formjs,multiSelectDropDown,fileUploadField } from "@oi/utilities/lib/js/form";
+import { Modal,FilePreview } from "@oi/reactcomponents";
+import { formjs,multiSelectDropDown,fileUploadField,insertValues } from "@oi/utilities/lib/js/form";
 
 const degrees=require("@oi/utilities/lib/lists/medical-degrees.json");
 const councils=require("@oi/utilities/lib/lists/medical-councils.json");
@@ -15,7 +15,7 @@ const DisplayItem=({item="",indx=null})=>{
 const DisplayItemAsString=(item,_id)=>{
     return ( `<div _id="${_id}" class="item bg-lgrey text-capitalize border rounded pr-2 pl-2 pt-1 pb-1 mt-1 mr-2">
         <div class="d-inline-block align-middle">${item}</div>
-        <div class="d-inline-block btn-link text-danger align-middle">
+        <div class="d-inline-block btn-link text-danger align-middle remove-item pointer">
             <i class="fas fa-times"></i>
         </div>
     </div>`);
@@ -29,12 +29,13 @@ export const ManageProviderQualification = () => {
     const [userMedicalDegrees,setMedicalDegrees]=useState("medical_degrees" in params.userInfo?params.userInfo.medical_degrees:[]);
     const [userMedicalRegNumber,setMedicalRegNumber]=useState("medical_registration_number" in params.userInfo?params.userInfo.medical_registration_number:"");
     const [userMedicalCouncils,setMedicalCouncil]=useState("medical_councils" in params.userInfo?params.userInfo.medical_councils:[]);
-    
+    const [userMedicalRegistrationFiles,setUserMedicalRegistrationFiles]=useState("files" in params.userInfo?params.userInfo.files.filter(f=>f.field_name==="medical_registration_files"):[]);
+    const [showMedicalRegistraionFilesPreviewModal,setMedicalRegistraionFilesPreviewModalFlag]=useState(false);
     const [showSpecialtyEntryForm,setShowSpecialtyEntryFormFlag]=useState(false);
     const [showMedicalDegreeEntryForm,setShowMedicalDegreeEntryFormFlag]=useState(false);
     const [showMedicalCouncilEntryForm,setShowMedicalCouncilEntryFormFlag]=useState(false);
     const [showMedicalRegistraionEntryForm,setShowMedicalRegistrationEntryFormFlag]=useState(false);
-    const [medicalRegistrationFile,setMedicalRegistrationFiles]=useState([]);
+    const [uploadedRegistrationFiles,setUploadedRegistrationFiles]=useState([]);
     const [specialties, setSpecialtiesList] = useState([]);
 
     let formRef=React.createRef();
@@ -95,7 +96,7 @@ export const ManageProviderQualification = () => {
                 },
                 displaySearchResults:function(items){
                     return items.map((item,indx)=>{
-                        return `<div class="p-2 border-bottom pointer text-capitalize item" _id="${item._id}">${item.name} (${item.abbr})</div>`
+                        return `<div className="p-2 border-bottom pointer text-capitalize item" _id="${item._id}">${item.name} (${item.abbr})</div>`
                     });
                 },
                 onItemSelect:function(item){
@@ -126,7 +127,7 @@ export const ManageProviderQualification = () => {
                 },
                 displaySearchResults:function(items){
                     return items.map((item,indx)=>{
-                        return `<div class="p-2 border-bottom pointer text-capitalize item" _id="${item._id}">${item.name}</div>`
+                        return `<div className="p-2 border-bottom pointer text-capitalize item" _id="${item._id}">${item.name}</div>`
                     });
                 },
                 onItemSelect:function(item){
@@ -147,16 +148,42 @@ export const ManageProviderQualification = () => {
 
     useEffect(()=>{
         if(showMedicalRegistraionEntryForm){
+
             let _manageFiles=new fileUploadField({
                 container:$(formRef.current).find('.droppable-file-container'),
                 multiple:true,
                 name:$(formRef.current).find('.droppable-file-container').attr('name'),
                 onFileSelectionCallback:function(file,allUploaded){
-                    setMedicalRegistrationFiles(allUploaded);
+                    setUploadedRegistrationFiles(allUploaded);
+                },
+                fileData:userMedicalRegistrationFiles,
+                onFileDeletionCallback:function(deletedFile){
+                    let regFiles=[...userMedicalRegistrationFiles];
+    
+                    //find the file 
+                    let indx=regFiles.findIndex(f=>f._id===deletedFile._id);
+                    let removedFile=regFiles.files.splice(indx,1);
+                    
+                    setUserMedicalRegistrationFiles(removedFile);
                 }
             });
             _manageFiles.bind();//bind file drg and drop
+            _manageFiles.insertFiles();
+
+            let _insertValues=new insertValues({
+                container:$(formRef.current)
+            });
+
+            //load the data in the form 
+            _insertValues.insert({
+                "medical_registration_number":userMedicalRegNumber
+            });
         }
+
+        if(!setShowMedicalRegistrationEntryFormFlag){
+            setUploadedRegistrationFiles([]);
+        }
+
     },[showMedicalRegistraionEntryForm]);
 
     //** Submit Updates */
@@ -262,13 +289,75 @@ export const ManageProviderQualification = () => {
             }).then(response=>{
                 setMedicalCouncil(selectedMedicalCouncils);
                 setShowMedicalCouncilEntryFormFlag(false);
+                
                 popup.remove();
                 popup.onBottomCenter("Medical Council Updated");
 
             }).catch(err=>{
                 console.log(err);
                 popup.onBottomCenter("Error while updating the info. Try again.");
-            })
+            });
+        }else{
+            popup.onBottomCenter("Please enter required fields");
+        }
+    }
+
+    const addMedicalRegistrationFiles=(files)=>{
+        //console.log(files);
+        let fileData=new FormData();
+
+        Object.keys(files).forEach(key=>{
+            fileData.append(key,files[key]);
+        });
+
+        fileData.append("linked_mongo_id",params.userInfo._id);
+        fileData.append("linked_db_name","accounts");
+        fileData.append("linked_collection_name","users");
+
+        return $.ajax({
+            "url": '/g/uploadfiles',
+            "processData": false,
+            "contentType": false,
+            "data": fileData,
+            "method": "POST"
+        })
+    }
+
+    const handleMedicalRegistrationSubmission=(e)=>{
+        e.preventDefault();
+        
+        let form=e.target;
+        let validation=_formjs.validateForm(form);
+
+        if(validation===0){
+            //update the registration number 
+            let medRegNum=$(form).find('[name="medical_registration_number"]').val();
+            submitUserUpdates({
+                "medical_registration_number":$(form).find('[name="medical_registration"]').val(),
+                "_id":params.userInfo._id
+
+            }).then(response=>{
+                setMedicalRegNumber(medRegNum);
+
+                //check if any new files uploaded 
+                if(Object.keys(uploadedRegistrationFiles).length>0){
+                    return addMedicalRegistrationFiles(uploadedRegistrationFiles);
+
+                }
+
+            }).then(response=>{
+                if(Array.isArray(response)){
+                    setUserMedicalRegistrationFiles(userMedicalRegistrationFiles.concat(response));
+                }
+                popup.remove();
+                popup.onBottomCenter("Medical Registration Updated");
+                setShowMedicalRegistrationEntryFormFlag(false);
+
+            }).catch(err=>{
+                console.log(err);
+                popup.onBottomCenter("Error while updating the info. Try again.");
+            });
+
         }else{
             popup.onBottomCenter("Please enter required fields");
         }
@@ -322,7 +411,7 @@ export const ManageProviderQualification = () => {
             }
         </div>
 
-        <div className="border-bottom pt-2 pb-2">
+        <div className="border-bottom pt-2 pb-2 position-relative">
             <div className="font-weight-bold">Medical Registration/ License Number</div>
             {
                 userMedicalRegNumber.length === 0 ? 
@@ -334,8 +423,9 @@ export const ManageProviderQualification = () => {
                     <div className="push-right">
                         <div className="small btn-link pointer" onClick={()=>{setShowMedicalRegistrationEntryFormFlag(true)}}>Edit</div>
                     </div>
-                    <div className="small text-muted">
-                        {userMedicalRegNumber}
+                    <div className="small">
+                        <div className="text-muted">{userMedicalRegNumber}</div>
+                        <div className="btn-link pointer" onClick={()=>setMedicalRegistraionFilesPreviewModalFlag(true)}>{userMedicalRegistrationFiles.length>0?userMedicalRegistrationFiles.length+" files":""}</div>
                     </div>
                 </div>
             }
@@ -364,6 +454,7 @@ export const ManageProviderQualification = () => {
                 </div>
             }
         </div>
+        
         {
             showSpecialtyEntryForm?
             <Modal header={<h3>Speacilty Entry</h3>} onCloseHandler={()=>{setShowSpecialtyEntryFormFlag(false)}}>
@@ -417,8 +508,8 @@ export const ManageProviderQualification = () => {
                 <form ref={formRef} onSubmit={(e)=>{handleMedicalRegistrationSubmission(e)}} >
                     <div className="form-group">
                         <label data-required="1">Registration/License Number </label>
-                        <input type="text" name="medical_registration" 
-                            class="form-control entry-field" data-required="1"
+                        <input type="text" name="medical_registration_number" 
+                            className="form-control entry-field" data-required="1"
                             placeholder="Medical Registration Number" />
                     </div>
                     <div className="form-group">
@@ -447,7 +538,9 @@ export const ManageProviderQualification = () => {
                             </div>
 
                         </div>
-                        
+                        <div className="mt-2 text-center">
+                            <button className="btn btn-primary w-75" type="submit">Save Medical Registration</button>
+                        </div>
                 </form>
             </Modal>:null
         }
@@ -474,7 +567,10 @@ export const ManageProviderQualification = () => {
                 </form>
             </Modal>:null
         }
+        {
+            showMedicalRegistraionFilesPreviewModal?
+            <FilePreview files={userMedicalRegistrationFiles} onCloseHandler={()=>{setMedicalRegistraionFilesPreviewModalFlag(false)}}></FilePreview>:null
+        }
         
-
     </div>)
 }
