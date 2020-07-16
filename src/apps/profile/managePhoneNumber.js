@@ -53,8 +53,7 @@ export const ManagePhoneNumbers = () => {
                 //Show Verify OTP form 
                 setVerifyOTPFormFlag(true);
 
-                popup.onBottomCenter(`<i class="material-icons align-middle font-weight-bold mr-2" style="color:darkgreen">check</i>
-                <span>Verification code sent</span>`);
+                popup.onBottomCenterSuccessMessage(`Verification code sent`);
 
             }).catch(err => {
                 console.error(err);
@@ -65,8 +64,7 @@ export const ManagePhoneNumbers = () => {
 
         } else {
             uiButtons.removeLoader(savePhoneNumberButton);
-            popup.onBottomCenter(`<i class="material-icons align-middle">warning</i>
-                <span>Please enter required fields</span>`);
+            popup.onBottomCenterRequiredErrorMsg();
         }
 
     };
@@ -157,8 +155,7 @@ export const ManagePhoneNumbers = () => {
 
             uiButtons.removeLoader(verifyOTPButton);
 
-            popup.onBottomCenter(`<i class="material-icons align-middle">warning</i>
-             <span>Please enter required fields</span>`);
+            popup.onBottomCenterRequiredErrorMsg();
         }
 
     }
@@ -244,7 +241,7 @@ export const ManagePhoneNumbers = () => {
                             params.updateUserInfoContext(data);
 
                             popup.remove();
-                            popup.onBottomCenter("Contact deleted");
+                            popup.onBottomCenterSuccessMessage("Contact deleted");
 
                         }).catch(err => {
                             reject(err);
@@ -294,7 +291,7 @@ export const ManagePhoneNumbers = () => {
             params.updateUserInfoContext(data.user_phone_numbers);
 
             popup.remove();
-            popup.onBottomCenter("Contact updated");
+            popup.onBottomCenterSuccessMessage("Contact updated");
 
         }).catch(err => {
             reject(err);

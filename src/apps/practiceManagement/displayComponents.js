@@ -1,6 +1,5 @@
 
 import React, { useState, useEffect }from "react";
-import { formjs} from "@oi/utilities/lib/js/form";
 import { UserInfo } from "../../contexts/userInfo";
 import { FilePreview } from "@oi/reactcomponents";
 

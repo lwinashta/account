@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <% include ../partials/common/load-scripts %>
+    
+    <!-- BRAINTREE: PAYPAL SERVICE --->
+    <script src="https://js.braintreegateway.com/web/dropin/1.6.1/js/dropin.js"></script>
+</head>
+
+<body>
+    <% include ../partials/common/header %>
+    <% include ../partials/common/left-pane %>
+
+    <div id="app-right-pane-container">
+
+        <div id="payment-management-root"></div>
+
+    </div>
+
+    <script type="module" src="/src/dist/payment-management.bundle.js"></script>
+
+</body>
+
+</html>

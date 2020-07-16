@@ -62,7 +62,7 @@ export const ManageEmail = () => {
         let sendOTPButton=$(form).find('button[type="submit"]');
 
         if (emailId === params.userInfo.email_id) {
-            popup.onBottomCenter(`<i class="fas fa-exclamation-circle mr-2"></i> <span>No change to email</span>`);
+            popup.onBottomCenterErrorOccured("No change to email");
             return false;
         }
 
@@ -98,7 +98,7 @@ export const ManageEmail = () => {
                     $(form).find('input[name="email_id"]').closest('.form-group').append(`<div class="required-err">Duplicate Email Id. Entered email id already exists in our system.</div>`);;
                 }else{
                     $(form).find('input[name="email_id"]').closest('.form-group').append(`<div class="required-err">Error in sending email to the entered email id. Please check your email and try again.</div>`);;
-                    popup.onBottomCenter(`<i class="fas fa-exclamation-circle mr-2 text-danger"></i> <span>Error while sending the email</span>`);
+                    popup.onBottomCenterErrorOccured("Error while sending the email");
                 }
 
                 uiButtons.removeLoader(sendOTPButton); 
@@ -107,7 +107,7 @@ export const ManageEmail = () => {
 
         } else {
             uiButtons.removeLoader(sendOTPButton);
-            popup.onBottomCenter("Please enter the required fields");
+            popup.onBottomCenterRequiredErrorMsg();
         }
     }
 
@@ -164,8 +164,7 @@ export const ManageEmail = () => {
 
             uiButtons.removeLoader(verifyOTPButton);
 
-            popup.onBottomCenter(`<i class="material-icons align-middle">warning</i>
-             <span>Please enter required fields</span>`);
+            popup.onBottomCenterRequiredErrorMsg();
         }
 
     }

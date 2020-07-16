@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
+import regeneratorRuntime from "regenerator-runtime";
 const countries = require('@oi/utilities/lib/lists/countries.json');
 import { Modal } from "@oi/reactcomponents";
 import { formjs, insertValues, fileUploadField, multiSelectDropDown } from "@oi/utilities/lib/js/form";
@@ -48,7 +49,6 @@ export const PracticeEntryForm = ({ afterSubmission = {} }) => {
     let params = useContext(UserInfo);
     let contactFormRef = React.createRef();
     let practiceEntryFormRef = React.createRef();
-    let practiceFormData = {};
 
     const [practiceEnteredData, setPracticeEnteredData] = useState({});
 
@@ -153,8 +153,11 @@ export const PracticeEntryForm = ({ afterSubmission = {} }) => {
         //Do the address validatin and then submit the information 
         if (Object.keys(practiceEnteredData).length > 0) {
 
+            popup.onScreen("Validating Address...");
+
             getCordinates(practiceEnteredData).then(resultAddress => {
                 setGoogleAddressResponse(resultAddress);
+                popup.remove();
 
             }).catch(err => {
                 console.log(err);
@@ -173,6 +176,7 @@ export const PracticeEntryForm = ({ afterSubmission = {} }) => {
 
             if (Object.keys(validatedAddr).length > 0) {
                 //popup confirmaton box to rectify the addr
+
                 setEnteredAddress(practiceEnteredData);
                 setRecommendedAddress(validatedAddr);
                 setConfirmAddressRecommendationModalFlag(true);
@@ -210,125 +214,142 @@ export const PracticeEntryForm = ({ afterSubmission = {} }) => {
 
     const handleNewPracticeSubmission = (facilityInfo) => {
 
-        let facilityId = "";
-        let facilityUserId = "";
+        return new Promise((resolve, reject) => {
+            
+            let facilityId = "";
+            let facilityUserId = "";
 
-        //Save the facility Info .
-        $.ajax({
-            "url": '/account/api/heathcarefacility/create',
-            "processData": false,
-            "contentType": false,
-            "data": _formjs.convertJsonToFormdataObject(facilityInfo),
-            "method": "POST"
-        }).then(facility => {
+            //Save the facility Info .
+            $.ajax({
+                "url": '/account/api/heathcarefacility/create',
+                "processData": false,
+                "contentType": false,
+                "data": _formjs.convertJsonToFormdataObject(facilityInfo),
+                "method": "POST"
+            }).then(facility => {
 
-            facilityId = facility.insertedId;
+                facilityId = facility.insertedId;
 
-            //Save New Practice User
-            return saveNewPracticeUser(params.userInfo._id,facilityId,availability,false);
+                //Save New Practice User
+                return saveNewPracticeUser(params.userInfo._id, facilityId, availability, "self");
 
-        }).then(facilityUserResponse => {
+            }).then(facilityUserResponse => {
 
-            facilityUserId = facilityUserResponse.insertedId;
+                facilityUserId = facilityUserResponse.insertedId;
 
-            //Save Facility files 
-            if (Object.keys(practiceFiles).length > 0) {
-                return addNewPracticeFiles(facilityId);
-            }
+                resolve({
+                    facilityInfo:{
+                        _id:facilityId,
+                    },
+                    facilityUserInfo:{
+                        _id:facilityUserId
+                    }
+                });
 
-        }).then(uploadedFilesResponse => {
-
-            //get the inof from sever fr the new / updated facility by Id
-            return $.getJSON('account/api/heathcarefacilityuser/get', {
-                "_id": facilityUserId
+            }).catch(err => {
+                console.log(err);
+                reject(err);
             });
-
-        }).then(updatedReponse => {
-            afterSubmission(updatedReponse);
-
-        }).catch(err => {
-            console.log(err);
-        });
+        })
     }
 
     const handleUpdatePracticeSubmission = (facilityInfo) => {
 
-        facilityInfo._id = params.selectedPracticeInfo.facilityInfo[0]._id;
-
-        console.log(facilityInfo);
-
-        //Save the facility Info .
-        $.ajax({
-            "url": '/account/api/heathcarefacility/update',
-            "processData": false,
-            "contentType": false,
-            "data": _formjs.convertJsonToFormdataObject(facilityInfo),
-            "method": "POST"
-        }).then(facility => {
-
-            //Save the facility User Info
-            let facilityUserInfo = _formjs.convertJsonToFormdataObject({
+        return new Promise((resolve,reject)=>{
+            
+            facilityInfo._id = params.selectedPracticeInfo.facilityInfo[0]._id;
+            
+            let facilityUserInfo={
                 "_id": params.selectedPracticeInfo._id,
                 "availability_information": availability
-            });
+            };
 
-            return $.ajax({
-                "url": '/account/api/heathcarefacilityuser/update',
+            //Save the facility Info .
+            $.ajax({
+                "url": '/account/api/heathcarefacility/update',
                 "processData": false,
                 "contentType": false,
-                "data": facilityUserInfo,
+                "data": _formjs.convertJsonToFormdataObject(facilityInfo),
                 "method": "POST"
+            }).then(facility => {
+
+                //Save the facility User Info
+                let fdFacilityUserInfo = _formjs.convertJsonToFormdataObject(facilityUserInfo);
+
+                return $.ajax({
+                    "url": '/account/api/heathcarefacilityuser/update',
+                    "processData": false,
+                    "contentType": false,
+                    "data": fdFacilityUserInfo,
+                    "method": "POST"
+                });
+
+            }).then(facilityUserResponse=>{
+                resolve({
+                    facilityInfo:facilityInfo,
+                    facilityUserInfo:facilityUserInfo
+                });
+            }).catch(err=>{
+                reject(err);
             });
 
-        }).then(facilityUserResponse => {
-
-            //Save Facility files 
-            if (Object.keys(practiceFiles).length > 0) {
-                return addNewPracticeFiles(facilityInfo._id);
-            }
-        }).then(uploadedFilesResponse => {
-
-            //get the inof from sever fr the new / updated facility by Id
-            return $.getJSON('account/api/heathcarefacilityuser/get', {
-                "_id": params.selectedPracticeInfo._id
-            });
-
-        }).then(updatedReponse => {
-            afterSubmission(updatedReponse);
-
-        }).catch(err => {
-            console.log(err);
         });
+
     }
 
-    const submitPracticeInfo = () => {
+    const submitPracticeInfo = async function() {
 
-        let facilityInfo = { ...practiceEnteredData };
+        try {
+            popup.onScreen("Submitting Information...");
 
-        //Insert the 
-        facilityInfo.medical_facility_city = 'medical_facility_city' in recommendedAddress ? recommendedAddress.medical_facility_city : facilityInfo.medical_facility_city;
-        facilityInfo.medical_facility_state = 'medical_facility_state' in recommendedAddress ? recommendedAddress.medical_facility_state : facilityInfo.medical_facility_state;
-        facilityInfo.medical_facility_zip_code = 'medical_facility_zip_code' in recommendedAddress ? recommendedAddress.medical_facility_zip_code : facilityInfo.medical_facility_zip_code;
-        facilityInfo.medical_facility_country = 'medical_facility_country' in recommendedAddress ? recommendedAddress.medical_facility_country : facilityInfo.medical_facility_country;
+            let facilityInfo = { ...practiceEnteredData };
 
-        facilityInfo.medical_facility_cordinates = ({
-            type: "Point",
-            coordinates: [googleAddressResponse.json.results[0].geometry.location.lng, googleAddressResponse.json.results[0].geometry.location.lat]
-        });
+            //Insert the 
+            facilityInfo.medical_facility_city = 'medical_facility_city' in recommendedAddress ? recommendedAddress.medical_facility_city : facilityInfo.medical_facility_city;
+            facilityInfo.medical_facility_state = 'medical_facility_state' in recommendedAddress ? recommendedAddress.medical_facility_state : facilityInfo.medical_facility_state;
+            facilityInfo.medical_facility_zip_code = 'medical_facility_zip_code' in recommendedAddress ? recommendedAddress.medical_facility_zip_code : facilityInfo.medical_facility_zip_code;
+            facilityInfo.medical_facility_country = 'medical_facility_country' in recommendedAddress ? recommendedAddress.medical_facility_country : facilityInfo.medical_facility_country;
 
-        facilityInfo.medical_facility_contact_information = facilityContacts;
+            facilityInfo.medical_facility_cordinates = ({
+                type: "Point",
+                coordinates: [googleAddressResponse.json.results[0].geometry.location.lng, googleAddressResponse.json.results[0].geometry.location.lat]
+            });
 
-        if (Object.keys(params.selectedPracticeInfo).length > 0) {
-            handleUpdatePracticeSubmission(facilityInfo);
+            facilityInfo.medical_facility_contact_information = facilityContacts;
 
-        } else {
-            facilityInfo.registration_number = params.userInfo.registration_number;
-            facilityInfo["deleted.$boolean"] = false;
-            facilityInfo["verified.$boolean"] = false;
+            let submissionResponse = {};
 
-            handleNewPracticeSubmission(facilityInfo);
+            if (Object.keys(params.selectedPracticeInfo).length > 0) {
+                submissionResponse = await handleUpdatePracticeSubmission(facilityInfo);
+
+            } else {
+                facilityInfo.registration_number = params.userInfo.registration_number;
+                facilityInfo["deleted.$boolean"] = false;
+                facilityInfo["verified.$boolean"] = false;
+
+                submissionResponse=await handleNewPracticeSubmission(facilityInfo);
+            }
+
+            //Save Facility files 
+            let uploadedFilesResponse={};
+            if (Object.keys(practiceFiles).length > 0) {
+                uploadedFilesResponse= await addNewPracticeFiles(submissionResponse.facilityInfo._id);
+            }
+
+            let setInfo=await $.getJSON('account/api/heathcarefacilityuser/get', {
+                "_id": submissionResponse.facilityUserInfo._id
+            });
+            //console.log(setInfo);
+
+            afterSubmission(setInfo);//Triggers the aftersubmission callback from parent componenet
+            popup.remove();
+
+        } catch (error) {
+            console.error(error);
+            popup.remove();
+            popup.onBottomCenterErrorOccured();
         }
-
+        
         //console.log(facilityInfo, availability, facilityContacts, practiceFiles);
 
     }
@@ -349,7 +370,9 @@ export const PracticeEntryForm = ({ afterSubmission = {} }) => {
     const handlePracticeSubmission = (e) => {
         e.preventDefault();
         let form = e.target;
-        
+
+        popup.onScreen("Validating Information...");
+
         let validate = _formjs.validateForm(form);
 
         if (availability.length === 0) {
@@ -370,11 +393,12 @@ export const PracticeEntryForm = ({ afterSubmission = {} }) => {
                 let fd = _formjs.getFieldData(this);
                 data = Object.assign(data, fd);
             });
-
+            popup.remove();
             setPracticeEnteredData(data);
 
         } else {
-            popup.onBottomCenter('Please enter required information');
+            popup.remove();
+            popup.onBottomCenterRequiredErrorMsg();
         }
 
     }
@@ -428,8 +452,6 @@ export const PracticeEntryForm = ({ afterSubmission = {} }) => {
         setEditContactId(_id);
         setShowContactEntryFormFlag(true);
     }
-
-   
 
     /**
      * 

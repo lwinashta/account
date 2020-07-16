@@ -1,0 +1,47 @@
+const calcProratedAmount=function(currentSubscription,newSubscription){
+    
+        var td = moment();// todays date 
+    
+        var currentSubscriptionPrice = parseFloat(currentSubscription.price);
+        var currentSubscriptionBalance = parseFloat(currentSubscription.balance);
+        var newSubscriptionPrice = parseFloat(newSubscription.price);
+    
+        var currentSubscriptionPlanId = currentSubscription.planId;
+    
+        //-- calculate the prorated amount -- 
+        //prorate calculation = (newSusPrice - currentSubPrice)/ (Number of days left in the billing cycle/Total number of days in the billing cycle)
+        //suppose subscription was updated on 3/23/2020.
+        //old subscriptin price = 29.99 for month and new subs 59.99 
+        //calc -> (59.99-29.99)*(7/30) = -7, $7 will be refunded from transaction and 59.99 will be charged from next month. 
+        
+        var nxtBd = moment(currentSubscription.nextBillingDate);
+        var lastMonthDate = moment(nxtBd).subtract(1, 'months');// calculate total number of days for subscription
+    
+        var diff1 = nxtBd.diff(td, 'days');// Number of days left in the billing cycle
+        var diff2 = nxtBd.diff(lastMonthDate, 'days'); //-- Total number of days in the billing cycle             
+    
+        var calcProratedAmount = (newSubscriptionPrice - currentSubscriptionPrice) * (diff1 / diff2);
+    
+        calcProratedAmount=parseFloat(calcProratedAmount.toFixed(2))
+    
+        if (calcProratedAmount > 0) {// -- upgrade amount 
+            
+            //-- charge/ debit the amount -- 
+            //-- if balance exists - The amount of outstanding charges associated with a subscription. 
+            //calcProratedAmount = calcProratedAmount+currentSubscriptionBalance ;
+    
+            return {
+                "action": "charge",
+                "outstandingBalance":currentSubscriptionBalance,
+                "amount": calcProratedAmount
+            };
+    
+        } else {
+            //-- refund or credit
+            return {
+                "action": "refund",
+                "outstandingBalance":currentSubscriptionBalance,
+                "amount": calcProratedAmount
+            };
+        }
+    }

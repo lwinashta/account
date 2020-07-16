@@ -222,14 +222,14 @@ export const ManageProviderQualification = () => {
                 setSpecialties(selectedSpecialties);
                 setShowSpecialtyEntryFormFlag(false);
                 popup.remove();
-                popup.onBottomCenter("Specialty Updated");
+                popup.onBottomCenterSuccessMessage("Specialty Updated");
 
             }).catch(err=>{
                 console.log(err);
-                popup.onBottomCenter("Error while updating the info. Try again.");
+                popup.onBottomCenterErrorOccured("Error while updating the info. Try again.");
             })
         }else{
-            popup.onBottomCenter("Please enter required fields");
+            popup.onBottomCenterRequiredErrorMsg();
         }
     }
 
@@ -256,14 +256,14 @@ export const ManageProviderQualification = () => {
                 setMedicalDegrees(selectedMedicalDegrees);
                 setShowMedicalDegreeEntryFormFlag(false);
                 popup.remove();
-                popup.onBottomCenter("Medical Degree Updated");
+                popup.onBottomCenterSuccessMessage("Medical Degree Updated");
 
             }).catch(err=>{
                 console.log(err);
-                popup.onBottomCenter("Error while updating the info. Try again.");
+                popup.onBottomCenterErrorOccured("Error while updating the info. Try again.");
             })
         }else{
-            popup.onBottomCenter("Please enter required fields");
+            popup.onBottomCenterRequiredErrorMsg();
         }
     }
 
@@ -291,14 +291,14 @@ export const ManageProviderQualification = () => {
                 setShowMedicalCouncilEntryFormFlag(false);
                 
                 popup.remove();
-                popup.onBottomCenter("Medical Council Updated");
+                popup.onBottomCenterSuccessMessage("Medical Council Updated");
 
             }).catch(err=>{
                 console.log(err);
-                popup.onBottomCenter("Error while updating the info. Try again.");
+                popup.onBottomCenterErrorOccured("Error while updating the info. Try again.");
             });
         }else{
-            popup.onBottomCenter("Please enter required fields");
+            popup.onBottomCenterRequiredErrorMsg();
         }
     }
 
@@ -350,16 +350,16 @@ export const ManageProviderQualification = () => {
                     setUserMedicalRegistrationFiles(userMedicalRegistrationFiles.concat(response));
                 }
                 popup.remove();
-                popup.onBottomCenter("Medical Registration Updated");
+                popup.onBottomCenterSuccessMessage("Medical Registration Updated");
                 setShowMedicalRegistrationEntryFormFlag(false);
 
             }).catch(err=>{
                 console.log(err);
-                popup.onBottomCenter("Error while updating the info. Try again.");
+                popup.onBottomCenterErrorOccured("Error while updating the info. Try again.");
             });
 
         }else{
-            popup.onBottomCenter("Please enter required fields");
+            popup.onBottomCenterRequiredErrorMsg();
         }
     }
 

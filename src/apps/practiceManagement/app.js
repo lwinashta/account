@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { UserInfo } from "./../../contexts/userInfo";
+import { UserInfo } from "../../contexts/userInfo";
 import { ShowAvailability } from "./showAvailability";
 import { PracticeEntryForm } from "./practiceEntryForm";
 import { Modal,ConfirmationBox } from "@oi/reactcomponents";
@@ -116,10 +116,14 @@ export const App = () => {
             _d[indx]=data[0];
         }else{
             //create mode 
-            _d.push(data[0]);
+            _d.splice(0,0,data[0]);
         }
+
         setUserPractices(_d);
         setShowPracticeEntryFormFlag(false);
+        setAffiliationEntryFormFlag(false);
+
+        popup.onBottomCenterSuccessMessage("Practice Saved");
     }
 
     const handlePracticeDeletion=(_id)=>{
@@ -151,7 +155,7 @@ export const App = () => {
             setUserPractices(allPractices);
 
             popup.remove();
-            popup.onBottomCenter("Practice Deleted");
+            popup.onBottomCenterSuccessMessage("Practice Deleted");
 
             setDeleteConfirmationBoxFlag(false);
         });
@@ -263,7 +267,9 @@ export const App = () => {
                             <Modal
                                 header={<h3>Affiliate Yourself to Practice</h3>}
                                 onCloseHandler={() => { setAffiliationEntryFormFlag(false) }}>
-                                <AffliatePracticeForm handleAddNewPracticeEntry={handleAddNewPracticeEntry}/>
+                                <AffliatePracticeForm 
+                                    handleAddNewPracticeEntry={handleAddNewPracticeEntry} 
+                                    afterSubmission={handleAfterPracticeSubmission} />
                             </Modal> : null
                         }
 

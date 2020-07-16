@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useContext } from "react";
+import { UserInfo } from "../../contexts/userInfo";
 import { DisplayPracticeAddress } from "./displayComponents";
 import { ShowAvailability } from "./showAvailability";
 import { AvailabilityEntry } from "./availabilityEntry";
@@ -6,7 +7,9 @@ import { DisplayFacilityInfo} from "./displayFacilityInfo";
 import { saveNewPracticeUser } from "./methods";
 import { Modal } from "@oi/reactcomponents";
 
-export const AffliatePracticeForm = ({ afterSubmisson = {}, handleAddNewPracticeEntry = {} }) => {
+export const AffliatePracticeForm = ({ afterSubmission = {}, handleAddNewPracticeEntry = {} }) => {
+
+    let params=useContext(UserInfo);
 
     const [searchPracticeLoader, setSearchPracticeLoader] = useState(false);
     const [initState, setInitStateFlag] = useState(true);
@@ -44,6 +47,10 @@ export const AffliatePracticeForm = ({ afterSubmisson = {}, handleAddNewPractice
         setEntryFormFlag(true);
     }
 
+    const checkIfUserIsAffiliated=(info)=>{
+        return params.userPractices.findIndex(f=>f.facilityInfo[0]._id===info._id);
+    }   
+
     const handleSearchOnSubmission = (e) => {
         setSearchPracticeLoader(true);
 
@@ -52,7 +59,15 @@ export const AffliatePracticeForm = ({ afterSubmisson = {}, handleAddNewPractice
 
         searchPractice($(form).find('input[type="text"]').val()).then(response => {
             console.log(response);
-            setPracticeResults(response);
+
+            let notAffiliatedPractices=response.reduce((acc,ci)=>{
+                if(checkIfUserIsAffiliated(ci)===-1){
+                    acc.push(ci);
+                }
+                return acc;
+            },[]);
+
+            setPracticeResults(notAffiliatedPractices);
             setSearchPracticeLoader(false);
             setInitStateFlag(false);
         });
@@ -78,12 +93,51 @@ export const AffliatePracticeForm = ({ afterSubmisson = {}, handleAddNewPractice
         setShowAvialabilityEntryFormFlag(true);
     }
 
+    const handlePracticeSubmission=(e)=>{
+        e.preventDefault();
+        let form=e.target;
+
+        popup.onScreen("Saving Information...");
+
+        let validate = 0;
+
+        if (availability.length === 0) {
+            $(form).find('#availability-container').append('<div class="required-err">Please enter availability</div>');
+            validate++;
+        }
+
+        if (validate === 0) {
+
+            //Save New Practice User
+            saveNewPracticeUser(params.userInfo._id, selectedSearchedPracticeInfo._id, availability, "affiliated").then(facilityUserResponse=>{
+                let facilityUserId = facilityUserResponse.insertedId;
+
+                return $.getJSON('account/api/heathcarefacilityuser/get', {
+                    "_id": facilityUserId
+                });
+
+            }).then(response=>{
+                afterSubmission(response);//Triggers the aftersubmission callback from parent componenet
+                popup.remove();
+
+            }).catch(err=>{
+                popup.remove();
+                console.error(err);
+                popup.onBottomCenterErrorOccured();
+            });
+
+        } else {
+            popup.remove();
+            popup.onBottomCenterRequiredErrorMsg();
+        }
+    }
+
     return (
         <div>
 
             {
                 showEntryForm ?
-                    <form className="p-2">
+                    <form className="p-2" onSubmit={(e)=>{handlePracticeSubmission(e)}}>
                         <DisplayFacilityInfo facilityInfo={selectedSearchedPracticeInfo}/>   
                         <hr />
                         <div>
@@ -124,6 +178,9 @@ export const AffliatePracticeForm = ({ afterSubmisson = {}, handleAddNewPractice
                                 </div>
 
                             </div>
+                        </div>
+                        <div className="mt-3 text-center pt-2">
+                            <button className="btn btn-primary w-75" type="submit">Save Information</button>
                         </div>
                     </form> :
                     <div>

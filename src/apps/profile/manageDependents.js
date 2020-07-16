@@ -126,18 +126,17 @@ export const Dependents = () => {
                         updateUserDependentState(fd);
                     }
                     popup.remove();
-                    popup.onBottomCenter("Dependent updated");
+                    popup.onBottomCenterSuccessMessage("Dependent updated");
                     setDependentEntryFormFlag(false);
                     
                 }).catch(err=>{
-                    popup.onBottomCenter("Error in saving info. Please try again");
+                    popup.onBottomCenterErrorOccured("Error in saving info. Please try again");
                 });
             }
 
         } else {
             popup.remove();
-            popup.onBottomCenter(`<i class="material-icons align-middle">warning</i>
-            <span>Please enter required fields</span>`);
+            popup.onBottomCenterRequiredErrorMsg();
         }
 
     };
@@ -169,7 +168,7 @@ export const Dependents = () => {
                         "method": "POST"
                     }).then(response=>{
                         popup.remove();
-                        popup.onBottomCenter("Dependent Deleted");
+                        popup.onBottomCenterSuccessMessage("Dependent Deleted");
 
                         let dependents=[...userDependents];
                         let indx=dependents.findIndex(dependent=>dependent._id===_id);
@@ -180,7 +179,7 @@ export const Dependents = () => {
                         
                     }).catch(err=>{
                         console.log(err);
-                        popup.onBottomCenter("Error while deleting. try again.");
+                        popup.onBottomCenterErrorOccured("Error while deleting. try again.");
                     });
 
                 }

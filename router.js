@@ -21,12 +21,12 @@ accountRouter.get('/practice-management',(req,res)=>{
     res.render(`pages/practice-management`);
 });
 
-accountRouter.get('/subscriptions',(req,res)=>{
-    res.render(`pages/subscriptions/${accountRouter.locals.user_info.user_type}`);
+accountRouter.get('/subscription-management',(req,res)=>{
+    res.render(`pages/subscription-management`);
 });
 
-accountRouter.get('/payments',(req,res)=>{
-    res.render(`pages/payment`);
+accountRouter.get('/payment-management',(req,res)=>{
+    res.render(`pages/payment-management`);
 });
 
 accountRouter.get('/edit/:edititem',(req,res)=>{

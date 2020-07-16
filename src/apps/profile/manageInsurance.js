@@ -226,15 +226,12 @@ export const Insurance = () => {
                 setInsuranceEntryFormFlag(false);
 
                 popup.remove();
-                popup.onBottomCenter(`<div>
-                    <span class="material-icons text-success align-middle">check_circle</span> 
-                    <span class="ml-2 align-middle">Insurance saved</span>
-                </div>`);
+                popup.onBottomCenterSuccessMessage(`Insurance saved`);
             });
 
         }else{
             popup.remove();
-            popup.onBottomCenter("Please enter required fields");
+            popup.onBottomCenterRequiredErrorMsg();
         }
 
     }
@@ -288,7 +285,7 @@ export const Insurance = () => {
 
                     Promise.all(setPromises).then(values => {
                         popup.remove();
-                        popup.onBottomCenter("Insurance Deleted");
+                        popup.onBottomCenterSuccessMessage("Insurance Deleted");
 
                         let insurances=[...userInsurances];
                         let indx=insurances.findIndex(insurance=>insurance._id===_id);

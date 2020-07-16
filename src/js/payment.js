@@ -7,7 +7,7 @@ var paymentInstance={};
 
 const _formjs=new formjs();
 
-const refreshPaymentMethods=function(){
+const refreshPaymentMethods=function(){//Done
     return new Promise((resolve,reject)=>{
         //check if customer information exists 
         $.post('/payment/api/customer/get', {
@@ -36,7 +36,7 @@ const refreshPaymentMethods=function(){
     });
 };
 
-const createUserPaymentGateway=function(data){
+const createUserPaymentGateway=function(data){//Done
     return $.post('/payment/api/customer/create', {
         "id": userInfo.registration_number,
         "firstName": data.first_name,
@@ -82,7 +82,7 @@ const getUserMatchingAddress=function(currentBilling,existingAddresses){
     return matchingAddress;
 };
 
-const createUserBillingAddress=function(data){
+const createUserBillingAddress=function(data){//done
     //create customer address 
     //check if personal address same as billing address 
     let address=getUserBillingAddress(data);
@@ -119,7 +119,7 @@ const deletePaymentMethod=function(data){
     });
 }
 
-const setUserCreditCardsLayout=function(data){
+const setUserCreditCardsLayout=function(data){//Done
     let html="";
     if(data==="customer-not-found"){
         html=`<div class="mt-3 text-center">
@@ -165,7 +165,7 @@ const setUserCreditCardsLayout=function(data){
 
 };
 
-const setPaymentDropIn = function () {
+const setPaymentDropIn = function () {//Done
     var paymentInstance = {};
     return new Promise((resolve,reject)=>{
         $.post('/payment/api/token/get').then(function (token) {
@@ -234,7 +234,7 @@ $('#same-as-address-personal-address').change(function(){
 });
 
 //Cancel payment method - on the payment method form pgsection
-$('#cancel-payment-method').click(e=>{
+$('#cancel-payment-method').click(e=>{//done
     goBackToPaymentMethods();
 });
 
@@ -316,6 +316,7 @@ $('#save-payment-method').click(function(e){
                     //create customer payment methods
                     formData.addressId=newCustomerAddress.address.id;
                     let newCustomerPaymentMethod=await createNewPaymentMethod(formData);
+                
                 }
                 
             }

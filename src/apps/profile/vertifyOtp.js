@@ -48,8 +48,7 @@ export const VerifyOTP = ({ userInfo={},contactInfo="",afterSubmission={} }) => 
 
             uiButtons.removeLoader(verifyOTPButton.current);
 
-            popup.onBottomCenter(`<i class="material-icons align-middle">warning</i>
-            <span>Please enter required fields</span>`);
+            popup.onBottomCenterRequiredErrorMsg();
         }
     }
 
