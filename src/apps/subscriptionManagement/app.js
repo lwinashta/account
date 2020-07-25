@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { UserInfo } from "./../../contexts/userInfo";
 import { HealthcareProviderApps } from "./healthcareProviderApps";
 import { HealthcareProviderSubscriptionManagement } from "./healthcareProviderSubscriptionManagement";
+import * as PaymentFunctions from "../reusable/paymentFunctions";
 
 export const App = () => {
 
@@ -30,14 +31,23 @@ export const App = () => {
     //3. Once user payment information is fetched, get user subscriptions from the user credit card on file 
     //4. Once subscriptions are fetched - set AppLoader to false 
     useEffect(() => {
-
-        Promise.all([getUserInfo(), getUserLocationByIp(), getPlans()]).then(values => {
+        //getUserLocationByIp(),
+        Promise.all([getUserInfo(), PaymentFunctions.getPlans()]).then(values => {
             console.log(values);
 
             setUserInfo(values[0]);
-            setUserCurrentLocationByIp(values[1]);
-            setSubscriptionPlans(values[2].plans);
+            //setUserCurrentLocationByIp(values[1]);
+            setUserCurrentLocationByIp({
+                country_code:"US",
+                currency:{
+                    "native":"$"
+                }
+            });
+            setSubscriptionPlans(values[1].plans);
 
+        }).catch(err=>{
+            console.log(err);
+            popup.onBottomCenter("Unexpected Error");
         });
 
     }, []);
@@ -63,30 +73,8 @@ export const App = () => {
                 });
             }
 
-            //Get the payment methods for the user 
-            Promise.all([getUserPaymentAccount(),getStoredUserAccountSubscriptions()]).then(values=>{
-                console.log(values);
-
-                let pym=values[0];
-                setUserPaymentAccount(pym);
-
-                if(Object.keys(pym).length>0 && pym.creditCards.length>0){
-                    //console.log(getUserSubscriptions(pym));
-                    setUserSubscriptions({
-                        fetched:true,
-                        subscriptions:getUserSubscriptions(pym)
-                    });
-
-                }else{
-                    setUserSubscriptions({
-                        fetched:true,
-                        subscriptions:[]
-                    })
-                }
-
-                setStoredUserAccountSubscriptions(values[1]);
-
-            });
+            //Get user's payment method and also stored information from the database
+            refreshUserSubscriptionInfo();
         }
 
     },[subscriptionPlans,userCurentLocationByIp,userInfo]);
@@ -95,6 +83,8 @@ export const App = () => {
         if(Object.keys(userSubscriptions).length>0 && userSubscriptions.fetched){
             //console.log(userSubscriptions);
             setAppLoader(false);
+        }else{
+            setAppLoader(true);
         }
     },[userSubscriptions]);
     
@@ -105,19 +95,9 @@ export const App = () => {
         return $.post('/account/api/user/verifytoken')
     }
 
-    /**  GET ALL PLANS */
-    const getPlans = function () {
-        return $.post('/payment/plans/getall');
-    }
-
-    const getUserPaymentAccount=()=>{
-        return $.post('/payment/customer/get', {
-            "registration_number": userInfo.registration_number
-        });
-    }
-
     const getUserLocationByIp = () => {
-        return $.getJSON('https://api.ipdata.co/es?api-key=071be21a2b0139997678d23a3fa5303040ada726a0dfaa55c817da21');
+        //071be21a2b0139997678d23a3fa5303040ada726a0dfaa55c817da21
+        return $.getJSON('https://api.ipdata.co/es?api-key=a5b3e1fbc1e4c9ed8616cf10815aa63cc283b0b9a76c861e4ab85ddd');
     }
 
     const getUserSubscriptions=(pym)=>{
@@ -129,10 +109,41 @@ export const App = () => {
         },[]);
     }
 
-    const getStoredUserAccountSubscriptions=()=>{
-        return $.getJSON('/account/api/subscription/get',{
-            "registration_number":userInfo.registration_number,
-            "subscription_name":"elite subscription"
+    /**
+     * @Refresh data
+     */
+    const refreshUserSubscriptionInfo=()=>{
+
+        setUserSubscriptions({
+            fetched:false,
+            subscriptions:[]
+        });
+
+        //Get user's payment method and also stored information from the database
+         Promise.all([PaymentFunctions.getUserPaymentAccount(userInfo.registration_number),
+                PaymentFunctions.getStoredUserAccountSubscriptions(userInfo.registration_number,'elite subscription')]).then(values=>{
+            
+            console.log(values);
+
+            let pym=values[0]==="customer-not-found"?{}:values[0];
+            setUserPaymentAccount(pym);
+
+            if(Object.keys(pym).length>0 && pym!=="customer-not-found" && pym.creditCards.length>0){
+                //console.log(getUserSubscriptions(pym));
+                setUserSubscriptions({
+                    fetched:true,
+                    subscriptions:getUserSubscriptions(pym)
+                });
+
+            }else{
+                setUserSubscriptions({
+                    fetched:true,
+                    subscriptions:[]
+                })
+            }
+
+            setStoredUserAccountSubscriptions(values[1]);
+
         });
     }
 
@@ -144,7 +155,8 @@ export const App = () => {
             subscriptionPlanByCountry:subscriptionPlanByCountry,
             userPaymentAccount:userPaymentAccount,
             userSubscriptions:userSubscriptions,
-            storedUserAccountSubscriptions:storedUserAccountSubscriptions
+            storedUserAccountSubscriptions:storedUserAccountSubscriptions,
+            refreshApp:refreshUserSubscriptionInfo
         }}>
             <div className="mt-3">
                 <div className="container">

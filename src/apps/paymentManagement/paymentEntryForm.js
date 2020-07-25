@@ -103,6 +103,7 @@ export const PaymentEntryForm = ({ afterSubmission = {} }) => {
     }
 
     const handlePaymentSubmission = (e) => {
+        
         e.preventDefault();
         let form = e.target;
 

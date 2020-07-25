@@ -1,8 +1,6 @@
 import React from "react";
-import { DisplayPracticeAddress,
-    DisplayPracticeContact,
-    DisplayPracticeTypes, 
-    DisplayPracticeVerification} from "./displayComponents";
+import { DisplayPracticeAddress,DisplayPracticeTypes } from "@oi/reactcomponents/provider-practice";
+import {  DisplayPracticeVerification} from "./displayComponents";
 
 export const DisplayFacilityInfo = ({facilityInfo={}}) => {
     return (
@@ -16,7 +14,9 @@ export const DisplayFacilityInfo = ({facilityInfo={}}) => {
                     <DisplayPracticeAddress address={facilityInfo} />
                 </div>
                 <div className="mt-2">{"medical_facility_description" in facilityInfo && facilityInfo.medical_facility_description.length > 0 ? facilityInfo.medical_facility_description : ""}</div>
-                <div className="mt-2"><DisplayPracticeTypes types={facilityInfo.medical_facility_type} /></div>
+                <div className="mt-2">
+                    <DisplayPracticeTypes types={facilityInfo.medical_facility_type} />
+                </div>
             </div>
         </div>
     );

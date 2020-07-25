@@ -10,7 +10,7 @@ const pokitdotRouter=require('../efs/pokitdot/router');
 const appointmentRouter=require('../efs/appointments/router');
 const accountRouter=require('./router');
 const paymentRouter=require('../efs/payment/router');
-const globalRouter=require('../efs/utilities/lib/router/global');
+const globalRouter=require('../efs/router/global');
 
 const userToken=require('../efs/accountManager/lib/token'); 
 
@@ -31,8 +31,8 @@ module.exports = function (app) {
     app.use('/efs',express.static(efsPath));
     app.use('/node_modules',express.static('node_modules'));
 
-    const fsPath = `../efs/filesystem`;
-    app.use(`/fs`, express.static(path.join(fsPath)));
+    // const fsPath = `../efs/filesystem`;
+    // app.use(`/fs`, express.static(path.join(fsPath)));
 
     app.use(formidable());
 
@@ -57,6 +57,13 @@ module.exports = function (app) {
             //If account is not verified send user to verification screen 
             if(!('verified' in app.locals.userInfo) || !app.locals.userInfo.verified){
                 throw "account-not-verified";
+            }
+
+            //set user profile image - for quick profile image for ejs pages 
+            if('files' in app.locals.userInfo && app.locals.userInfo.files.length>0  
+                && app.locals.userInfo.files.filter(f=>f.field_name==="personal_profile_image").length>0){
+                let profilePics=app.locals.userInfo.files.filter(f=>f.field_name==="personal_profile_image");
+                app.locals.userInfo.profile_pic='/g/fs/'+profilePics.pop()._id;
             }
 
             next();

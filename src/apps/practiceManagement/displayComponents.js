@@ -1,82 +1,6 @@
 
 import React, { useState, useEffect }from "react";
-import { UserInfo } from "../../contexts/userInfo";
 import { FilePreview } from "@oi/reactcomponents";
-
-/**
- * Display address in single line 
- * @param {Object} address  
- */
-export const DisplayPracticeAddress=({address={}})=>{
-    return (
-        <div>
-            {address.medical_facility_street_address_1},
-            {address.medical_facility_street_address_2.length > 0 ? address.medical_facility_street_address_2 : ""}
-            {address.medical_facility_city},
-            {address.medical_facility_state},
-            {address.medical_facility_zip_code},
-            {address.medical_facility_country}
-        </div>
-    )
-};
-
-/**
- * Display practice contact information 
- * @param {Array of contact objects} contacts 
- */
-export const DisplayPracticeContact=({contacts=[]})=>{
-    return (
-        <div>
-            {contacts.length > 0 ?
-                <div>
-                    {
-                        contacts.map((contact, indx) => {
-                            return <div key={indx} >
-                                <span className="mr-2">
-                                    {
-                                        contact.contact_type.match(/phone|mobile|fax/i)!==null?
-                                        <i className="fas fa-phone-alt"></i>:
-                                        <i className="fas fa-envelope"></i>
-                                    }
-                                </span>
-                                <span>{contact.contact_info} ({contact.contact_type})</span>
-                            </div>
-                        })
-                    }
-                </div> :
-                null
-            }
-        </div>
-    )
-}
-
-/**
- * Display practice types information 
- * @param {Array} types 
- */
-export const DisplayPracticeTypes=({types=[]})=>{
-    return (
-        <UserInfo.Consumer>
-            {({facilityTypes=[]})=>{
-                return <div className="d-flex flex-wrap">
-                    {
-                        types.length>0 && facilityTypes.length>0?
-                        types.map((type,indx)=>{
-                            
-                            let classes="bg-light p-1 mt-1 border rounded";
-                            classes+=indx!==0?" ml-2 ":"";
-                            
-                            let val=facilityTypes.filter(f=>f._id===type)[0];
-                            return <div key={indx} className={classes}>{val.name}</div>
-
-                        }):null
-                    }
-                </div>
-            }}
-        </UserInfo.Consumer>
-        
-    );
-}
 
 /**
  * Display practice uploaded files 
@@ -116,8 +40,8 @@ export const DisplayPracticeFiles=({files=[]})=>{
                                 return <div key={indx} className={classes} 
                                     onClick={()=>{handleFilePreview(indx)}}>
                                     {file.file_type.match(/jpeg|jpg|png|gif/i) !== null ?
-                                        <img src={"/fs/" + file._id} /> :
-                                        <embed src={"/fs/" + file._id}></embed>
+                                        <img src={"/g/fs/" + file._id} /> :
+                                        <embed src={"/g/fs/" + file._id}></embed>
                                     }
                                 </div>
                             }

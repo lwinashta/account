@@ -1,21 +1,80 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { UserInfo } from "./../../contexts/userInfo";
 import { ManagePhoneNumbers } from "./managePhoneNumber";
 import { ManageAddresses } from "./manageAddresses";
 import {ManageEmail} from './manageEmail';
+import { getUserProfilePictureUri } from "@oi/utilities/lib/js/common-modules";
 
 export const Demographics = () => {
+
+    let contextValues=useContext(UserInfo);
+    const [userProfileImageUrl,setUserProfileImageUri]=useState("");
+
+    useEffect(()=>{
+        setProfileImage();
+    },[]);
+
+    const setProfileImage = () => {
+
+        let userInfo=contextValues.userInfo;
+        
+        setUserProfileImageUri(getUserProfilePictureUri(userInfo));
+    }
+
+    //Upload pictures only allows one picture upload 
+    const uploadProfilePicture=(e)=>{
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        console.log(e.target.files);
+
+        let files=e.target.files;
+        
+        //console.log(files);
+        let fileData=new FormData();
+
+        $.each(files,function(indx,file){
+            fileData.append(`personal_profile_image-${indx}`,file);
+        });
+
+        fileData.append("linked_mongo_id",contextValues.userInfo._id);
+        fileData.append("linked_db_name","accounts");
+        fileData.append("linked_collection_name","users");
+
+        $.ajax({
+            "url": '/g/uploadfiles',
+            "processData": false,
+            "contentType": false,
+            "data": fileData,
+            "method": "POST"
+        }).then(uploadedPicture=>{
+            console.log(uploadedPicture);
+
+            //Set the new img uri 
+            setUserProfileImageUri(`/g/fs/${uploadedPicture[0]._id}`);
+
+            let userFiles=[...contextValues.userInfo.files];
+            userFiles.push(uploadedPicture[0]);
+            contextValues.updateUserInfoContext({
+                "files":userFiles
+            });
+
+        });
+    }
     
     return (
         <UserInfo.Consumer>
-            {({userInfo={},userProfileImageUrl=""})=>{
+            {({userInfo={}})=>{
                 return (<div>
                     <div className="text-center">
                         <div className="mx-auto position-relative text-center" style={{ width: '100px', 'height': '100px' }}>
-                            <img src={userProfileImageUrl} className="rounded-circle w-100"></img>
+                            <img src={userProfileImageUrl} className="rounded-circle h-100 w-100"></img>
                             <div className="upload-img-container" style={{ top: '45%', right: '-10px' }}>
                                 <input type="file" name="personal_profile_image"
-                                    id="update-profile-img-input" className="entry-field" title="upload image" />
+                                    id="update-profile-img-input" 
+                                    className="entry-field" title="upload image" 
+                                    onChange={(e)=>{uploadProfilePicture(e)}} />
                                 <div className="input-overlay">
                                     <i className="material-icons">camera_alt</i>
                                 </div>

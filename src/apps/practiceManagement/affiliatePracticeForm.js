@@ -1,11 +1,11 @@
 import React, { useState, useEffect,useContext } from "react";
 import { UserInfo } from "../../contexts/userInfo";
-import { DisplayPracticeAddress } from "./displayComponents";
-import { ShowAvailability } from "./showAvailability";
+import { DisplayPracticeAddress } from "@oi/reactcomponents/provider-practice";
 import { AvailabilityEntry } from "./availabilityEntry";
 import { DisplayFacilityInfo} from "./displayFacilityInfo";
 import { saveNewPracticeUser } from "./methods";
 import { Modal } from "@oi/reactcomponents";
+import { ShowAvailability } from "@oi/reactcomponents/provider-practice";
 
 export const AffliatePracticeForm = ({ afterSubmission = {}, handleAddNewPracticeEntry = {} }) => {
 

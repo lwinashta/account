@@ -19,10 +19,12 @@
                 <div class="d-inline-block ml-2 small">Profile</div>
             </div>
         </a>
-        <div class="p-2 app-left-pane-menu-item">
-            <i class="far fa-calendar-check"></i>
-            <div class="d-inline-block ml-2 small">My Appointments</div>
-        </div>
+        <a href="/appointments">
+            <div class="p-2 app-left-pane-menu-item">
+                <i class="far fa-calendar-check"></i>
+                <div class="d-inline-block ml-2 small">My Appointments</div>
+            </div>
+        </a>
         <% if ('login_user_type' in userInfo && userInfo.login_user_type=='healthcare_provider') {%>
         <a href="/practice-management">
             <div class="p-2 app-left-pane-menu-item">
@@ -33,7 +35,7 @@
         <a href="/payment-management">
             <div class="p-2 app-left-pane-menu-item">
                 <i class="fas fa-credit-card"></i>
-                <div class="d-inline-block ml-2 small">Payment Methods</div>
+                <div class="d-inline-block ml-2 small">Payment & Transactions</div>
             </div>
         </a>
         <a href="/subscription-management">

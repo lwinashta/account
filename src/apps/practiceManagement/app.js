@@ -1,12 +1,13 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { UserInfo } from "../../contexts/userInfo";
-import { ShowAvailability } from "./showAvailability";
 import { PracticeEntryForm } from "./practiceEntryForm";
-import { Modal,ConfirmationBox } from "@oi/reactcomponents";
-import { DisplayPracticeFiles,
+import { PracticeSettingsForm } from "./practiceSettingsForm";
+import { Modal, ConfirmationBox} from "@oi/reactcomponents";
+import {ShowAvailability, 
         DisplayPracticeAddress,
         DisplayPracticeContact,
-        DisplayPracticeTypes, 
+        DisplayPracticeTypes } from "@oi/reactcomponents/provider-practice";
+import { DisplayPracticeFiles,
         DisplayPracticeVerification,
         DisplayPracticeUserVerification} from "./displayComponents";
 import {AffliatePracticeForm} from './affiliatePracticeForm';
@@ -18,7 +19,7 @@ export const App = () => {
     const [appLoader, setAppLoader] = useState(true);
     
     const [showPracticeEntryForm, setShowPracticeEntryFormFlag] = useState(false);
-    const [userProfileImageUrl, setUserProfileImageUri] = useState("");   
+    const [showPracticeSettingsEntryForm, setShowPracticeSettingsEntryFormFlag] = useState(false);
     const [facilityTypes, setFacilityType] = useState([]);
 
     const [showAffiliationEntryForm, setAffiliationEntryFormFlag]=useState(false);
@@ -64,11 +65,11 @@ export const App = () => {
     },[showSelectedPracticeDetails]);
 
     useEffect(()=>{
-        if(!showSelectedPracticeDetails && !showPracticeEntryForm && !showDeleteConfirmationBox){
+        if(!showSelectedPracticeDetails && !showPracticeEntryForm && !showDeleteConfirmationBox && !showPracticeSettingsEntryForm){
             setSelectedPracticeId("");
             setSelectedPracticeInfo({});
         }
-    },[showSelectedPracticeDetails,showPracticeEntryForm,showDeleteConfirmationBox]);
+    },[showSelectedPracticeDetails,showPracticeEntryForm,showDeleteConfirmationBox,showPracticeSettingsEntryForm]);
 
     /** Get Data ***/
     const getUserInfo = () => {
@@ -93,10 +94,16 @@ export const App = () => {
     }
 
     /** Handle Events ***/
-    const handlePracticeEdit = (_id) => {
+    const handlePracticeDetailsEdit = (_id) => {
         setSelectedPracticeId(_id);
         setSelectedPracticeInfo(userPractices.filter(p => p._id === _id)[0]);
         setShowPracticeEntryFormFlag(true);
+    }
+
+    const handlePracticeSettingsEdit=(_id)=>{
+        setSelectedPracticeId(_id);
+        setSelectedPracticeInfo(userPractices.filter(p => p._id === _id)[0]);
+        setShowPracticeSettingsEntryFormFlag(true);
     }
 
     const handleViewPracticeDetails = (_id) => {
@@ -124,6 +131,30 @@ export const App = () => {
         setAffiliationEntryFormFlag(false);
 
         popup.onBottomCenterSuccessMessage("Practice Saved");
+    }
+
+    const handleAfterPracticeSettingSubmission=(data)=>{
+        let _d=[...userPractices];
+        
+        if(Object.keys(selectedPracticeInfo).length>0){
+            //update mode 
+            let indx=_d.findIndex(p=>p._id===selectedPracticeInfo._id);
+            console.log(indx);
+            if('settings' in _d[indx]){
+                _d[indx].settings=Object.assign(_d[indx].settings,data.settings);
+            }else{
+                _d[indx].settings=data.settings;
+            }
+
+            console.log(_d[indx]);
+        }
+
+        //console.log(_d);
+
+        setUserPractices(_d);
+        setShowPracticeSettingsEntryFormFlag(false);
+
+        popup.onBottomCenterSuccessMessage("Practice Settings Saved");
     }
 
     const handlePracticeDeletion=(_id)=>{
@@ -223,17 +254,28 @@ export const App = () => {
                                                             <DisplayPracticeAddress address={facilityInfo} />
                                                         </div>
                                                         <div className="mt-2 pb-1">
-                                                            <DisplayPracticeTypes types={facilityInfo.medical_facility_type} />
+                                                            <DisplayPracticeTypes 
+                                                                types={facilityInfo.medical_facility_type} 
+                                                                facilityTypes={facilityTypes} />
                                                         </div>
                                                         <div className="mt-2 mb-2">
                                                             <DisplayPracticeFiles files={facilityInfo.files} />
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className="push-right d-flex small">
-                                                    <div className="pointer btn-link p-1 text-secondary" onClick={() => handleViewPracticeDetails(practice._id)}>View All Details</div>
-                                                    <div className="pointer btn-link ml-3 p-1" onClick={() => { handlePracticeEdit(practice._id) }}>Edit</div>
-                                                    <div className="pointer btn-link text-danger ml-3 p-1" onClick={() => { handlePracticeDeletion(practice._id) }}>Delete</div>
+                                                <div className="push-right d-flex">
+                                                    <div className="pointer btn-tooltip p-1" tip="View All Details" onClick={() => handleViewPracticeDetails(practice._id)}>
+                                                        <i className="fas fa-info-circle"></i>
+                                                    </div>
+                                                    <div className="pointer btn-tooltip ml-3 p-1" tip="Edit Practice Details" onClick={() => { handlePracticeDetailsEdit(practice._id) }}>
+                                                        <i className="far fa-edit"></i>
+                                                    </div>
+                                                    <div className="pointer btn-tooltip ml-3 p-1" tip="Edit Practice Settings" onClick={() => { handlePracticeSettingsEdit(practice._id) }}>
+                                                        <i className="fas fa-cog"></i>
+                                                    </div>
+                                                    <div className="pointer btn-tooltip text-danger ml-3 p-1" tip="Delete Practice" onClick={() => { handlePracticeDeletion(practice._id) }}>
+                                                        <i className="far fa-trash-alt"></i>
+                                                    </div>
                                                 </div>
                                             </div>
                                         })
@@ -254,26 +296,6 @@ export const App = () => {
                         }
 
                         {
-                            showPracticeEntryForm ? 
-                            <Modal
-                                header={<h3>Practice Entry</h3>}
-                                onCloseHandler={() => { setShowPracticeEntryFormFlag(false) }}>
-                                <PracticeEntryForm afterSubmission={handleAfterPracticeSubmission}/>
-                            </Modal> : null
-                        }
-
-                        {
-                            showAffiliationEntryForm ? 
-                            <Modal
-                                header={<h3>Affiliate Yourself to Practice</h3>}
-                                onCloseHandler={() => { setAffiliationEntryFormFlag(false) }}>
-                                <AffliatePracticeForm 
-                                    handleAddNewPracticeEntry={handleAddNewPracticeEntry} 
-                                    afterSubmission={handleAfterPracticeSubmission} />
-                            </Modal> : null
-                        }
-
-                        {
                             showSelectedPracticeDetails ?
                             <Modal header={<h3>Practice Details</h3>} onCloseHandler={() => { setShowPracticeDetailsFlag(false) }}>
                                     <div className="tab-parent-container" ref={detailsModalRef}>
@@ -284,7 +306,7 @@ export const App = () => {
                                         <div className="tab-content-container mt-4">
                                             <div className="tab-content position-relative" id="pop-practice-details">
                                                 <div className="d-flex push-right">
-                                                    <div className="small pointer mr-2 btn-link" onClick={() => { handlePracticeEdit(selectedPracticeInfo._id) }}>Edit</div>
+                                                    <div className="small pointer mr-2 btn-link" onClick={() => { handlePracticeDetailsEdit(selectedPracticeInfo._id) }}>Edit</div>
                                                 </div>
                                                 <div className="mt-2">
                                                     <h4>{selectedPracticeInfo.facilityInfo[0].medical_facility_name}</h4>
@@ -293,7 +315,9 @@ export const App = () => {
                                                         <DisplayPracticeAddress address={selectedPracticeInfo.facilityInfo[0]} />
                                                     </div>
                                                     <div className="mt-2 small">
-                                                        <DisplayPracticeTypes types={selectedPracticeInfo.facilityInfo[0].medical_facility_type} />
+                                                        <DisplayPracticeTypes 
+                                                            types={selectedPracticeInfo.facilityInfo[0].medical_facility_type} 
+                                                            facilityTypes={facilityTypes} />
                                                     </div>
                                                 </div>
                                                 <div className="mt-3">
@@ -351,6 +375,35 @@ export const App = () => {
                                     <div className="d-inline-block btn btn-link btn-sm ml-2 pointer" onClick={()=>{setDeleteConfirmationBoxFlag(false)}}> No</div>
                                 </div>
                             </ConfirmationBox>:null
+                        }
+
+                        {
+                            showPracticeSettingsEntryForm ? 
+                            <Modal
+                                header={<h3>Practice Settings</h3>}
+                                onCloseHandler={() => { setShowPracticeSettingsEntryFormFlag(false) }}>
+                                <PracticeSettingsForm afterSubmission={handleAfterPracticeSettingSubmission} />
+                            </Modal> : null
+                        }
+
+                        {
+                            showPracticeEntryForm ? 
+                            <Modal
+                                header={<h3>Practice Entry</h3>}
+                                onCloseHandler={() => { setShowPracticeEntryFormFlag(false) }}>
+                                <PracticeEntryForm afterSubmission={handleAfterPracticeSubmission}/>
+                            </Modal> : null
+                        }
+
+                        {
+                            showAffiliationEntryForm ? 
+                            <Modal
+                                header={<h3>Affiliate Yourself to Practice</h3>}
+                                onCloseHandler={() => { setAffiliationEntryFormFlag(false) }}>
+                                <AffliatePracticeForm 
+                                    handleAddNewPracticeEntry={handleAddNewPracticeEntry} 
+                                    afterSubmission={handleAfterPracticeSubmission} />
+                            </Modal> : null
                         }
 
                     </div>

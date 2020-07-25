@@ -1,0 +1,54 @@
+.fc-button{
+    padding: 5px 10px!important;
+    font-size: small !important;
+    text-transform: capitalize !important;
+}
+
+.fc-col-header-cell,
+.fc-timegrid-slot,
+.fc-timegrid-axis{
+    font-size: small;
+    vertical-align: middle;
+}
+
+.inner-left-pane{
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 275px;
+    bottom: 0px;
+    overflow: auto;
+}
+
+.inner-right-pane{
+    position: absolute;
+    left: 276px;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    overflow: auto;
+}
+
+.react-datepicker{
+    font-family: inherit !important;
+    height: 280px !important;
+}
+
+.colored-checkbox{
+    width:18px;
+    height: 18px;
+    border-radius: 2px;
+    margin-right:8px;
+    position: relative;
+}
+
+.colored-checkbox.checked::before{
+    position: absolute;
+    content: "\f00c";
+    left: 4px;
+    font-family: 'Font Awesome 5 Free';
+    color: white;
+    font-weight: 900;
+    font-size: 10px;
+    top: 2px;
+}

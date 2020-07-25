@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import { UserInfo } from "../../contexts/userInfo";
 import regeneratorRuntime from "regenerator-runtime";
 import { Modal, ConfirmationBox } from "@oi/reactcomponents";
+import * as PaymentFunctions from "../reusable/paymentFunctions";
 const moment = require('moment');
 
 export const CancelSubscription = ({ planBillingFrequency = "", subscriptionName = "" }) => {
@@ -19,14 +20,24 @@ export const CancelSubscription = ({ planBillingFrequency = "", subscriptionName
     //Step 1:
     const handleCancelSubscriptionClick = () => {
 
-        //check if payment exists for the user. If yes go next otherwise show error message
-        setSelectedPlan(contextValues.subscriptionPlanByCountry[planBillingFrequency]);
+        //Retrieve user stored information again and check the selected plan isnot already canceled 
+        //if selected plan is already canceled, refresh the page
+        PaymentFunctions.checkIfCachedSubsciptionIsValid(contextValues.userInfo.registration_number, "elite subscription",contextValues.storedUserAccountSubscriptions).then(response=>{
+            
+            //check if payment exists for the user. If yes go next otherwise show error message
+            setSelectedPlan(contextValues.subscriptionPlanByCountry[planBillingFrequency]);
 
-        //set the selected subscripotion
-        //filter active prescription for the plan
-        console.log(contextValues,contextValues.userSubscriptions.subscriptions.filter(s => s.planId === contextValues.subscriptionPlanByCountry[planBillingFrequency].id && s.status === "Active")[0]);
-        setSelectedSubscription(contextValues.userSubscriptions.subscriptions.filter(s => s.planId === contextValues.subscriptionPlanByCountry[planBillingFrequency].id && s.status === "Active")[0]);
-        setCancelSubscriptionConfirmationBoxFlag(true);
+            //set the selected subscripotion
+            //filter active prescription for the plan
+            //console.log(contextValues.userSubscriptions.subscriptions.filter(s => s.planId === contextValues.subscriptionPlanByCountry[planBillingFrequency].id && (s.status === "Active" || s.status === "Pending"))[0]);
+            setSelectedSubscription(contextValues.userSubscriptions.subscriptions.filter(s => s.planId === contextValues.subscriptionPlanByCountry[planBillingFrequency].id && (s.status === "Active" || s.status === "Pending"))[0]);
+            setCancelSubscriptionConfirmationBoxFlag(true);
+
+        }).catch(err=>{
+            popup.onBottomCenterErrorOccured("Error Occured. Refreshing App.");
+            contextValues.refreshApp();
+        });
+
     }
 
     // Cancels the subscription and updates the subscription status 
@@ -75,7 +86,7 @@ export const CancelSubscription = ({ planBillingFrequency = "", subscriptionName
 
             /**@SendEmail:Pending on subscription cancellation */
 
-            window.location.reload();
+            contextValues.refreshApp();
 
         }).catch(err => {
             popup.onBottomCenterErrorOccured("Error occured while cancellation");
@@ -86,6 +97,7 @@ export const CancelSubscription = ({ planBillingFrequency = "", subscriptionName
     const processCancellationIfTransactionExists = async () => {
         
         popup.onScreen("Checking transactions...");
+        
         let subscriptionEndDate=new Date();
         let refundAmount=0;
 
@@ -98,20 +110,20 @@ export const CancelSubscription = ({ planBillingFrequency = "", subscriptionName
         let checkTransactionState=getTransactionState();
  
         if (refundAmount > 0 && checkTransactionState==="void" && selectedPlan.billingFrequency===12) {
-            let voided=await voidTransaction(transaction.id);
+            let voided=await PaymentFunctions.voidTransaction(transaction.id);
             subscriptionEndDate=new Date();
 
         } else if (refundAmount > 0 && checkTransactionState==="refund" && selectedPlan.billingFrequency===12){
-            let refund=await refundTransaction(transaction.id,refundAmount);
+            let refund=await PaymentFunctions.refundTransaction(transaction.id,refundAmount);
             subscriptionEndDate=selectedPlan.billingFrequency===12?getYearlySubscriptionEndDate().format():"";
 
         }else if(refundAmount === 0 && checkTransactionState==="void" && selectedPlan.billingFrequency===1){
-            let voided=await voidTransaction(transaction.id);
+            let voided=await PaymentFunctions.voidTransaction(transaction.id);
             subscriptionEndDate=new Date();
 
         }else if(refundAmount === 0 && checkTransactionState==="refund" && selectedPlan.billingFrequency===1){
             //Nothing to be done. Cancel the subscription
-
+            subscriptionEndDate=selectedSubscription.nextBillingDate;
         }
 
         popup.remove();
@@ -164,31 +176,16 @@ export const CancelSubscription = ({ planBillingFrequency = "", subscriptionName
         }
     }
 
-    //Transaction is voided or refunded depending on the status 
-    //If transaction status in not settled, the transaction can be voided and whole refund is provided to the user 
-    //If trasaction is already settled, the remaing balance amount is refunded 
-    const voidTransaction=(transactionId)=>{
-        return $.post('/payment/transaction/void', {
-            "transactionId": transactionId
-        });
-    } 
-    
-    const refundTransaction=(transactionId,amount)=>{
-        return $.post('/payment/transaction/refund', {
-            "transactionId": transactionId,
-            "amount": amount.toString()
-        });
-    }
-
     //Calculates the subscription end date. 
     //Monthly suncriptions is cancelled at the end of the next billing cycle 
     //Yealry subscription is cancelled if the transaction cannot be voided. YEalry subscription stays active till end of next billDate and then canceled
     const getYearlySubscriptionEndDate = () => {
         let today = moment();
-        console.log(selectedSubscription.transactions[selectedSubscription.transactions.length - 1]);
+        let transaction=selectedSubscription.transactions[selectedSubscription.transactions.length - 1];
+        console.log(transaction);
         if (today.date() >= selectedSubscription.billingDayOfMonth
-            && selectedSubscription.transactions[selectedSubscription.transactions.length - 1].status !== "submitted_for_settlement"
-            && selectedSubscription.transactions[selectedSubscription.transactions.length - 1].status !== "settlement_pending") {
+            && transaction.status !== "submitted_for_settlement"
+            && transaction.status !== "settlement_pending") {
             return today.add(1, 'months').date(selectedSubscription.billingDayOfMonth);
         } else {
             return today.date(selectedSubscription.billingDayOfMonth);
@@ -232,7 +229,7 @@ export const CancelSubscription = ({ planBillingFrequency = "", subscriptionName
                                                     <li className="mt-2">{
                                                         selectedSubscription.transactions.length === 0 ?
                                                             /** There is no transaction. therefore the subscription is still in trial period therefore no refund  */
-                                                            <div>'Still in trial period. NO refund will be issued. '</div> :
+                                                            <div>NO refund will be issued, since nothing has been charged to your account. </div> :
 
                                                             /** Transaction Exists, but transaction can be voided and total amount will be credited to the default cc   */
                                                             selectedSubscription.transactions[selectedSubscription.transactions.length - 1].status === "submitted_for_settlement"

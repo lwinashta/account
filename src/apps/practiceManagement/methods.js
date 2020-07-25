@@ -16,7 +16,7 @@ export const saveNewPracticeUser=(userId,facilityId,availability,affiliation)=>{
         "facilityId.$_id": facilityId,
         "availability_information": availability,
         "settings":{//default settings set by the system. User can change settings later 
-            "appointment_time_slot_diff":15,
+            "appointment_time_slot_diff":"15",
             "appointment_allowed_booking_types":[
                 "video","call","inperson"
             ]
@@ -32,5 +32,20 @@ export const saveNewPracticeUser=(userId,facilityId,availability,affiliation)=>{
         "data": facilityUserInfo,
         "method": "POST"
     }); 
+
+}
+
+export const updatePracticeUser=(data)=>{
+    
+    let _formjs=new formjs();
+    let facilityUserInfo = _formjs.convertJsonToFormdataObject(data);
+
+    return $.ajax({
+        "url": '/account/api/heathcarefacilityuser/update',
+        "processData": false,
+        "contentType": false,
+        "data": facilityUserInfo,
+        "method": "POST"
+    });
 
 }
