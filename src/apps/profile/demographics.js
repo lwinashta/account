@@ -3,7 +3,7 @@ import { UserInfo } from "./../../contexts/userInfo";
 import { ManagePhoneNumbers } from "./managePhoneNumber";
 import { ManageAddresses } from "./manageAddresses";
 import {ManageEmail} from './manageEmail';
-import { getUserProfilePictureUri } from "@oi/utilities/lib/js/common-modules";
+import { getUserProfilePictureUri } from "@oi/reactcomponents";
 
 export const Demographics = () => {
 

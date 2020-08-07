@@ -23,10 +23,10 @@
     "react-dom": ">=16.8.0"
   },
   "dependencies": {
-    "@fullcalendar/daygrid": "^5.1.0",
-    "@fullcalendar/interaction": "^5.1.0",
-    "@fullcalendar/react": "^5.1.0",
-    "@fullcalendar/timegrid": "^5.1.0",
+    "@fullcalendar/daygrid": "^5.2.0",
+    "@fullcalendar/interaction": "^5.2.0",
+    "@fullcalendar/react": "^5.2.0",
+    "@fullcalendar/timegrid": "^5.2.0",
     "@oi/reactcomponents": "file:../efs/reactComponents",
     "@oi/utilities": "file:../efs/utilities",
     "bootstrap": "^4.3.1",

@@ -82,6 +82,7 @@ export const Insurance = () => {
             _manageFiles.fileData=insuranceInfo.files;
             _manageFiles.insertFiles();
             _manageFiles.onFileDeletionCallback=function(deletedFile){
+                
                 let insurances=[...userInsurances];
 
                 //find the file 

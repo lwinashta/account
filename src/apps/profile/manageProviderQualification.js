@@ -1,576 +1,151 @@
 import React, { useEffect, useState, useContext } from "react";
 import { UserInfo } from "../../contexts/userInfo";
-import { Modal,FilePreview } from "@oi/reactcomponents";
-import { formjs,multiSelectDropDown,fileUploadField,insertValues } from "@oi/utilities/lib/js/form";
+import { ConfirmationBox } from "@oi/reactcomponents";
+import * as userFunctions from './../reusable/userInfoFunctions';
 
-const degrees=require("@oi/utilities/lib/lists/medical-degrees.json");
-const councils=require("@oi/utilities/lib/lists/medical-councils.json");
-
-const _formjs=new formjs();
-
-const DisplayItem=({item="",indx=null})=>{
-    return ( <div className="small bg-lgrey border text-capitalize rounded pr-2 pl-2 pt-1 pb-1 mt-1 mr-2">{item}</div>);
-}
-
-const DisplayItemAsString=(item,_id)=>{
-    return ( `<div _id="${_id}" class="item bg-lgrey text-capitalize border rounded pr-2 pl-2 pt-1 pb-1 mt-1 mr-2">
-        <div class="d-inline-block align-middle">${item}</div>
-        <div class="d-inline-block btn-link text-danger align-middle remove-item pointer">
-            <i class="fas fa-times"></i>
-        </div>
-    </div>`);
-}
+import { ManageProviderSpecialties } from "./manageProviderSpecialties";
+import { ManageProviderMedicalDegree } from "./manageProviderMedicalDegree";
+import { ManageProviderMedicalRegistration } from "./manageProviderMedicalRegistration";
+import { ManageProviderMedicalCouncil } from "./manageProviderMedicalCouncil";
 
 export const ManageProviderQualification = () => {
     
     let params=useContext(UserInfo);
     
-    const [userSpecialties,setSpecialties]=useState([]);
-    const [userMedicalDegrees,setMedicalDegrees]=useState("medical_degrees" in params.userInfo?params.userInfo.medical_degrees:[]);
-    const [userMedicalRegNumber,setMedicalRegNumber]=useState("medical_registration_number" in params.userInfo?params.userInfo.medical_registration_number:"");
-    const [userMedicalCouncils,setMedicalCouncil]=useState("medical_councils" in params.userInfo?params.userInfo.medical_councils:[]);
-    const [userMedicalRegistrationFiles,setUserMedicalRegistrationFiles]=useState("files" in params.userInfo?params.userInfo.files.filter(f=>f.field_name==="medical_registration_files"):[]);
-    const [showMedicalRegistraionFilesPreviewModal,setMedicalRegistraionFilesPreviewModalFlag]=useState(false);
-    const [showSpecialtyEntryForm,setShowSpecialtyEntryFormFlag]=useState(false);
-    const [showMedicalDegreeEntryForm,setShowMedicalDegreeEntryFormFlag]=useState(false);
-    const [showMedicalCouncilEntryForm,setShowMedicalCouncilEntryFormFlag]=useState(false);
-    const [showMedicalRegistraionEntryForm,setShowMedicalRegistrationEntryFormFlag]=useState(false);
-    const [uploadedRegistrationFiles,setUploadedRegistrationFiles]=useState([]);
-    const [specialties, setSpecialtiesList] = useState([]);
-
-    let formRef=React.createRef();
-
-    /** UseEffect Hooks */
-    useEffect(()=>{
-        $.getJSON('/healthcare/api/specialties/getall').then(response=>{
-            //console.log(response)
-            setSpecialtiesList(response);
-
-            //set all states 
-            setSpecialties("specialties" in params.userInfo?params.userInfo.specialties:[]);
-
-        });
-    },[]);
-
-    useEffect(()=>{
-        if(showSpecialtyEntryForm){
-            let _multiSelectDropDown=new multiSelectDropDown({
-                container:$(formRef.current),
-                data:specialties,
-                initialDataset:specialties,
-                onItemSearch:function(val){
-                    let rgEx = new RegExp(val, 'i');
-                    return specialties.filter(ds => rgEx.test(ds.name));
-                },
-                displaySearchResults:function(items){
-                    console.log(items);
-                    return items.map((item,indx)=>{
-                        return `<div class="p-2 border-bottom pointer text-capitalize item" _id="${item._id}">${item.name}</div>`
-                    });
-                },
-                onItemSelect:function(item){
-                    return DisplayItemAsString(item.name,item._id);
-                }
-            });
-            _multiSelectDropDown.bind();
-
-            let layout=userSpecialties.map((specialty,indx)=>{
-                let specialtyinfo=specialties.filter(s=>s._id===specialty)[0];
-                return DisplayItemAsString(specialtyinfo.name,specialtyinfo._id);
-            })
-
-            $(formRef.current).find('.selected-items').append(layout)
-
-        }
-    },[showSpecialtyEntryForm]);
-
-    useEffect(()=>{
-        if(showMedicalDegreeEntryForm){
-            let _multiSelectDropDown=new multiSelectDropDown({
-                container:$(formRef.current),
-                data:degrees,
-                initialDataset:degrees,
-                onItemSearch:function(val){
-                    let rgEx = new RegExp(val, 'i');
-                    return degrees.filter(ds => rgEx.test(ds.name) || rgEx.test(ds.abbr) );
-                },
-                displaySearchResults:function(items){
-                    return items.map((item,indx)=>{
-                        return `<div className="p-2 border-bottom pointer text-capitalize item" _id="${item._id}">${item.name} (${item.abbr})</div>`
-                    });
-                },
-                onItemSelect:function(item){
-                    return DisplayItemAsString(`${item.name} (${item.abbr})`,item._id);
-                }
-            });
-            _multiSelectDropDown.bind();
-
-            let layout=userMedicalDegrees.map((degree,indx)=>{
-                let degreeInfo=degrees.filter(s=>s._id===degree)[0];
-                return DisplayItemAsString(degreeInfo.name,degreeInfo._id);
-            })
-
-            $(formRef.current).find('.selected-items').append(layout)
-
-        }
-    },[showMedicalDegreeEntryForm]);
-
-    useEffect(()=>{
-        if(showMedicalCouncilEntryForm){
-            let _multiSelectDropDown=new multiSelectDropDown({
-                container:$(formRef.current),
-                data:councils,
-                initialDataset:councils,
-                onItemSearch:function(val){
-                    let rgEx = new RegExp(val, 'i');
-                    return degrees.filter(ds => rgEx.test(ds.name) );
-                },
-                displaySearchResults:function(items){
-                    return items.map((item,indx)=>{
-                        return `<div className="p-2 border-bottom pointer text-capitalize item" _id="${item._id}">${item.name}</div>`
-                    });
-                },
-                onItemSelect:function(item){
-                    return DisplayItemAsString(`${item.name}`,item._id);
-                }
-            });
-            _multiSelectDropDown.bind();
-
-            let layout=userMedicalCouncils.map((council,indx)=>{
-                let councilInfo=councils.filter(s=>s._id===council)[0];
-                return DisplayItemAsString(councilInfo.name,councilInfo._id);
-            })
-
-            $(formRef.current).find('.selected-items').append(layout)
-
-        }
-    },[showMedicalCouncilEntryForm]);
-
-    useEffect(()=>{
-        if(showMedicalRegistraionEntryForm){
-
-            let _manageFiles=new fileUploadField({
-                container:$(formRef.current).find('.droppable-file-container'),
-                multiple:true,
-                name:$(formRef.current).find('.droppable-file-container').attr('name'),
-                onFileSelectionCallback:function(file,allUploaded){
-                    setUploadedRegistrationFiles(allUploaded);
-                },
-                fileData:userMedicalRegistrationFiles,
-                onFileDeletionCallback:function(deletedFile){
-                    let regFiles=[...userMedicalRegistrationFiles];
+    const [qualificationVerificationState,setQualitficationVerificationState]=useState("qualification_verification_status" in params.userInfo ?params.userInfo.qualification_verification_status:"");
+    const [qualificationStateChangeTo,setQualificationStateChangeTo]=useState("");
     
-                    //find the file 
-                    let indx=regFiles.findIndex(f=>f._id===deletedFile._id);
-                    let removedFile=regFiles.files.splice(indx,1);
-                    
-                    setUserMedicalRegistrationFiles(removedFile);
-                }
-            });
-            _manageFiles.bind();//bind file drg and drop
-            _manageFiles.insertFiles();
+    const [qualificationStateChangeConfirmation,setQualificationStateChangeConfirmationFlag]=useState(false);
 
-            let _insertValues=new insertValues({
-                container:$(formRef.current)
-            });
-
-            //load the data in the form 
-            _insertValues.insert({
-                "medical_registration_number":userMedicalRegNumber
-            });
-        }
-
-        if(!setShowMedicalRegistrationEntryFormFlag){
-            setUploadedRegistrationFiles([]);
-        }
-
-    },[showMedicalRegistraionEntryForm]);
-
-    //** Submit Updates */
-    const submitUserUpdates=(data)=>{
-        return $.ajax({
-            "url": '/account/api/user/update',
-            "data": JSON.stringify(data),
-            "processData": false,
-            "contentType": "application/json; charset=utf-8",
-            "method": "POST"
-        });
-    }
-
+    /******************** */
     /** Event Handlers */
 
-    const handleSpecialtySubmission=(e)=>{
-        e.preventDefault();
-
-        let form=e.target;
-
-        let validate=_formjs.validateForm(form);
-
-        if(validate===0){
-            popup.onScreen("Updating...");
-            let selectedSpecialties=[];
-
-            $(form).find('[name="specialties"]').find('.selected-items').find('.item').each(function(){
-                selectedSpecialties.push($(this).attr('_id'));
-            });
-
-            submitUserUpdates({
-                "specialties":selectedSpecialties,
-                "_id":params.userInfo._id
-
-            }).then(response=>{
-                setSpecialties(selectedSpecialties);
-                setShowSpecialtyEntryFormFlag(false);
-                popup.remove();
-                popup.onBottomCenterSuccessMessage("Specialty Updated");
-
-            }).catch(err=>{
-                console.log(err);
-                popup.onBottomCenterErrorOccured("Error while updating the info. Try again.");
-            })
-        }else{
-            popup.onBottomCenterRequiredErrorMsg();
-        }
+    const handleQualificationStateChange=(state)=>{
+        setQualificationStateChangeTo(state);
+        setQualificationStateChangeConfirmationFlag(true);
     }
 
-    const handleMedicalDegreeSubmission=(e)=>{
-        e.preventDefault();
-
-        let form=e.target;
-
-        let validate=_formjs.validateForm(form);
-
-        if(validate===0){
-            popup.onScreen("Updating...");
-            let selectedMedicalDegrees=[];
-
-            $(form).find('[name="medical_degrees"]').find('.selected-items').find('.item').each(function(){
-                selectedMedicalDegrees.push($(this).attr('_id'));
-            });
-
-            submitUserUpdates({
-                "medical_degrees":selectedMedicalDegrees,
-                "_id":params.userInfo._id
-
-            }).then(response=>{
-                setMedicalDegrees(selectedMedicalDegrees);
-                setShowMedicalDegreeEntryFormFlag(false);
-                popup.remove();
-                popup.onBottomCenterSuccessMessage("Medical Degree Updated");
-
-            }).catch(err=>{
-                console.log(err);
-                popup.onBottomCenterErrorOccured("Error while updating the info. Try again.");
-            })
-        }else{
-            popup.onBottomCenterRequiredErrorMsg();
-        }
-    }
-
-    const handleMedicalCouncilSubmission=(e)=>{
-        e.preventDefault();
-
-        let form=e.target;
-
-        let validate=_formjs.validateForm(form);
-
-        if(validate===0){
-            popup.onScreen("Updating...");
-            let selectedMedicalCouncils=[];
-
-            $(form).find('[name="medical_councils"]').find('.selected-items').find('.item').each(function(){
-                selectedMedicalCouncils.push($(this).attr('_id'));
-            });
-
-            submitUserUpdates({
-                "medical_councils":selectedMedicalCouncils,
-                "_id":params.userInfo._id
-
-            }).then(response=>{
-                setMedicalCouncil(selectedMedicalCouncils);
-                setShowMedicalCouncilEntryFormFlag(false);
-                
-                popup.remove();
-                popup.onBottomCenterSuccessMessage("Medical Council Updated");
-
-            }).catch(err=>{
-                console.log(err);
-                popup.onBottomCenterErrorOccured("Error while updating the info. Try again.");
-            });
-        }else{
-            popup.onBottomCenterRequiredErrorMsg();
-        }
-    }
-
-    const addMedicalRegistrationFiles=(files)=>{
-        //console.log(files);
-        let fileData=new FormData();
-
-        Object.keys(files).forEach(key=>{
-            fileData.append(key,files[key]);
+    const handleQualificationStateChangeOnConfirm=(state)=>{
+        
+        popup.onScreen("Updating ...");
+        
+        let history="qualification_verification_status_history" in params.userInfo?params.userInfo.qualification_verification_status_history:[];
+        
+        history.push({
+            "to":state,
+            "from":"qualification_verification_status" in params.userInfo? params.userInfo.qualification_verification_status:null,
+            dateTime:new Date()
         });
 
-        fileData.append("linked_mongo_id",params.userInfo._id);
-        fileData.append("linked_db_name","accounts");
-        fileData.append("linked_collection_name","users");
+        userFunctions.submitUserUpdates({
+            "qualification_verification_status":state,
+            "qualification_verification_status_change_history":history,
+            "_id":params.userInfo._id
 
-        return $.ajax({
-            "url": '/g/uploadfiles',
-            "processData": false,
-            "contentType": false,
-            "data": fileData,
-            "method": "POST"
+        }).then(response=>{
+
+            setQualitficationVerificationState(state);
+            setQualificationStateChangeConfirmationFlag(false);
+
+            popup.remove();
+            popup.onBottomCenterSuccessMessage("Qualification Verification Updated");
         })
-    }
-
-    const handleMedicalRegistrationSubmission=(e)=>{
-        e.preventDefault();
-        
-        let form=e.target;
-        let validation=_formjs.validateForm(form);
-
-        if(validation===0){
-            //update the registration number 
-            let medRegNum=$(form).find('[name="medical_registration_number"]').val();
-            submitUserUpdates({
-                "medical_registration_number":$(form).find('[name="medical_registration"]').val(),
-                "_id":params.userInfo._id
-
-            }).then(response=>{
-                setMedicalRegNumber(medRegNum);
-
-                //check if any new files uploaded 
-                if(Object.keys(uploadedRegistrationFiles).length>0){
-                    return addMedicalRegistrationFiles(uploadedRegistrationFiles);
-
-                }
-
-            }).then(response=>{
-                if(Array.isArray(response)){
-                    setUserMedicalRegistrationFiles(userMedicalRegistrationFiles.concat(response));
-                }
-                popup.remove();
-                popup.onBottomCenterSuccessMessage("Medical Registration Updated");
-                setShowMedicalRegistrationEntryFormFlag(false);
-
-            }).catch(err=>{
-                console.log(err);
-                popup.onBottomCenterErrorOccured("Error while updating the info. Try again.");
-            });
-
-        }else{
-            popup.onBottomCenterRequiredErrorMsg();
-        }
     }
 
     /** Render */
     return (<div>
-        <div className="border-bottom pb-2 position-relative">
-            <div className="font-weight-bold">Specialty</div>
+
+            <div className="border-bottom">
+                {
+                    qualificationVerificationState.length>0 && qualificationVerificationState==="pending"?
+                    <div className="small mb-2">
+                        <i className="fas text-danger fa-exclamation-triangle"></i> Qualification verification is in <i className="text-danger">pending</i> state. 
+                        Please enter all of the required <span className="text-danger">*</span> qualification details, i.e., <b className="text-info">Specialty, Medical Degree, Medical Registration Number and Medical Council</b>. 
+                        Once all the information is entered and you think your profile is ready to be reviewed, please click on "Send for Approval" button below.
+                    </div>:
+                    qualificationVerificationState.length>0 && qualificationVerificationState==="in_review"?
+                    <div className="small mb-2">
+                        <i className="far fa-question-circle text-danger"></i> Your qualification details are being reviewed by our compliance team. 
+                        It takes 1-3 business days to approve the details depending on the scenario. 
+                        If there are any questions or concerns please contact us.
+                    </div>:
+                    qualificationVerificationState.length>0 && qualificationVerificationState==="approved"?
+                    <div className="small mb-2">
+                        <i className="fas text-info fa-user-check"></i> Your qualification has been <i className="text-info">approved</i> by our complaince team. 
+                        Please click on "Request to Edit" if you wish to update your qualification.
+                    </div>:
+                    null
+                }
+            </div>
+
+            <ManageProviderSpecialties />
+            <ManageProviderMedicalDegree />
+            <ManageProviderMedicalRegistration />
+            <ManageProviderMedicalCouncil />
+           
+            {/* {Qualification Workflow Buttons} */}
             {
-                userSpecialties.length === 0 ? 
-                <div>
-                    <div className="small mb-1 mt-1 btn-link pointer" onClick={()=>setShowSpecialtyEntryFormFlag(true)}>Add Specialties</div>
-                </div> :
-                <div>
-                    <div className="push-right">
-                        <div className="small btn-link pointer" onClick={()=>setShowSpecialtyEntryFormFlag(true)}>Edit</div>
-                    </div>
-                    <div className="d-flex flex-wrap">
+                qualificationVerificationState.length>0?
+                    <div className="border-bottom pt-2 pb-2 d-flex small justify-content-end pointer">
+                    {
+                        qualificationVerificationState.length>0 && qualificationVerificationState==="pending"?
+                        <div className="btn-sm btn-primary" onClick={()=>{handleQualificationStateChange("in_review")}}>
+                            <i className="far fa-check-circle"></i> Send for Approval
+                        </div>:
+                        qualificationVerificationState.length>0 && qualificationVerificationState==="approved"?
+                        <div className="btn-sm btn-warning" onClick={()=>{handleQualificationStateChange("pending")}}>
+                            <i className="far fa-edit"></i> Request to Update
+                        </div>:
+                        null
+                    }
+                    </div>:null
+            }
+
+            {
+                qualificationStateChangeConfirmation ?
+                    <ConfirmationBox >
+                        <h3 className="text-center">
+                            {qualificationStateChangeTo === "in_review" ? "Send for Approval" :
+                                qualificationStateChangeTo === "pending" ? "Request to Edit" :
+                                    null
+                            }
+                        </h3>
                         {
-                            userSpecialties.map((specialty,indx)=>{
-                                return <DisplayItem key={indx} item={specialties.filter(s=>s._id===specialty)[0].name} />
-                            })
-                        }
-                    </div>
-                    
-                </div>
-            }
-        </div>
-
-        <div className="border-bottom pt-2 pb-2 position-relative">
-            <div className="font-weight-bold">Medical Degrees</div>
-            {
-                userMedicalDegrees.length === 0 ? 
-                <div>
-                    <div className="small mb-1 mt-1 btn-link pointer" onClick={()=>{setShowMedicalDegreeEntryFormFlag(true)}}>Add Medical Degrees</div>
-                </div> :
-                <div>
-                    <div className="push-right">
-                        <div className="small btn-link pointer" onClick={()=>{setShowMedicalDegreeEntryFormFlag(true)}}>Edit</div>
-                    </div>
-                    <div className="d-flex flex-wrap">
-                    {
-                        userMedicalDegrees.map((degree,indx)=>{
-                            let degreeInfo=degrees.filter(d=>d._id===degree)[0];
-                            return <DisplayItem key={indx} item={degreeInfo.name+" ("+degreeInfo.abbr+") "} />
-                        })
-                    }
-                    </div>
-                </div>
-            }
-        </div>
-
-        <div className="border-bottom pt-2 pb-2 position-relative">
-            <div className="font-weight-bold">Medical Registration/ License Number</div>
-            {
-                userMedicalRegNumber.length === 0 ? 
-                <div className="small">
-                    <div className="mt-1 btn-link pointer" onClick={()=>{setShowMedicalRegistrationEntryFormFlag(true)}}>Add Medical Registration/ License Number</div>
-                    <div className="text-muted">You will also need your medical registration certificate as an attachment to verify your qualitifcation.</div>
-                </div> :
-                <div>
-                    <div className="push-right">
-                        <div className="small btn-link pointer" onClick={()=>{setShowMedicalRegistrationEntryFormFlag(true)}}>Edit</div>
-                    </div>
-                    <div className="small">
-                        <div className="text-muted">{userMedicalRegNumber}</div>
-                        <div className="btn-link pointer" onClick={()=>setMedicalRegistraionFilesPreviewModalFlag(true)}>{userMedicalRegistrationFiles.length>0?userMedicalRegistrationFiles.length+" files":""}</div>
-                    </div>
-                </div>
-            }
-            
-        </div>
-        
-        <div className="border-bottom pt-2 pb-2 position-relative">
-            <div className="font-weight-bold">Medical Councils</div>
-            {
-                userMedicalCouncils.length === 0 ? 
-                <div>
-                    <div className="small mb-1 mt-1 btn-link pointer" onClick={()=>{setShowMedicalCouncilEntryFormFlag(true)}}>Add Medical Council</div>
-                </div> :
-                <div>
-                    <div className="push-right">
-                        <div className="small pointer btn-link" onClick={()=>{setShowMedicalCouncilEntryFormFlag(true)}}>Edit</div>
-                    </div>
-                    <div className="d-flex flex-wrap">
-                    {
-                        userMedicalCouncils.map((council,indx)=>{
-                            let councilInfo=councils.filter(d=>d._id===council)[0];
-                            return <DisplayItem key={indx} item={councilInfo.name} />
-                        })
-                    }
-                    </div>
-                </div>
-            }
-        </div>
-        
-        {
-            showSpecialtyEntryForm?
-            <Modal header={<h3>Speacilty Entry</h3>} onCloseHandler={()=>{setShowSpecialtyEntryFormFlag(false)}}>
-                <form ref={formRef} onSubmit={(e)=>{handleSpecialtySubmission(e)}}>
-                        <div className="form-group">
-                            <label data-required="1">Specialty</label>
-                            <p className="text-muted small">Search and add multiple specialties </p>
-                            <div name="specialties" 
-                                className="multi-select-container hide-off-focus-outer-container entry-field"
-                                data-required="1"
-                                placeholder="Specialties">
-                                <div className="selected-items mb-2 d-flex flex-wrap"> </div>
-                                <div className="position-relative search-outer-container">
-                                    <input type="text" className="form-control search-box" placeholder="Search Specialties" />
-                                    <div className="search-results-container hide-off-focus-inner-container"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="mt-2 text-center">
-                            <button className="btn btn-primary w-75" type="submit">Save Specialty</button>
-                        </div>
-                </form>
-            </Modal>:null
-        }
-        {
-            showMedicalDegreeEntryForm?
-            <Modal header={<h3>Medical Degree Entry</h3>} onCloseHandler={()=>{setShowMedicalDegreeEntryFormFlag(false)}}>
-                <form ref={formRef} onSubmit={(e)=>{handleMedicalDegreeSubmission(e)}}>
-                        <div className="form-group">
-                            <label data-required="1">Medical Degrees</label>
-                            <div name="medical_degrees" 
-                                className="multi-select-container hide-off-focus-outer-container entry-field"
-                                data-required="1"
-                                placeholder="Specialties">
-                                <div className="selected-items mb-2 d-flex flex-wrap"> </div>
-                                <div className="position-relative search-outer-container">
-                                    <input type="text" className="form-control search-box" placeholder="Search Medical Degrees" />
-                                    <div className="search-results-container hide-off-focus-inner-container"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="mt-2 text-center">
-                            <button className="btn btn-primary w-75" type="submit">Save Medical Degree</button>
-                        </div>
-                </form>
-            </Modal>:null
-        }
-        {
-            showMedicalRegistraionEntryForm?
-            <Modal header={<h3>Medical Registration Entry</h3>} onCloseHandler={()=>{setShowMedicalRegistrationEntryFormFlag(false)}}>
-                <form ref={formRef} onSubmit={(e)=>{handleMedicalRegistrationSubmission(e)}} >
-                    <div className="form-group">
-                        <label data-required="1">Registration/License Number </label>
-                        <input type="text" name="medical_registration_number" 
-                            className="form-control entry-field" data-required="1"
-                            placeholder="Medical Registration Number" />
-                    </div>
-                    <div className="form-group">
-
-                            <label htmlFor="medical-registration-file" data-required="1">Attach Insurance Card </label>
-
-                            <div id="medical-registration-file-container"
-                                name="medical_registration_files"
-                                className="mt-2 p-2 position-relative droppable-file-container entry-field"
-                                data-required="1"
-                                placeholder="Medical Registration">
-
-                                <div className="droppable-file-action-container">
-
-                                    <div className="small text-muted d-inline-block">Drag and drop or upload the file</div>
-
-                                    <div className="position-relative ml-2 upload-file-container d-inline-block">
-                                        <input type="file" id="medical-registration-file" className="form-control" multiple="multiple" />
-                                        <div className="btn-info p-1 rounded text-center input-overlay small">Upload File</div>
+                            qualificationStateChangeTo === "in_review" ?
+                                <div>
+                                    <div className="small">
+                                        <p className="text-left">The approval process takes atleast 1-3 business days.
+                                            During our approval process you will not be able to edit your
+                                            qualification details. If you need to make any changes please
+                                            feel free to contact us.
+                                        </p>
+                                        <p className="font-weight-bold">Are your sure to send it for approval? </p>
                                     </div>
+                                    <div className="mt-2 p-2 d-flex justify-content-end">
+                                        <div className="btn-sm btn-primary pointer" onClick={()=>{handleQualificationStateChangeOnConfirm("in_review")}}>Send</div>
+                                        <div className="btn-sm btn-link ml-2 pointer" onClick={() => { setQualificationStateChangeConfirmationFlag(false) }}>Cancel</div>
+                                    </div>
+                                </div> :
+                                qualificationStateChangeTo === "pending" ?
+                                    <div>
+                                        <div className="small">
+                                            <p className="text-left"><b>"Request to Edit"</b> will make your qualification state again in <i className="text-danger">pending</i> state, i.e, 
+                                                your profile will not appear to users untill its approved again, which normally takes
+                                                1-3 business days depending on the scenario.
+                                            </p>
+                                            <p className="font-weight-bold">Are you sure to proceed? </p>
+                                        </div>
+                                        <div className="mt-2 p-2 d-flex justify-content-end">
+                                            <div className="btn-sm btn-primary pointer" onClick={()=>{handleQualificationStateChangeOnConfirm("pending")}}>Proceed</div>
+                                            <div className="btn-sm btn-link ml-2 pointer" onClick={() => { setQualificationStateChangeConfirmationFlag(false) }}>Cancel</div>
+                                        </div>
+                                    </div> :
+                                    null
 
-                                </div>
+                        }
 
-                                <div className="droppable-file-preview-container"></div>
-
-                            </div>
-
-                        </div>
-                        <div className="mt-2 text-center">
-                            <button className="btn btn-primary w-75" type="submit">Save Medical Registration</button>
-                        </div>
-                </form>
-            </Modal>:null
-        }
-        {
-            showMedicalCouncilEntryForm?
-            <Modal header={<h3>Medical Council Entry</h3>} onCloseHandler={()=>{setShowMedicalCouncilEntryFormFlag(false)}}>
-                <form ref={formRef} onSubmit={(e)=>{handleMedicalCouncilSubmission(e)}}>
-                        <div className="form-group">
-                            <label data-required="1">Medical Councils</label>
-                            <div name="medical_councils" 
-                                className="multi-select-container hide-off-focus-outer-container entry-field"
-                                data-required="1"
-                                placeholder="Medical Council">
-                                <div className="selected-items mb-2 d-flex flex-wrap"> </div>
-                                <div className="position-relative search-outer-container">
-                                    <input type="text" className="form-control search-box" placeholder="Search Medical Council" />
-                                    <div className="search-results-container hide-off-focus-inner-container"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="mt-2 text-center">
-                            <button className="btn btn-primary w-75" type="submit">Save Medical Council</button>
-                        </div>
-                </form>
-            </Modal>:null
-        }
-        {
-            showMedicalRegistraionFilesPreviewModal?
-            <FilePreview files={userMedicalRegistrationFiles} onCloseHandler={()=>{setMedicalRegistraionFilesPreviewModalFlag(false)}}></FilePreview>:null
-        }
+                    </ConfirmationBox> : null
+            }
         
     </div>)
 }

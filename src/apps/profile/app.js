@@ -3,7 +3,9 @@ import { UserInfo } from "./../../contexts/userInfo";
 import { Demographics } from './demographics';
 import { Insurance } from './manageInsurance';
 import { Dependents } from './manageDependents';
+import {ManageAboutMe} from './manageAboutMe';
 import { ManageProviderQualification } from "./manageProviderQualification";
+import { ManageProviderCertifications } from "./manageProviderCertifications";
 
 export const App = () => {
 
@@ -55,17 +57,32 @@ export const App = () => {
                                             <Demographics />
                                         </div>
                                     </div>
+                                    {
+                                        'login_user_type' in userInfo && userInfo.login_user_type === 'healthcare_provider' ?
+                                        <div className="tile white-tile mb-2">
+                                            <h4>About Me</h4>
+                                            <div className="small text-muted">
+                                                Enter few sentences to describe yourself and your experience. 
+                                                This information will be visible on your profile page.
+                                            </div>
+                                            <div>
+                                                <ManageAboutMe />
+                                            </div>
+                                        </div>:null
+                                    }
                                 </div>
                                 <div className="col-sm-12 col-md-12 col-lg-6 col-xl-6">
                                     {
                                         'login_user_type' in userInfo && userInfo.login_user_type === 'healthcare_provider' ?
-                                            <div className="tile white-tile mb-2">
-                                                <h4>Qualification</h4>
-                                                <p className="small mb-2 text-muted font-weight-bold">
-                                                    Adding your <b className="text-danger">incorrect</b> qualification details will delay processing time in validating your qualification.
-                                                Also, without all the qualification details your account will <b>NOT</b> be visible to users while searching healthcare provider for appointments.
-                                            </p>
-                                                <ManageProviderQualification />
+                                            <div>
+                                                <div className="tile white-tile mb-2">
+                                                    <h4>Qualification Details</h4>
+                                                    <ManageProviderQualification />
+                                                </div>
+                                                <div className="tile white-tile mb-2">
+                                                    <h4>Certifications & Trainings</h4>
+                                                    <ManageProviderCertifications />
+                                                </div>
                                             </div> : null
                                     }
                                     {
@@ -79,8 +96,7 @@ export const App = () => {
                                                     <h4>My Dependents</h4>
                                                     <Dependents />
                                                 </div>
-                                            </div>
-                                            : ""
+                                            </div>: null
                                     }
                                 </div>
                             </div>
