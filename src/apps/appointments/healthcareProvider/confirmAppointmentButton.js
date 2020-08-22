@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { AppointmentContext } from "../../contexts/appoinment";
+import { AppointmentContext } from "./../../../contexts/appoinment";
 
 export const ConfirmAppointmentButton = () => {
 

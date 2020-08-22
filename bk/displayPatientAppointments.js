@@ -7,12 +7,13 @@ import interactionPlugin from '@fullcalendar/interaction';
 import { Modal } from '@oi/reactcomponents';
 import { AppointmentDetailsOnDblClick } from './appointmentDetailsOnDblClick';
 import {AppointmentDetailsOnClick} from './appointmentDetailsOnClick';
+import { DisplayPracticeAddress } from "@oi/reactcomponents/provider-practice";
 import DatePicker from "react-datepicker";
 import * as handlers from './methods';
 
 const moment = require('moment');
 
-export const DisplayHealthcareProviderAppoiintments = ({ userInfo = {} }) => {
+export const DisplayPatientAppointments = ({ userInfo = {} }) => {
 
     const [appLoader, setAppLoader] = useState(true);
 
@@ -20,15 +21,11 @@ export const DisplayHealthcareProviderAppoiintments = ({ userInfo = {} }) => {
     const [userFullCalendarEvents, setUserFullCalendarEvents] = useState([]);//Events for full calendar
     
     const [selectedAppointment, setSelectedAppointment] = useState({});
-
+    
     const [showAppointmentDetailsModalOnDblClick, setAppointmentDetailModalOnDblClickFlag] = useState(false);
     const [showAppointmentDetailsModalOnClick, setAppointmentDetailModalOnClickFlag] = useState(false);
     
     const [weekendsVisible, setWeekendsVisible] = useState(true);
-
-    const [userPractices, setUserPractices] = useState([]);
-    const [userPracticeFacilites, setUserPracticeFacilities] = useState([]);
-    const [selectedUserPracticeFacility,setSelectedUserPracticeFacility]= useState([]);
 
     const [datePickerStartDate, setDatePickerStartDate] = useState(new Date());
     const [datePickerEndDate, setDatePickerEndDate] = useState(null);
@@ -37,49 +34,45 @@ export const DisplayHealthcareProviderAppoiintments = ({ userInfo = {} }) => {
 
     const [selectedFullCalendarEvent, setSelectedFullCalendarEvent] = useState({});
 
+    const [userProviders,setUserProviders]=useState([]);
+    const [selectedUserProvider,setSelectedUserProvider]=useState([]);
+
     const fullCalendarRef = React.createRef();
 
-    //Triggers after userifo is fetched
     useEffect(() => {
-        Promise.all([$.getJSON('/appointments/get/currentuser'), handlers.getUserPractices(userInfo._id)]).then(values => {
 
-            let appointments = values[0];
-            let practices=values[1];
-            let events=[];
-
-            let facilities=practices.reduce((acc,ci,indx)=>{
-                let info=ci.facilityInfo[0];
-                info.color=COLORSCHEME[indx];
-                acc.push(info);
-                return acc;
-            },[]);
+        $.getJSON('/appointments/get/currentuser').then(appointments => {
+            let events = [];
 
             if (appointments.length > 0) {
-                
+
+                //get user providers 
+                let providers=getHealthcareProviders(appointments);
+                //console.log(providers);
+
                 events = appointments.reduce((acc, ci) => {
-                    acc.push(handlers.getEachCalendarEventObject(ci,facilities.filter(f => f._id === ci.facilityId)[0].color));
+                    let _hpId=ci.attendees.filter(a=>a.user_type==="healthcare_provider")[0]._id;
+                    acc.push(handlers.getEachCalendarEventObject(ci,providers.filter(p=>p._id===_hpId)[0].color));
                     return acc;
                 }, []);
 
-                //console.log(events);
+                console.log(appointments);
 
+                setUserAppointments(appointments);
+                setUserFullCalendarEvents(events);
+                setUserProviders(providers);
+                setAppLoader(false);
+                
             } else {
+                setAppLoader(false);
                 popup.onBottomCenter(`<div>
                     <i className="fas fa-calendar-day"></i>
                     <span className="ml-2">No appointments found.</span>
                 </div>`);
             }
 
-            setUserPractices(practices);
-            setUserPracticeFacilities(facilities);
-            setSelectedUserPracticeFacility(facilities.reduce((acc,ci)=>{
-                acc.push(ci._id);
-                return acc;
-            },[]));
-            setUserFullCalendarEvents(events);//Events for full calendar
-            setUserAppointments(appointments);//Events for full details 
-            setAppLoader(false);
         });
+
     }, []);
 
     useEffect(() => {
@@ -102,43 +95,36 @@ export const DisplayHealthcareProviderAppoiintments = ({ userInfo = {} }) => {
         setAppointmentDetailModalOnClickFlag(true);
     }
 
-    const handlePracticeClick=(facilityId)=>{
-        let _d=[...selectedUserPracticeFacility];
-        let indx=selectedUserPracticeFacility.findIndex(f=>f===facilityId);
+    const getHealthcareProviders=(appts)=>{
 
-        if(indx>-1){//User is unselecting the item
-            _d.splice(indx,1);
+        let providers=appts.reduce((acc,ci)=>{
 
-            //remove the items from the caledar Eevnts 
-            removeItemsFromCalendarEvents(facilityId);
+            let _hpInfo=ci.attendees.filter(a=>a.user_type==="healthcare_provider").map(att=>{
+                
+                let _hp=ci.attendeesInfo.filter(a=>a._id===att._id)[0];
+                
+                //console.log(COLORSCHEME,acc.length-1);
+                if(acc.filter(_b=>_b._id===_hp._id).length===0){
+                    return {
+                        first_name:_hp.first_name,
+                        last_name:_hp.last_name,
+                        _id:_hp._id,
+                        facilityInfo:ci.facilityInfo,
+                        color:COLORSCHEME[acc.length]
+                    }
+                }else{
+                    return [];
+                }
+                
+            })[0];
 
-        }else{
-            _d.push(facilityId);
-
-            //add events to the calendar events 
-            addItemsToCalendarEvents(facilityId);
-        }
-
-        setSelectedUserPracticeFacility(_d);
-        
-    }
-
-    const addItemsToCalendarEvents=(facilityId)=>{
-        let _d=[...userFullCalendarEvents];
-        let getEvents=userAppointments.filter(c=>c.facilityId===facilityId).reduce((acc,ci)=>{
-            acc.push(handlers.getEachCalendarEventObject(ci,userPracticeFacilites.filter(f => f._id === ci.facilityId)[0].color));
+            acc=acc.concat(_hpInfo);
             return acc;
+
         },[]);
-
-        setUserFullCalendarEvents(_d.concat(getEvents));
-    }
-
-    const removeItemsFromCalendarEvents=(facilityId)=>{
-        let _d=[...userFullCalendarEvents];
-
-        //get all the vents where facility is NOT equal to clicked practice
-        _d=_d.filter(c=>c.extendedProps.facilityId!==facilityId);
-        setUserFullCalendarEvents(_d);
+        console.log(providers);
+        return providers;
+        
     }
 
     return (
@@ -171,26 +157,26 @@ export const DisplayHealthcareProviderAppoiintments = ({ userInfo = {} }) => {
                                             inline
                                         />
                                     </div>
-
                                     <div className="mt-2">
-                                        <div className="font-weight-bold">My Practices</div>
+                                        <div className="font-weight-bold">My Providers</div>
                                         <div className="small mt-1">
                                             {
-                                                userPracticeFacilites.length>0?
-                                                userPracticeFacilites.map((facility,indx)=>{
+                                                userProviders.length>0?
+                                                userProviders.map((provider,indx)=>{
                                                     let cbClassNames="colored-checkbox ";
-                                                    cbClassNames+=selectedUserPracticeFacility.indexOf(facility._id)>-1?" checked ":"";
-                                                    return <div key={facility._id} className="d-flex pt-1 pb-1 pointer" 
-                                                        onClick={()=>{handlePracticeClick(facility._id)}}>
-                                                        <div className={cbClassNames} style={{backgroundColor:facility.color}}></div>
-                                                        <div>{facility.medical_facility_name}</div>
+                                                    cbClassNames+=selectedUserProvider.indexOf(provider._id)>-1?" checked ":"";
+                                                    return <div key={provider._id} className="d-flex pt-1 pb-1 pointer" >
+                                                        <div className={cbClassNames} style={{backgroundColor:provider.color}}></div>
+                                                        <div>
+                                                            <div>{provider.first_name} {provider.last_name}</div>
+                                                            <div className="text-muted"><DisplayPracticeAddress address={provider.facilityInfo[0]} /></div>
+                                                        </div>
                                                     </div>
                                                 }):
-                                                <div className="mt-2 text-muted">No Practice found</div>
+                                                <div className="mt-2 text-muted">No providers found</div>
                                             }
                                         </div>
                                     </div>
-
                                 </div>
                             </div>
                             <div className="inner-right-pane">
@@ -230,6 +216,7 @@ export const DisplayHealthcareProviderAppoiintments = ({ userInfo = {} }) => {
                         </div>
                     </AppointmentContext.Provider>
             }
+
 
         </div>
 

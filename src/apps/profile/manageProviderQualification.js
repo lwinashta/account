@@ -7,12 +7,13 @@ import { ManageProviderSpecialties } from "./manageProviderSpecialties";
 import { ManageProviderMedicalDegree } from "./manageProviderMedicalDegree";
 import { ManageProviderMedicalRegistration } from "./manageProviderMedicalRegistration";
 import { ManageProviderMedicalCouncil } from "./manageProviderMedicalCouncil";
+import { ManagePracticeStartDate } from "./manageProviderPracticeStartDate";
 
 export const ManageProviderQualification = () => {
     
-    let params=useContext(UserInfo);
+    let contextValues=useContext(UserInfo);
     
-    const [qualificationVerificationState,setQualitficationVerificationState]=useState("qualification_verification_status" in params.userInfo ?params.userInfo.qualification_verification_status:"");
+    const [qualificationVerificationState,setQualitficationVerificationState]=useState("qualification_verification_status" in contextValues.userInfo ?contextValues.userInfo.qualification_verification_status:"");
     const [qualificationStateChangeTo,setQualificationStateChangeTo]=useState("");
     
     const [qualificationStateChangeConfirmation,setQualificationStateChangeConfirmationFlag]=useState(false);
@@ -29,23 +30,28 @@ export const ManageProviderQualification = () => {
         
         popup.onScreen("Updating ...");
         
-        let history="qualification_verification_status_history" in params.userInfo?params.userInfo.qualification_verification_status_history:[];
+        let history="qualification_verification_status_history" in contextValues.userInfo?contextValues.userInfo.qualification_verification_status_history:[];
         
         history.push({
             "to":state,
-            "from":"qualification_verification_status" in params.userInfo? params.userInfo.qualification_verification_status:null,
+            "from":"qualification_verification_status" in contextValues.userInfo? contextValues.userInfo.qualification_verification_status:null,
             dateTime:new Date()
         });
 
         userFunctions.submitUserUpdates({
             "qualification_verification_status":state,
             "qualification_verification_status_change_history":history,
-            "_id":params.userInfo._id
+            "_id":contextValues.userInfo._id
 
         }).then(response=>{
 
             setQualitficationVerificationState(state);
             setQualificationStateChangeConfirmationFlag(false);
+
+            contextValues.updateUserInfoContext({
+                "qualification_verification_status":state,
+                "qualification_verification_status_change_history":history,
+            });
 
             popup.remove();
             popup.onBottomCenterSuccessMessage("Qualification Verification Updated");
@@ -82,6 +88,7 @@ export const ManageProviderQualification = () => {
             <ManageProviderMedicalDegree />
             <ManageProviderMedicalRegistration />
             <ManageProviderMedicalCouncil />
+            <ManagePracticeStartDate />
            
             {/* {Qualification Workflow Buttons} */}
             {

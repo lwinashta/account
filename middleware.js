@@ -10,6 +10,7 @@ const pokitdotRouter=require('../efs/pokitdot/router');
 const appointmentRouter=require('../efs/appointments/router');
 const accountRouter=require('./router');
 const paymentRouter=require('../efs/payment/router');
+const reviewRouter=require('../efs/reviews/router');
 const globalRouter=require('../efs/router/global');
 
 const userToken=require('../efs/accountManager/lib/token'); 
@@ -94,6 +95,7 @@ module.exports = function (app) {
     app.use('/pokitdot',pokitdotRouter);
     app.use('/appointments',appointmentRouter);
     app.use('/payment',paymentRouter);
+    app.use('/review',reviewRouter);
     app.use('/g',globalRouter);
     app.use('/',accountRouter);
 

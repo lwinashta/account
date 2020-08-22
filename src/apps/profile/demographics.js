@@ -2,8 +2,11 @@ import React, { useState, useEffect, useContext } from 'react';
 import { UserInfo } from "./../../contexts/userInfo";
 import { ManagePhoneNumbers } from "./managePhoneNumber";
 import { ManageAddresses } from "./manageAddresses";
-import {ManageEmail} from './manageEmail';
+import { ManageEmail } from './manageEmail';
 import { getUserProfilePictureUri } from "@oi/reactcomponents";
+import { ManageGender } from './manageGender';
+import { ManageBirthDate } from './manageBirthDate';
+import {ManageLanguages} from './manageLanguages'
 
 export const Demographics = () => {
 
@@ -118,49 +121,37 @@ export const Demographics = () => {
 
                     <div className="mt-2 p-2 border-bottom position-relative">
                         <div className="align-top pull-left">
-                            <i className="material-icons align-middle">perm_identity</i>
+                            <i className="fas fa-venus-mars"></i>
                         </div>
-                        <div className="d-inline-block ml-5">
-                            <div>
-                                {
-                                    'gender' in userInfo && userInfo.gender.length > 0 ?
-                                        <div>
-                                            <div>{userInfo.gender}</div> 
-                                            <div className="text-muted small">Gender</div>
-                                            <div className="push-right">
-                                                <i className="btn-link small pointer">Edit</i>
-                                            </div>
-                                        </div>:
-                                        <div className="pointer small mt-2 btn-link text-primary">Set Gender</div>
-                                }
+                        <div className="ml-5">
+                            <div className="w-100">
+                                <ManageGender />
                             </div>
-                            
                         </div>
                     </div>
 
                     <div className="mt-2 p-2 border-bottom position-relative">
                         <div className="align-top pull-left">
-                            <i className="material-icons align-middle">cake</i>
+                            <i className="fas fa-birthday-cake"></i>
                         </div>
-                        <div className="d-inline-block ml-5">
-                            <div>
-                                {
-                                    'birth_date' in userInfo && userInfo.birth_date.length > 0 ?
-                                        <div>
-                                            <div>{userInfo.birth_date}</div> 
-                                            <div className="text-muted small">Birth Date</div>
-                                            <div className="push-right">
-                                                <i className="btn-link small pointer">Edit</i>
-                                            </div>
-                                        </div>:
-                                        <div className="pointer small mt-2 btn-link text-primary">Set Birth Date</div>
-                                }
+                        <div className="ml-5">
+                            <div className="w-100">
+                                <ManageBirthDate />
                             </div>
-                            
                         </div>
                     </div>
-                    
-        
+
+                    <div className="mt-2 p-2 border-bottom position-relative">
+                        <div className="align-top pull-left">
+                            <i class="fas fa-american-sign-language-interpreting"></i>
+                        </div>
+                        <div className="ml-5">
+                            <div className="w-100">
+                                <ManageLanguages />
+                            </div>
+                        </div>
+                    </div>
+
                 </div>);
             }}
         </UserInfo.Consumer>

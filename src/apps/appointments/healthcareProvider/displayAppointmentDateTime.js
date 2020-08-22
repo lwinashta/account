@@ -1,5 +1,5 @@
 import React from "react";
-import { AppointmentContext } from "./../../contexts/appoinment";
+import { AppointmentContext } from "./../../../contexts/appoinment";
 
 export const DisplayAppointmentDateTime = () => {
 

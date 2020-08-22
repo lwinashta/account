@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { AppointmentContext } from "../../contexts/appoinment";
+import { AppointmentContext } from "./../../../contexts/appoinment";
 import { DisplayAppointmentAttendees } from './displayAppointmentAttendees';
 import { DisplayAppointmentTitle } from './displayAppointmentTitle';
 import { DisplayAppointmentDateTime } from './displayAppointmentDateTime';

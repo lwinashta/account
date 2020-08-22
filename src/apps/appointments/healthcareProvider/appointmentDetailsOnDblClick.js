@@ -1,5 +1,5 @@
 import React from "react";
-import { AppointmentContext } from "../../contexts/appoinment";
+import { AppointmentContext } from "./../../../contexts/appoinment";
 import { DisplayAppointmentAttendees } from './displayAppointmentAttendees';
 import { DisplayInsuranceInfo } from "./displayInsuranceInfo";
 import { DisplayAppointmentTitle } from './displayAppointmentTitle';

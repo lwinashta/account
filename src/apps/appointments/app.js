@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { DisplayPatientAppointments } from "./displayPatientAppointments";
-import { DisplayHealthcareProviderAppoiintments } from "./displayHealthcareProviderAppointments";
+import { DisplayPatientAppointments } from "./patient/displayPatientAppointments";
+import { DisplayHealthcareProviderAppointments } from "./healthcareProvider/displayHealthcareProviderAppointments";
 import "react-datepicker/dist/react-datepicker.css";
 
 export const App = () => {
@@ -26,7 +26,7 @@ export const App = () => {
     },[userInfo])
 
     return (
-        <div className="mt-2 p-2 mb-2">
+        <div>
             {
                 appLoader ?
                     <div className="mt-2 p-2 text-center">
@@ -35,8 +35,8 @@ export const App = () => {
                     <div>
                        {
                         userInfo.login_user_type==="patient"?
-                            <DisplayPatientAppointments userInfo={userInfo} />:
-                            <DisplayHealthcareProviderAppoiintments userInfo={userInfo} />
+                            <div className="bg-white mb-2" style={{borderBottom:"1px solid lightgrey"}}><DisplayPatientAppointments userInfo={userInfo} /></div>:
+                            <div className="mt-2 p-2 mb-2"><DisplayHealthcareProviderAppointments userInfo={userInfo} /></div>
                         } 
                     </div>
                     

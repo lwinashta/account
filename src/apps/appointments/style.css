@@ -52,3 +52,88 @@
     font-size: 10px;
     top: 2px;
 }
+
+/***********************/
+/*PATIENT APPOINTMENTS*/
+/* For Desktop view  */
+@media screen and (min-width: 768px) {
+    .appointment-details-outer-container{
+        padding:10px 10px 20px 20px;
+        margin-left: 110px;
+        border-left:1px solid lightgrey;
+    }
+
+    .provider-profile-pic{
+        position: absolute;
+    }
+
+    .provider-demographics-details{
+        margin-left: 110px;
+    }
+
+    .appointment-dot-marker{
+        position: absolute;
+        left: -25px;
+        width: 10px;
+        height: 10px;
+        background-color: dodgerblue;
+        border: 1px solid lightgrey;
+        border-radius: 50%;
+    }
+
+    .appointment-datetime{
+        position: absolute;
+        left: -110px;
+        width: 80px;
+        font-size: smaller;
+    }
+
+}  
+
+@media screen and (max-width: 768px) {
+    .provider-profile-pic{
+        position: relative;
+        width: 100%;
+        text-align: center;
+    }
+
+    .provider-demographics-details{
+        width: 100%;
+    }
+
+    .provider-demographics{
+        text-align: center;
+    }
+
+    .provider-demographics .d-flex,
+    .provider-review .d-flex{
+        justify-content: center;
+    }
+
+    .appointment-dot-marker{
+        display: none;
+    }
+    .appointment-datetime{
+        padding: 8px;
+        font-weight: bold;
+        /* background-color: aliceblue; */
+    }
+}  
+
+.appointment-menu-selected::after{
+    content: '';
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    bottom: -8px;
+    background-color: whitesmoke;
+    left: 40%;
+    z-index: 2;
+    transform: rotate(45deg);
+    border-top: 1px solid lightgrey;
+    border-left: 1px solid lightgrey;
+}
+
+.appointment-details-inner-container{
+    min-height: 200px;
+}

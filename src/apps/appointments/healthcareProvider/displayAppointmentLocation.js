@@ -1,7 +1,6 @@
 import React from "react";
-import { AppointmentContext } from "./../../contexts/appoinment";
+import { AppointmentContext } from "./../../../contexts/appoinment";
 import { DisplayPracticeAddress } from "@oi/reactcomponents/provider-practice";
-
 
 export const DisplayAppointmentLocation = () => {
 

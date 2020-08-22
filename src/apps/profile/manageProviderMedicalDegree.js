@@ -147,7 +147,5 @@ export const ManageProviderMedicalDegree = () => {
                 </Modal> : null
         }
     </div>
-
-
     )
 }

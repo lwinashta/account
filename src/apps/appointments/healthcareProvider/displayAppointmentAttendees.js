@@ -1,6 +1,6 @@
 import React from "react";
 import { getUserProfilePictureUri } from "@oi/reactcomponents";
-import { AppointmentContext } from "./../../contexts/appoinment";
+import { AppointmentContext } from "./../../../contexts/appoinment";
 
 export const DisplayAppointmentAttendees = () => {
 
