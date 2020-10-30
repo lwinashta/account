@@ -1,5 +1,4 @@
-import React,{useState,useEffect,useContext} from "react";
-import { UserInfo } from "../../contexts/userInfo";
+import React,{useState,useEffect} from "react";
 import { formjs} from "@oi/utilities/lib/js/form";
 const moment=require('moment');
 
@@ -102,15 +101,17 @@ const AddTimeSlot=()=>{
     </div>);       
 }
 
-export const AvailabilityEntry=({afterSubmission={},_editAvailabilityId="",_editAvailabilityInfo={},_indx=0})=>{
+export const AvailabilityEntryForm=({
+    onSubmission={},
+    _editAvailabilityId="",
+    _editAvailabilityInfo={},
+    _indx=0
+})=>{
 
     const [timeSlot,setTimeSlot]=useState(1);
     const [availabilityDays,setAvailabilityDays]=useState(Object.keys(_editAvailabilityInfo).length>0?_editAvailabilityInfo.availability_days:[]);
 
-    let params=useContext(UserInfo);
-
     let _formjs=new formjs();
-
     let formRef=React.createRef();
 
     const handleSubmission=(e)=>{
@@ -135,7 +136,7 @@ export const AvailabilityEntry=({afterSubmission={},_editAvailabilityId="",_edit
                 });
             });
 
-            afterSubmission({
+            onSubmission({
                 availability_days:availabilityDays,
                 availability_time_slots:availabilityTimeSlots,
                 _id:_editAvailabilityId.length>0?_editAvailabilityId:getRandomId(_indx)

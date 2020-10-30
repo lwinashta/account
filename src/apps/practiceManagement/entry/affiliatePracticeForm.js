@@ -1,9 +1,9 @@
 import React, { useState, useEffect,useContext } from "react";
-import { UserInfo } from "../../contexts/userInfo";
+import { UserInfo } from "../../../contexts/userInfo";
 import { DisplayPracticeAddress } from "@oi/reactcomponents/provider-practice";
-import { AvailabilityEntry } from "./availabilityEntry";
-import { DisplayFacilityInfo} from "./displayFacilityInfo";
-import { saveNewPracticeUser } from "./methods";
+import { AvailabilityEntryForm } from "./availabilityEntryForm";
+import { DisplayVerification} from "../display/displayVerification";
+import { saveNewPracticeUser } from "../common/methods";
 import { Modal } from "@oi/reactcomponents";
 import { ShowAvailability } from "@oi/reactcomponents/provider-practice";
 
@@ -138,7 +138,13 @@ export const AffliatePracticeForm = ({ afterSubmission = {}, handleAddNewPractic
             {
                 showEntryForm ?
                     <form className="p-2" onSubmit={(e)=>{handlePracticeSubmission(e)}}>
-                        <DisplayFacilityInfo facilityInfo={selectedSearchedPracticeInfo}/>   
+                        <div className="d-flex pb-1 border-bottom">
+                            <div className="font-weight-bold">{selectedSearchedPracticeInfo.medical_facility_name}</div>
+                            <div>
+                                <DisplayVerification 
+                                    practiceVerified={selectedSearchedPracticeInfo.verified} />
+                            </div>
+                        </div>
                         <hr />
                         <div>
                             <div className="form-group" id="availability-container">
@@ -242,7 +248,7 @@ export const AffliatePracticeForm = ({ afterSubmission = {}, handleAddNewPractic
                 showAvialabilityEntryForm ?
                     <Modal header={<h3>Availability Entry</h3>}
                         onCloseHandler={() => { setShowAvialabilityEntryFormFlag(false) }}>
-                        <AvailabilityEntry
+                        <AvailabilityEntryForm
                             _editAvailabilityId={editAvailabilityId}
                             _editAvailabilityInfo={editAvailabilityId.length > 0 ? availability.filter(v => v._id === editAvailabilityId)[0] : {}}
                             _indx={availability.length}

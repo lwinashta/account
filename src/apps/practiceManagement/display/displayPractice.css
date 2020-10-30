@@ -1,0 +1,39 @@
+
+.practice-state::before{
+    font-family: 'Font Awesome 5 Free';
+    padding-top: 3px;
+    border-radius: 50%;
+    width: 18px;
+    text-align: center;
+    height: 18px;
+    margin-left: 10px;
+    /* vertical-align: middle; */
+    display: inline-block;
+    color: white;
+    font-weight: 700;
+    font-size: 8px;
+}
+
+.practice-state[state="completed"]::before{
+    content: "\f00c";
+    background-color: #008000;
+}
+
+.practice-state[state="pending"]::before{
+    content: "\f12a";
+    background-color: crimson;
+}
+
+.practice-state[state="completed"]{
+    color: #008000;
+}
+
+.practice-state[state="pending"]{
+    color: crimson;
+}
+
+.practice-state-title{
+    font-size: 14px; 
+    margin-left: 5px;
+    font-weight: bold;
+}

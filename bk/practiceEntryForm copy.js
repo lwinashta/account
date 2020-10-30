@@ -4,10 +4,10 @@ const countries = require('@oi/utilities/lib/lists/countries.json');
 import { Modal } from "@oi/reactcomponents";
 import { ShowAvailability } from "@oi/reactcomponents/provider-practice";
 import { formjs, insertValues, fileUploadField, multiSelectDropDown } from "@oi/utilities/lib/js/form";
-import { UserInfo } from "../../contexts/userInfo";
+import { UserInfo } from "../src/contexts/userInfo";
 import { AvailabilityEntry } from "./availabilityEntry";
-import { DisplayFacilityInfo} from "./displayFacilityInfo";
-import { saveNewPracticeUser } from "./methods";
+import { DisplayFacilityInfo} from "../src/apps/practiceManagement/displayFacilityInfo";
+import { saveNewPracticeUser } from "../src/apps/practiceManagement/methods";
 
 let _manageFiles = new fileUploadField();
 
@@ -20,7 +20,7 @@ const DisplayItemAsString = (item, _id) => {
     </div>`);
 }
 
-const getCordinates = (enteredAddress) => {
+const getCordinates = async (enteredAddress) => {
     return new Promise((resolve, reject) => {
         try {
             //get the cordinates of the practice address
@@ -31,9 +31,14 @@ const getCordinates = (enteredAddress) => {
 
             $.getJSON('/google/maps/api/getaddresscordinates', {
                 "address": address,
-                "strict": true
+                "strict": enteredAddress.medical_facility_country==="IN"?
+                    false:true//if India is country set the strict rule to be false since addresses in india ia approximate
             }).then(results => {
                 resolve(results);
+
+            }).fail(err=>{
+                reject (err);
+                console.log(err);
             });
 
         } catch (error) {
@@ -156,11 +161,13 @@ export const PracticeEntryForm = ({ afterSubmission = {} }) => {
             popup.onScreen("Validating Address...");
 
             getCordinates(practiceEnteredData).then(resultAddress => {
+
                 setGoogleAddressResponse(resultAddress);
                 popup.remove();
 
             }).catch(err => {
                 console.log(err);
+                popup.remove();
                 $('#practice-address-container').append('<div class="required-err">Invalid Address. Please verify your address</div>');
             });
 

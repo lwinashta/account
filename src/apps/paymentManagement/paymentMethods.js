@@ -6,6 +6,7 @@ import { PaymentEntryForm } from './paymentEntryForm';
 export const ManagePaymentMethods = () => {
 
     const contextValues=useContext(UserInfo);
+
     const [appLoader, setAppLoader] = useState(true);
     const [userPaymentInfo, setUserPaymentInfo] = useState([]);
 
@@ -388,7 +389,9 @@ export const ManagePaymentMethods = () => {
                     <Modal
                         header={<h3>Payment Entry</h3>}
                         onCloseHandler={() => { setPaymentEntryFormFlag(false) }}>
-                        <PaymentEntryForm afterSubmission={handleAfterPaymentMethodSubmission} />
+                        <PaymentEntryForm 
+                            afterSubmission={handleAfterPaymentMethodSubmission} 
+                            userPaymentInfo={userPaymentInfo} />
                     </Modal> : null
             }
         </div>

@@ -1,0 +1,92 @@
+.practice-form-container .action-tab{
+    display: flex;
+    justify-content: center;
+    justify-items: center;
+    flex-wrap: wrap;
+    font-size: 14px;
+}
+
+.practice-form-container .action-tab:before{
+    content: "";
+    border-bottom: 5px dotted lightgrey;
+    height: 12px;
+    margin: 0px 10px;
+}
+
+/* For Desktop view  */
+@media screen and (min-width: 768px) {
+    .practice-form-container .action-tab:before{
+        width: 20px;
+    }
+}
+
+/* For Smaller Mobile less than 1441px */
+@media screen and (max-width: 768px) {
+    .practice-form-container .action-tab:before{
+        width: 5px;
+    }
+}
+
+.practice-form-container .action-tab[active="true"]::before{
+    border-color: dodgerblue;
+}
+
+.practice-form-container .action-tab:first-child:before{
+    content: "";
+    border-bottom: 0px dotted lightgrey;
+    width: 0px;
+    height: 0px;
+    margin: 0px;
+}
+
+.practice-form-container .action-tab .tab-icon{
+    /* padding: 5px; */
+    text-align: center;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    line-height: 2.3;
+    /* vertical-align: middle; */
+    margin-right: 5px;
+    margin-top: -5px;
+}
+
+.practice-form-container .action-tab[active="true"] .tab-icon{
+    /* padding: 5px; */
+    background-color: dodgerblue;
+    color: white;
+}
+
+.practice-form-container .action-tab[active="true"] .tab-icon i{
+    color: white;
+}
+
+.practice-form-container .action-tab[active="false"] .tab-icon,
+.practice-form-container .action-tab[active="false"] .tab-icon i{
+    color: lightgrey;
+}
+
+.practice-form-container .action-tab[active="false"] .tab-name{
+    color:lightgrey;
+}
+
+.practice-form-container .action-tab[active="true"] .tab-name{
+    color:inherit;
+}
+
+
+/* For Smaller Mobile less than 1441px */
+@media screen and (max-width: 768px) {
+    .practice-form-container .tab-name{
+        display: none;
+    }
+}
+
+#practice-entry-tab-content-container{
+    position: absolute;
+    overflow: auto;
+    bottom: 0;
+    top: 75px;
+    right: 0;
+    left: 0;
+}

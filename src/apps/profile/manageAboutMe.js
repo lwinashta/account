@@ -16,7 +16,7 @@ export const ManageAboutMe = () => {
     let aboutMeContentContainer=React.createRef();
 
     useEffect(()=>{
-        if(aboutMe.length>0){
+        if(aboutMe!==null && aboutMe.length>0){
             setClamped(isClamped(aboutMeContentContainer.current));
         } 
     },[aboutMe]);

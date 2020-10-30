@@ -4,7 +4,7 @@ import { Modal } from "@oi/reactcomponents";
 import { formjs} from "@oi/utilities/lib/js/form";
 import { AddressEntryForm } from './../../components/addressEntryForm';
 
-export const PaymentEntryForm = ({ afterSubmission = {} }) => {
+export const PaymentEntryForm = ({ afterSubmission = {},userPaymentInfo }) => {
 
     let paymentCCDropInRef = React.createRef();
     let params = useContext(UserInfo);
@@ -76,7 +76,7 @@ export const PaymentEntryForm = ({ afterSubmission = {} }) => {
 
     const getUserMatchingAddress = function (currentBilling, existingAddresses) {
         let matchingAddress = [];
-        params.userPaymentInfo.addresses.forEach(addr => {
+        userPaymentInfo.addresses.forEach(addr => {
 
             if (addr.streetAddress === billingAddress.street_line1
                 && addr.locality === billingAddress.city
@@ -131,8 +131,10 @@ export const PaymentEntryForm = ({ afterSubmission = {} }) => {
 
                 formData.first_name = $(form).find('[name="first_name"]').val();
                 formData.last_name = $(form).find('[name="last_name"]').val();
-                console.log(params.userPaymentInfo);
-                if (params.userPaymentInfo === "customer-not-found") {
+                
+                console.log(userPaymentInfo);
+
+                if (userPaymentInfo === "customer-not-found") {
                     //console.log(formData);
                     //Execute step 2a, 3a, 4
                     createUserPaymentGateway(formData).then(customerInfo => {
@@ -147,6 +149,9 @@ export const PaymentEntryForm = ({ afterSubmission = {} }) => {
                         afterSubmission(paymentResponse);
                         popup.remove();
                         popup.onBottomCenterSuccessMessage("Payment Method Saved");
+                    }).catch(err=>{
+                        console.error(err);
+
                     });
 
                 } else {
@@ -170,6 +175,7 @@ export const PaymentEntryForm = ({ afterSubmission = {} }) => {
                         });
 
                     } else {
+
                         createUserBillingAddress(formData).then(adressResponse => {
                             formData.addressId = adressResponse.address.id;
                             return createNewPaymentMethod(formData);
@@ -236,7 +242,7 @@ export const PaymentEntryForm = ({ afterSubmission = {} }) => {
                             <div className="mt-4">
                                 <div className="font-weight-bold h5" data-required="1">Billing Address</div>
                                 {
-                                    userInfo.user_addresses.length > 0 ?
+                                    'user_addresses' in userInfo && userInfo.user_addresses.length > 0 ?
                                         <div className="radio-control-group entry-field" data-required="1">
                                             {
                                                 userInfo.user_addresses.map((addr, indx) => {

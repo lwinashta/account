@@ -143,7 +143,7 @@ export const Demographics = () => {
 
                     <div className="mt-2 p-2 border-bottom position-relative">
                         <div className="align-top pull-left">
-                            <i class="fas fa-american-sign-language-interpreting"></i>
+                            <i className="fas fa-american-sign-language-interpreting"></i>
                         </div>
                         <div className="ml-5">
                             <div className="w-100">

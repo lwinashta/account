@@ -1,9 +1,15 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { UserInfo } from "../../contexts/userInfo";
-import { PracticeEntryForm } from "./entry/practiceEntryForm";
+import { PracticeEntryForm } from "./practiceEntryForm";
 import { Modal, ConfirmationBox} from "@oi/reactcomponents";
-import { DisplayEachPractice } from "./display/displayEachPractice";
-import {AffliatePracticeForm} from './entry/affiliatePracticeForm';
+import {ShowAvailability, 
+        DisplayPracticeAddress,
+        DisplayPracticeContact,
+        DisplayPracticeTypes } from "@oi/reactcomponents/provider-practice";
+import { DisplayPracticeFiles,
+        DisplayPracticeVerification,
+        DisplayPracticeUserVerification} from "./displayComponents";
+import {AffliatePracticeForm} from './affiliatePracticeForm';
 
 export const App = () => {
 
@@ -19,8 +25,11 @@ export const App = () => {
     const [selectedPracticeId, setSelectedPracticeId] = useState("");
     const [selectedPracticeInfo, setSelectedPracticeInfo] = useState({});
 
+    const [showSelectedPracticeDetails, setShowPracticeDetailsFlag] = useState(false);
     const [showDeleteConfirmationBox, setDeleteConfirmationBoxFlag]=useState(false);
     
+    const detailsModalRef=React.createRef();
+
     //On Load 
     useEffect(() => {
         //Get data
@@ -49,11 +58,16 @@ export const App = () => {
     },[appLoader])
 
     useEffect(()=>{
-        if(!showDeleteConfirmationBox){
+        $(detailsModalRef.current).find('.tab').tab();
+        $(detailsModalRef.current).find('.tab[showel="pop-practice-details"]').trigger('click');
+    },[showSelectedPracticeDetails]);
+
+    useEffect(()=>{
+        if(!showSelectedPracticeDetails && !showPracticeEntryForm && !showDeleteConfirmationBox){
             setSelectedPracticeId("");
             setSelectedPracticeInfo({});
         }
-    },[showDeleteConfirmationBox]);
+    },[showSelectedPracticeDetails,showPracticeEntryForm,showDeleteConfirmationBox]);
 
     /** Get Data ***/
     const getUserInfo = () => {
@@ -75,6 +89,22 @@ export const App = () => {
             },
             "method": "GET"
         });
+    }
+
+    /** Handle Events ***/
+    const handlePracticeDetailsEdit = (_id) => {
+        setSelectedPracticeId(_id);
+        setSelectedPracticeInfo(userPractices.filter(p => p._id === _id)[0]);
+        setShowPracticeEntryFormFlag(true);
+    }
+
+    const handleViewPracticeDetails = (_id) => {
+
+        //get practice info
+        setSelectedPracticeId(_id);
+        setSelectedPracticeInfo(userPractices.filter(p => p._id === _id)[0]);
+        setShowPracticeDetailsFlag(true);
+
     }
 
     const handleAfterPracticeSubmission=(data)=>{
@@ -135,47 +165,11 @@ export const App = () => {
         setShowPracticeEntryFormFlag(true);
     }
 
-    //Updatinf the Facility Information 
-    const updateFacilityStateInfo=(data)=>{
-        let _d=[...userPractices];
-
-        //Find the index of the facility inside the facilityUser data 
-        let indx=_d.findIndex(p=>p.facilityInfo[0]._id===data._id);
-        
-        //Deconstructing _id from data
-        let {_id,..._de}=data;  
-
-        //Assinging the updates
-        //Index =0 is the only index for the each data  
-        _d[indx].facilityInfo[0]=Object.assign(_d[indx].facilityInfo[0],_de);
-
-        setUserPractices(_d);
-    }
-
-    //Updatinf the Facility Information 
-    const updateFacilityUserInfo=(data)=>{
-        let _d=[...userPractices];
-
-        //Find the index of the facility inside the facilityUser data 
-        let indx=_d.findIndex(p=>p._id===data._id);
-        
-        //Deconstructing _id from data
-        let {_id,..._de}=data;  
-
-        //Assinging the updates
-        //Index =0 is the only index for the each data  
-        _d[indx]=Object.assign(_d[indx],_de);
-
-        setUserPractices(_d);
-    }
-
     /** Layout */
     return (
         <UserInfo.Provider value={{
             userInfo: userInfo,
             userPractices: userPractices,
-            updateFacilityStateInfo:updateFacilityStateInfo,
-            updateFacilityUserInfo:updateFacilityUserInfo,
             selectedPracticeId:selectedPracticeId,
             selectedPracticeInfo:selectedPracticeInfo,
             facilityTypes:facilityTypes
@@ -213,7 +207,57 @@ export const App = () => {
                                 <div>
                                     {
                                         userPractices.map((practice, indx) => {
-                                            return <DisplayEachPractice practice={practice}  key={practice._id} />
+                                            let facilityInfo = practice.facilityInfo[0];
+                                            return <div key={practice._id}
+                                                className="bg-white p-2 border rounded position-relative mt-2 mb-2" >
+                                                <div>
+                                                    <div className="pb-1 border-bottom">{facilityInfo.medical_facility_name}</div>
+                                                    <div className="small mt-2 pb-1 border-bottom">
+                                                        <DisplayPracticeVerification verified={facilityInfo.verified} />
+                                                        <DisplayPracticeUserVerification verified={practice.verified} />
+                                                    </div>
+
+                                                    {/* {PRACTICE GENERAL INFORMATION} */}
+                                                    <div className="pt-2 pb-2 border-bottom position-relative">
+                                                        <div>
+                                                            <DisplayPracticeTypes 
+                                                                types={facilityInfo.medical_facility_type} 
+                                                                facilityTypes={facilityTypes} />
+                                                        </div>
+                                                        <div className="mt-2">{facilityInfo.medical_facility_description}</div>
+                                                        <div className="push-right" >
+                                                            <div className="small pointer mr-2 btn-link">Edit</div>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* {PRACTICE ADDRESS} */}
+                                                    <div  className="pt-2 pb-2 border-bottom position-relative">
+                                                        <div className="text-muted small">
+                                                            <DisplayPracticeAddress address={facilityInfo} />
+                                                        </div>
+                                                        <div className="push-right" onClick={()=>{setCurrentTab('practice-general-info')}}>
+                                                            <div className="small pointer mr-2 btn-link">Edit</div>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* {PRACTICE FILES} */}
+                                                    <div className="pt-2 pb-2 border-bottom position-relative">
+                                                        <DisplayPracticeFiles files={facilityInfo.files} />
+                                                    </div>
+
+                                                </div>
+                                                <div className="push-right d-flex">
+                                                    <div className="pointer btn-tooltip p-1" tip="View All Details" onClick={() => handleViewPracticeDetails(practice._id)}>
+                                                        <i className="fas fa-info-circle"></i>
+                                                    </div>
+                                                    <div className="pointer btn-tooltip ml-3 p-1" tip="Edit Practice Details" onClick={() => { handlePracticeDetailsEdit(practice._id) }}>
+                                                        <i className="far fa-edit"></i>
+                                                    </div>
+                                                    <div className="pointer btn-tooltip text-danger ml-3 p-1" tip="Delete Practice" onClick={() => { handlePracticeDeletion(practice._id) }}>
+                                                        <i className="far fa-trash-alt"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         })
                                     }
                                 </div> :

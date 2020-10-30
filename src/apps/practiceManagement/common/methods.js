@@ -7,7 +7,15 @@ import { formjs} from "@oi/utilities/lib/js/form";
  * @param {Array} availability 
  * @param {Boolean} affiliation //Defined if the user is affilaited to practice or have directly linked and created the practice.
  */
-export const saveNewPracticeUser=(userId,facilityId,availability,affiliation)=>{
+export const saveNewPracticeUser=(userId,
+    facilityId,
+    availability,
+    settings={//default settings set by the system. User can change settings later 
+    "appointment_time_slot_diff":"15",
+    "appointment_allowed_booking_types":[
+        "video","call","inperson"
+    ]
+}, affiliation)=>{
     
     let _formjs=new formjs();
     let facilityUserInfo = _formjs.convertJsonToFormdataObject({
@@ -15,12 +23,7 @@ export const saveNewPracticeUser=(userId,facilityId,availability,affiliation)=>{
         "user_mongo_id.$_id": userId,
         "facilityId.$_id": facilityId,
         "availability_information": availability,
-        "settings":{//default settings set by the system. User can change settings later 
-            "appointment_time_slot_diff":"15",
-            "appointment_allowed_booking_types":[
-                "video","call","inperson"
-            ]
-        },
+        "settings":settings,
         "deleted.$boolean": false,
         "verified.$boolean":false
     });
@@ -45,6 +48,21 @@ export const updatePracticeUser=(data)=>{
         "processData": false,
         "contentType": false,
         "data": facilityUserInfo,
+        "method": "POST"
+    });
+
+}
+
+export const updateFacilityInfo=(data)=>{
+    
+    let _formjs=new formjs();
+    let fdata = _formjs.convertJsonToFormdataObject(data);
+
+    return $.ajax({
+        "url": '/account/api/heathcarefacility/update',
+        "processData": false,
+        "contentType": false,
+        "data": fdata,
         "method": "POST"
     });
 
