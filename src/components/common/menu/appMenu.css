@@ -1,0 +1,19 @@
+.app-menu-item{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: baseline;
+}
+
+.current-app-menu-item{
+    background-color: aliceblue;
+    color:dodgerblue;
+}
+
+.app-menu-item i{
+    margin-right: 8px;
+}
+
+.app-menu-item:hover{
+    background-color: aliceblue;
+}

@@ -8,6 +8,10 @@ const efsPath = efsPaths[process.platform];
 const accountRouter=express.Router();
 
 accountRouter.get('/',(req,res)=>{
+    res.render(`pages/app`);
+});
+
+accountRouter.get('/home',(req,res)=>{
     res.render(`pages/profile`);
 });
 

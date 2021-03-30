@@ -1,0 +1,42 @@
+:root {
+    --left-pane-width: 220px;
+    --right-pane-left-pos:225px;
+    --pane-top-pos:65px;
+    --pane-bg-color:#4250b2;
+}
+
+#app-left-pane-container{
+    position: fixed;
+    left: 0px;
+    top: var(--pane-top-pos);
+    bottom: 0; 
+    width: var(--left-pane-width);
+    background-color: white;
+}
+
+#app-left-pane-container a{
+    color: inherit;
+    text-decoration: none;
+}
+
+#app-right-pane-container{
+    position: absolute;
+    left:var(--right-pane-left-pos);
+    top: var(--pane-top-pos);
+    bottom: 0;
+    right: 0px;
+    background-color: whitesmoke;
+    overflow: auto;
+}
+
+/* For Desktop view  */
+@media screen and (min-width: 768px) {
+   
+}
+
+
+/* For Smaller Mobile less than 1441px */
+@media screen and (max-width: 768px) {
+    
+}
+

@@ -1,18 +1,17 @@
 import React, { useState, useContext, useRef } from 'react';
-import { AppContext } from "../../AppContext";
+import { v4 as uuidv4 } from 'uuid';
+
+import * as utils from "account-manager-module/lib/user/phoneNumber/handlers"
 import { form } from "form-module/form";
 import { Modal } from "core/components/modal/web/modal";
-import { v4 as uuidv4 } from 'uuid';
+const countries = require('@oi/utilities/lists/countries.json');
 
 import VerifyOTPForm from '../otp/vertifyOtpForm';
 import {getOTP} from '../otp/getOtp';
-
-import * as utils from "account-manager-module/profile/managePhoneNumber/utils"
-
-const countries = require('@oi/utilities/lists/countries.json');
+import { AppContext } from "../../AppContext";
 
 const _iForm = new form();
-_iForm.formConfig = require('account-manager-module/profile/managePhoneNumber/phoneNumberEntryConfig.json');
+_iForm.formConfig = require('account-manager-module/lib/user/phoneNumber/form/config.json');
 
 const PhoneNumberEntryForm = ({
     contactToUpdate = null,
