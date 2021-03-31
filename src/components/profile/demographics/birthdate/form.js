@@ -56,6 +56,7 @@ export const BirthDateForm = ({
             onCloseHandler={() => { onCloseHandler() }}>
         <form onSubmit={(e) => { handleBirthDateUpdate(e) }}>
             <div className="form-group mt-2">
+                <label>Birth Date</label>
                 <input id="birthDate"
                     name="birthDate" 
                     onInput={(e)=>{

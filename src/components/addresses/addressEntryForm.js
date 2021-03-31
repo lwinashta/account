@@ -4,7 +4,7 @@ import { form } from "form-module/form";
 import { Modal } from "core/components/modal/web/modal";
 const countries = require('@oi/utilities/lists/countries.json');
 
-import { AppContext } from "../../AppContext";
+import { AppContext } from "../AppContext";
 
 const _iForm = new form();
 _iForm.formConfig = require('account-manager-module/lib/user/address/form/config.json');

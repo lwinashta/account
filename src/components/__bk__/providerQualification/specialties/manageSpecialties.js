@@ -2,12 +2,12 @@ import React, { useEffect, useState, useContext } from "react";
 import { UserInfo } from "../contexts/userInfo";
 import { Modal } from "@oi/reactcomponents";
 import { formjs, multiSelectDropDown} from "@oi/utilities/__bk__/form";
-import * as userFunctions from './../reusable/userInfoFunctions';
+import * as userFunctions from '../reusable/userInfoFunctions';
 import { DisplayItem, DisplayItemAsString } from './methods';
 
 const _formjs = new formjs();
 
-export const ManageProviderSpecialties = () => {
+export const ManageSpecialties = () => {
 
     let contextValues = useContext(UserInfo);
 

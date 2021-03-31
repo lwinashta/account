@@ -62,6 +62,7 @@ export const AboutMeForm = ({
                 <div className="form-group mt-2">
                     <textarea id="aboutme"
                         name="aboutMe" 
+                        rows="10"
                         onInput={(e)=>{
                             formValues.current.aboutMe=e.target.value;
                         }}

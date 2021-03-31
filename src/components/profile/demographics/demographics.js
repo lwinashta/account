@@ -7,6 +7,7 @@ import { ManageEmail } from '../email/manageEmail';
 import { ManagePhoneNumbers } from "../phoneNumbers/managePhoneNumber";
 import { ManageAboutMe } from './aboutme/manageAboutMe';
 import { ManageBirthDate } from './birthdate/ManageBirthDate';
+import { ManageGender } from './gender/manageGender';
 
 // import { getUserInfoFromCookieToken } from "account-manager-module/authentication/login/events/handleUserLogin";
 
@@ -142,6 +143,15 @@ export const Demographics = () => {
                 </div>
                 <div style={{flexGrow:2}}>
                     <ManageBirthDate />
+                </div>
+            </div>
+
+            <div className="mt-2 p-2 border-bottom d-flex flex-row align-items-top">
+                <div className="mr-2">
+                    <i class="fas fa-venus-mars"></i>
+                </div>
+                <div style={{flexGrow:2}}>
+                    <ManageGender />
                 </div>
             </div>
 

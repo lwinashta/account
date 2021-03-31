@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import { UserInfo } from "../contexts/userInfo";
 import { Modal } from "@oi/reactcomponents";
 import { formjs, multiSelectDropDown} from "@oi/utilities/__bk__/form";
-import * as userFunctions from './../reusable/userInfoFunctions';
+import * as userFunctions from '../reusable/userInfoFunctions';
 import { DisplayItem, DisplayItemAsString } from './methods';
 
 const councils = require("@oi/utilities/lists/medical-councils.json");

@@ -7,7 +7,11 @@ import { getUserInfoFromCookieToken } from "account-manager-module/lib/auth/logi
 
 import { AppContext } from "./AppContext";
 import { AppMenu } from "./common/menu/appMenu";
+
 import { Profile } from "./profile/Profile";
+import { ManageAddresses } from './addresses/Addresses';
+import { ProviderQualification } from './providerQualification/ProviderQualification';
+
 import './common/panes/panes.css';
 
 const App = () => {
@@ -91,9 +95,15 @@ const App = () => {
                     <AppMenu />
                 </div>
                 <div id="app-right-pane-container">
-                    <Switch>
-                        <Route exact path="/" component={Profile} />
-                    </Switch>
+                    {
+                        Object.keys(userInfo).length>0?
+                        <Switch>
+                            <Route exact path="/" component={Profile} />
+                            <Route exact path="/manage-addresses" component={ManageAddresses} />
+                            <Route exact path="/manage-qualification" component={ProviderQualification} />
+                        </Switch>:
+                        <div>Loading</div>
+                    }
                 </div>
             </Router> 
 

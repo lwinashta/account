@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useContext } from "react";
-import { UserInfo } from "../contexts/userInfo";
+import { UserInfo } from "../../contexts/userInfo";
 import { Modal, FilePreview, ConfirmationBox } from "@oi/reactcomponents";
 import { formjs, fileUploadField, insertValues } from "@oi/utilities/__bk__/form";
-import * as userFunctions from '../reusable/userInfoFunctions';
+import * as userFunctions from '../../reusable/userInfoFunctions';
 const moment=require("moment");
 
 const _formjs = new formjs();

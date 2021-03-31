@@ -18,7 +18,7 @@ export const ManageBirthDate = () => {
     return (
         <div>
             {
-                'birthDate' in AppLevelContext.userInfo && AppLevelContext.userInfo.birthDate.length > 0 ?
+                'birthDate' in AppLevelContext.userInfo && AppLevelContext.userInfo.birthDate!==null ?
                     <div className="d-flex flex-row justify-content-between">
                         <div>
                             <div className="text-capitalize">{moment(AppLevelContext.userInfo.birthDate).format('DD MMM YYYY')}</div>

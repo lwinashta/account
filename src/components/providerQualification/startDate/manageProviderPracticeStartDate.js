@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { UserInfo } from "../contexts/userInfo";
 import { Modal } from "@oi/reactcomponents";
-import { submitUserUpdates } from './../reusable/userInfoFunctions';
+import { submitUserUpdates } from '../reusable/userInfoFunctions';
 
 const moment = require('moment');
 

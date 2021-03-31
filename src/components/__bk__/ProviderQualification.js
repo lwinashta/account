@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useContext } from "react";
 import { UserInfo } from "../contexts/userInfo";
 import { ConfirmationBox } from "@oi/reactcomponents";
-import * as userFunctions from './../reusable/userInfoFunctions';
+import * as userFunctions from '../reusable/userInfoFunctions';
 
 import { ManageProviderSpecialties } from "./manageProviderSpecialties";
-import { ManageProviderMedicalDegree } from "./manageProviderMedicalDegree";
+import { ManageProviderMedicalDegree } from "./degrees/manageProviderMedicalDegree";
 import { ManageProviderMedicalRegistration } from "./manageProviderMedicalRegistration";
 import { ManageProviderMedicalCouncil } from "./manageProviderMedicalCouncil";
 import { ManagePracticeStartDate } from "./manageProviderPracticeStartDate";
