@@ -8,7 +8,7 @@ export const AppMenu = () => {
     const AppLevelContext = useContext(AppContext);
 
     let location = useLocation();
-    console.log(location); 
+    //console.log(location); 
     return (
         <div>
             <Link to="/">

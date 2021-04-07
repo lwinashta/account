@@ -17,7 +17,7 @@ export const DisplayInsuranceInfo = () => {
                                     {
                                         selectedAppointment.insurance_information.insurance_files.length > 0 ?
                                             <div className="sm-img">
-                                                <img src={'/g/public/fs/' + selectedAppointment.insurance_information.insurance_files[0]._id} />
+                                                <img src={'/file/public/fs/' + selectedAppointment.insurance_information.insurance_files[0]._id} />
                                             </div> :
                                             <i className="fas fa-hand-holding-medical"></i>
                                     }
@@ -32,7 +32,7 @@ export const DisplayInsuranceInfo = () => {
                                                     {
                                                         selectedAppointment.insurance_information.insurance_files.map(file => {
                                                             return <div className="med-img mr-2" key={file._id}>
-                                                                <img className="rounded" src={'/g/public/fs/' + file._id} />
+                                                                <img className="rounded" src={'/file/public/fs/' + file._id} />
                                                             </div>
                                                         })
                                                     }

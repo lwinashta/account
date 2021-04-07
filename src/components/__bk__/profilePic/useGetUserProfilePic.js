@@ -22,7 +22,7 @@ export const useGetUserProfilePic = () => {
             
             let fileId=userInfoContext.userInfo.files[0]._id;
             console.log(fileId);
-            setPicUri(`/g/public/fs/${fileId}`);
+            setPicUri(`/file/public/fs/${fileId}`);
         }
 
     }, []);

@@ -86,7 +86,7 @@ export const ManageProviderMedicalRegistration = () => {
         fileData.append("linked_collection_name", "users");
 
         return $.ajax({
-            "url": '/g/uploadfiles',
+            "url": '/file/uploadfiles',
             "processData": false,
             "contentType": false,
             "data": fileData,

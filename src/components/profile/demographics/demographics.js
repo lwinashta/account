@@ -57,7 +57,7 @@ export const Demographics = () => {
         fileData.append("linkedDatabaseName", "accounts");
         fileData.append("linkedCollectionName", "users");
 
-        fetch('/g/uploadfiles', {
+        fetch('/file/uploadfiles', {
             "method": "PUT",
             body: fileData
         })

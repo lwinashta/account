@@ -18,6 +18,7 @@ module.exports = {
     alias:{
       "form-module":path.resolve(__dirname, '../efs/form'),
       "account-manager-module":path.resolve(__dirname, '../efs/accountManager'),
+      "fileManagement-module":path.resolve(__dirname, '../efs/fileManagement'),
       "core":path.resolve(__dirname, '../efs/core')
     },
     modules: [path.resolve(__dirname, './node_modules'),'node_modules']

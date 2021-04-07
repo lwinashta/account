@@ -5,6 +5,8 @@ import { OnScreenMessage } from "core/components/popups/web/popups";
 
 import { AppContext } from "../../AppContext";
 
+import * as handlers from '../handlers';
+
 import { SpecialtyEntryForm } from "./form";
 
 export const ManageSpecialties = () => {
@@ -52,33 +54,46 @@ export const ManageSpecialties = () => {
     /** Render */
     return (<>
         <div className="tile bg-white">
-            <div className="d-flex flex-row justify-content-between p-2 border-bottom">
-                <div className="font-weight-bold">Specialty <i className="text-danger">(* Required)</i></div>
-                <div className="pointer" onClick={() => {
-                    setShowSpecialtyEntryFormFlag(true);
-                }}>
-                    <i className="fas fa-plus"></i>
+            
+            <div className=" p-2 border-bottom">
+                <div className="d-flex flex-row justify-content-between">
+                    <div className="d-flex flex-row">
+                        <div className="font-weight-bold">Specialties</div>
+                        <div className="font-weight-bold text-danger ml-2 text-uppercase small">(* Required)</div>
+                    </div>
+                    {
+                        handlers.checkIfAllowedEdit(AppLevelContext.userInfo)?
+                        <div className="pointer" 
+                            onClick={() => {
+                                setShowSpecialtyEntryFormFlag(true);
+                            }}>
+                            <i className="fas fa-plus"></i>
+                        </div>:
+                        null
+                    }
+                    
                 </div>
+                <div className="text-muted"> Atleast one specialty is required. Specialty will be displayed on your profile screen and patient or other users can search healthcare providers with specialties.</div>
             </div>
-
-            <div className="px-2 pt-2">
-                Please select your specialty.
-                Patient can search healthcare providers with specialties.
-            </div>
-
+            
             <div className="d-flex flex-row flex-wrap">
                 {
                     ("specialties" in AppLevelContext.userInfo) && AppLevelContext.userInfo.specialties.length > 0 ?
                         AppLevelContext.userInfo.specialties.map(sp => {
                             return <div key={sp._id} className="d-flex flex-row justify-content-between align-items-center p-2 border rounded bg-whitesmoke mr-2 mt-2">
                                 <div>{setFirstLetterUpperCase(sp.name)}</div>
-                                <div 
-                                    className="ml-3 pointer text-danger"
-                                    onClick={() => { 
-                                        setSpecialtyToDelete(sp);
-                                    }}>
-                                    <i className="fas fa-times"></i>
-                                </div>
+                                {
+                                    handlers.checkIfAllowedEdit(AppLevelContext.userInfo)?
+                                    <div 
+                                        className="ml-3 pointer text-danger"
+                                        onClick={() => { 
+                                            setSpecialtyToDelete(sp);
+                                        }}>
+                                        <i className="fas fa-times"></i>
+                                    </div>:
+                                    null
+                                }
+                                
                             </div>
                         }) :
                         null

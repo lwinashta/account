@@ -6,7 +6,7 @@ export const DisplayProviderProfilePic=()=>{
         {({ provider={}}) => {
             return <div>
                 <div className="mx-auto med-img">
-                    <img className="rounded-circle border" src={"/g/public/profilepic/" + provider._id} />
+                    <img className="rounded-circle border" src={"/file/public/profilepic/" + provider._id} />
                 </div>
             </div>
         }}

@@ -173,7 +173,7 @@ export const Insurance = () => {
         fileData.append("linked_collection_name","userInsurances");
 
         return $.ajax({
-            "url": '/g/uploadfiles',
+            "url": '/file/uploadfiles',
             "processData": false,
             "contentType": false,
             "data": fileData,
@@ -265,7 +265,7 @@ export const Insurance = () => {
                     //Delete insurance Files first 
                     getInsuranceFiles.forEach(file => {
                         setPromises.push($.ajax({
-                            "url": '/g/deletefile',
+                            "url": '/file/deletefile',
                             "data": JSON.stringify(file),
                             "processData": false,
                             "contentType": "application/json; charset=utf-8",

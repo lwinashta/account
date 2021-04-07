@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack",
-    "push":"git add --all && git commit -m '30Mar2021' && git push "
+    "push": "git add --all && git commit -m '30Mar2021' && git push "
   },
   "author": "Pramod",
   "license": "ISC",

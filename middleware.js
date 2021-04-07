@@ -14,7 +14,7 @@ const accountManagementRoutes=require('../efs/accountManager/routes');
 const accountRouter=require('./router');
 const paymentRouter=require('../efs/payment/router');
 const reviewRouter=require('../efs/reviews/router');
-const globalRouter=require('../efs/router/global');
+const fileRouter=require('../efs/fileManagement/router');
 
 const config = require("../efs/core/config/config.json");
 const domains = config.domains;
@@ -76,7 +76,7 @@ module.exports = function (app) {
     app.use('/appointments',appointmentRouter);
     app.use('/payment',paymentRouter);
     app.use('/review',reviewRouter);
-    app.use('/g',globalRouter);
+    app.use('/file',fileRouter);
     app.use('/account/api',accountManagementRoutes);
     app.use('/',accountRouter);
 

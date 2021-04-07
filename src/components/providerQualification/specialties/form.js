@@ -1,11 +1,10 @@
 import React, { useEffect, useState, useContext, useRef } from "react";
 
 import { Modal } from "core/components/modal/web/modal";
-import { MultiSelectField } from "core/components/fields/web/multiselectField";
+import { SearchableMultiselectField } from "core/components/fields/web/multiselect/searchableMultiselectField";
 const specialties=require('@oi/utilities/lists/specialties.json');
 
 import { AppContext } from "../../AppContext";
-import App from "../../App";
 
 export const SpecialtyEntryForm = ({
     onCloseHandler=function(){}
@@ -46,7 +45,8 @@ export const SpecialtyEntryForm = ({
 
                 AppLevelContext.setPopup({
                     show:true,
-                    message:"Specialty saved successfully"
+                    message:"Specialty saved successfully",
+                    messageType:"success"
                 });
 
                 onCloseHandler();
@@ -73,9 +73,9 @@ export const SpecialtyEntryForm = ({
                 <label data-required="1">Specialty</label>
                 <p className="text-muted small  my-2">Search and add multiple specialties </p>
                 <div>
-                    <MultiSelectField  
+                    <SearchableMultiselectField  
                         handleOnItemSelection={handleOnItemSelection}
-                        data={
+                        selections={
                             ("specialties" in AppLevelContext.userInfo) && AppLevelContext.userInfo.specialties.length>0?
                                 specialties.reduce((acc,ci)=>{
                                     //exclude items from data which are alreadu added to profile

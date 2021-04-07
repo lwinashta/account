@@ -1,221 +1,251 @@
-import React, { useEffect, useState, useContext } from "react";
-import { UserInfo } from "../contexts/userInfo";
-import { Modal,FilePreview } from "@oi/reactcomponents";
-import { formjs,fileUploadField,insertValues } from "@oi/utilities/__bk__/form";
-import * as userFunctions from '../reusable/userInfoFunctions';
+import React, { useEffect, useState, useContext, useRef } from "react";
+const moment = require('moment')
 
-const _formjs = new formjs();
+import { form } from "form-module/form";
+import { Modal } from "core/components/modal/web/modal";
+import { FileUploadField } from "core/components/fields/web/fileUploadField/fileUploadField";
+import { uploadFilesToServer } from "fileManagement-module/lib/handlers";
+const countries = require('@oi/utilities/lists/countries.json');
 
-export const ManageProviderMedicalRegistration = () => {
+import { AppContext } from "../../AppContext";
 
-    let contextValues = useContext(UserInfo);
+const _iForm = new form();
+_iForm.formConfig = require('account-manager-module/lib/user/qualification/medicalRegistration/form/config.json');
 
-    const [userMedicalRegNumber, setMedicalRegNumber] = useState("medical_registration_number" in contextValues.userInfo ? contextValues.userInfo.medical_registration_number : "");
-    const [userMedicalRegistrationFiles, setUserMedicalRegistrationFiles] = useState("files" in contextValues.userInfo ? contextValues.userInfo.files.filter(f => f.field_name === "medical_registration_files") : []);
+export const MedicalRegistrationForm = ({
+    onCloseHandler = function () { }
+}) => {
 
-    const [showMedicalRegistraionFilesPreviewModal, setMedicalRegistraionFilesPreviewModalFlag] = useState(false);
-    const [showMedicalRegistraionEntryForm, setShowMedicalRegistrationEntryFormFlag] = useState(false);
-    
-    const [uploadedRegistrationFiles,setUploadedRegistrationFiles]=useState([]);
+    let AppLevelContext = useContext(AppContext);
 
-    let formRef = React.createRef();
+    let formValues = useRef(("medicalRegistration" in AppLevelContext.userInfo)?
+        Object.assign(_iForm.getInitialFormObject(),AppLevelContext.userInfo.medicalRegistration) : _iForm.getInitialFormObject());
 
-    /** UseEffect Hooks */
+    let filesToUpload = useRef({
+        registrationFiles: []
+    });
 
-    useEffect(() => {
-        if (showMedicalRegistraionEntryForm) {
+    const [validationError, setValidationError] = useState([]);
 
-            let _manageFiles = new fileUploadField({
-                container: $(formRef.current).find('.droppable-file-container'),
-                multiple: true,
-                name: $(formRef.current).find('.droppable-file-container').attr('name'),
-                onFileSelectionCallback: function (file, allUploaded) {
-                    setUploadedRegistrationFiles(allUploaded);
-                },
-                fileData: userMedicalRegistrationFiles,
-                onFileDeletionCallback: function (deletedFile) {
-                    if(deletedFile._id!==null){
-                        
-                        let regFiles = [...userMedicalRegistrationFiles];
-
-                        //find the file 
-                        let indx = regFiles.findIndex(f => f._id === deletedFile._id);
-                        let removedFile = regFiles.files.splice(indx, 1);
-
-                        setUserMedicalRegistrationFiles(removedFile);
-
-                    }else{
-
-                        //rmeoved the file which was not uploaded to server
-                        setUploadedRegistrationFiles(deletedFile.uploadedFiles);
-                    }
-                    
-                }
-            });
-            _manageFiles.bind();//bind file drg and drop
-            _manageFiles.insertFiles();
-
-            let _insertValues = new insertValues({
-                container: $(formRef.current)
-            });
-
-            //load the data in the form 
-            _insertValues.insert({
-                "medical_registration_number": userMedicalRegNumber
-            });
-        }
-
-        if (!setShowMedicalRegistrationEntryFormFlag) {
-            setUploadedRegistrationFiles([]);
-        }
-
-    }, [showMedicalRegistraionEntryForm]);
-
-    /******************** */
-    /** Event Handlers */
-    const addMedicalRegistrationFiles = (files) => {
-        //console.log(files);
-        let fileData = new FormData();
-
-        Object.keys(files).forEach(key => {
-            fileData.append(key, files[key]);
-        });
-
-        fileData.append("linked_mongo_id", contextValues.userInfo._id);
-        fileData.append("linked_db_name", "accounts");
-        fileData.append("linked_collection_name", "users");
-
-        return $.ajax({
-            "url": '/g/uploadfiles',
-            "processData": false,
-            "contentType": false,
-            "data": fileData,
-            "method": "POST"
-        })
+    const setDefaultValueForFields = (fieldName) => {
+        return ('medicalRegistration' in AppLevelContext.userInfo)
+            && (fieldName in AppLevelContext.userInfo.medicalRegistration) ?
+            AppLevelContext.userInfo.medicalRegistration[fieldName] : null
     }
 
-    const handleMedicalRegistrationSubmission = (e) => {
-        e.preventDefault();
+    const handleFileUpload = (files) => {
+        filesToUpload.current.registrationFiles = files;
+        formValues.current.registrationFiles = formValues.current.registrationFiles.concat(files);
+    }
 
-        let form = e.target;
-        let validation = _formjs.validateForm(form);
+    const handleFormValues = (params) => {
+        formValues.current = Object.assign(formValues.current, params);
+    }
 
-        if (validation === 0) {
-            //update the registration number 
-            let medRegNum = $(form).find('[name="medical_registration_number"]').val();
-            userFunctions.submitUserUpdates({
-                "medical_registration_number": medRegNum,
-                "_id": contextValues.userInfo._id
+    const handleMedicalRegistrationSubmission = async (e) => {
 
-            }).then(response => {
-                setMedicalRegNumber(medRegNum);
+        try {
 
-                //check if any new files uploaded 
-                if (Object.keys(uploadedRegistrationFiles).length > 0) {
-                    return addMedicalRegistrationFiles(uploadedRegistrationFiles);
+            e.preventDefault();
 
-                }
+            //validation check 
+            let _d = _iForm.validateForm(formValues.current);
+            
+            setValidationError(_d);
 
-            }).then(response => {
-                
-                if (Array.isArray(response)) {
-                    setUserMedicalRegistrationFiles(userMedicalRegistrationFiles.concat(response));
-                }
-                popup.remove();
+            if (_d.length > 0) {
+                alert("Please enter required information.");
 
-                //Update the context
-                contextValues.updateUserInfoContext({
-                    medical_registration_number: medRegNum
+            } else {
+                //Insert necessary values in the data 
+                let { registrationFiles, issueDate, expirationDate, ...data } = formValues.current;
+
+                data["issueDate.$date"] = issueDate;//convert to date value
+                data["expirationDate.$date"] = expirationDate;
+
+                let quaification = await fetch("/account/api/user/profile/update", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        _id: AppLevelContext.userInfo._id,
+                        "medicalRegistration.$object": data
+                    }),
+                    headers: {
+                        "content-type": "application/json"
+                    }
                 });
 
-                popup.onBottomCenterSuccessMessage("Medical Registration Updated");
-                setShowMedicalRegistrationEntryFormFlag(false);
+                //insert Files 
+                let newFiles = registrationFiles ? registrationFiles.filter(f => !('_id' in f)):[];
 
-            }).catch(err => {
-                console.log(err);
-                popup.onBottomCenterErrorOccured("Error while updating the info. Try again.");
-            });
+                if (newFiles.length > 0) {
+                    let uploadFiles = await uploadFilesToServer(newFiles,{
+                        linkedMongoId:AppLevelContext.userInfo._id,
+                        linkedDatabaseName: "accounts",
+                        linkedCollectionName: "users",
+                        fieldName:"medicalRegistrationFile"
+                    });
+                }
 
-        } else {
-            popup.onBottomCenterRequiredErrorMsg();
+                //reset user info
+                let resetUserInfo = await AppLevelContext.resetUserInformation();
+
+                AppLevelContext.setPopup({
+                    show:true,
+                    message:"Medical Registration Updated",
+                    messageType:"success"
+                });
+
+                onCloseHandler(false);
+                
+            }
+
+        } catch (error) {
+            console.log(error);
+
         }
     }
 
+
     /** Render */
-    return (<div className="border-bottom pt-2 pb-3 position-relative">
-        <div className="font-weight-bold" data-required="1">Medical Registration/ License Number</div>
-        {
-            userMedicalRegNumber.length === 0 ?
-                <div className="small">
-                    <div className="mt-1 btn-link pointer" onClick={() => { setShowMedicalRegistrationEntryFormFlag(true) }}>Add Medical Registration/ License Number</div>
-                    <div className="text-muted">You will also need your medical registration certificate as an attachment to verify your qualitifcation.</div>
-                </div> :
-                <div>
-                    {
-                        'qualification_verification_status' in contextValues.userInfo &&
-                        contextValues.userInfo.qualification_verification_status.length > 0 && 
-                        contextValues.userInfo.qualification_verification_status === "pending" ?
-                            <div className="push-right">
-                                <div className="small btn-link pointer" onClick={() => { setShowMedicalRegistrationEntryFormFlag(true) }}>Edit</div>
-                            </div> : null
+    return (
+        <Modal header={<h3>Medical Registration Entry</h3>}
+            onCloseHandler={() => { onCloseHandler(false) }}>
+            <form onSubmit={(e) => { handleMedicalRegistrationSubmission(e) }} >
+                
+                <div className="form-group">
+                    <label data-required="1">Registration/License Number </label>
+                    <input type="text"
+                        name="registrationNumber"
+                        onInput={(e) => {
+                            handleFormValues({
+                                registrationNumber: e.target.value
+                            })
+                        }}
+                        className="form-control entry-field"
+                        data-required="1"
+                        defaultValue={setDefaultValueForFields("registrationNumber")}
+                        placeholder="Medical Registration Number" />
+                    {validationError.length > 0 ?
+                        _iForm.displayValidationError("registrationNumber") : null
                     }
-                    <div className="small">
-                        <div className="text-muted">{userMedicalRegNumber}</div>
-                        <div className="btn-link pointer" onClick={() => setMedicalRegistraionFilesPreviewModalFlag(true)}>{userMedicalRegistrationFiles.length > 0 ? userMedicalRegistrationFiles.length + " files" : ""}</div>
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="registrationFile" data-required="1">Upload Medication Registration </label>
+                    <div className="mt-2">
+                        <FileUploadField
+                            files={AppLevelContext.userInfo.files.length>0 ?AppLevelContext.userInfo.files.filter(f=>f.fieldName==="medicalRegistrationFile"):null}
+                            required
+                            onUpload={handleFileUpload} />
+                        {validationError.length > 0 ?
+                            _iForm.displayValidationError("registrationFiles") : null
+                        }
                     </div>
                 </div>
-        }
 
-        {
-            showMedicalRegistraionEntryForm ?
-                <Modal header={<h3>Medical Registration Entry</h3>} onCloseHandler={() => { setShowMedicalRegistrationEntryFormFlag(false) }}>
-                    <form ref={formRef} onSubmit={(e) => { handleMedicalRegistrationSubmission(e) }} >
-                        <div className="form-group">
-                            <label data-required="1">Registration/License Number </label>
-                            <input type="text" name="medical_registration_number"
-                                className="form-control entry-field" data-required="1"
-                                placeholder="Medical Registration Number" />
-                        </div>
-                        <div className="form-group">
+                <div className="form-group mt-2">
+                    <label data-required="1">Issue Date</label>
+                    <input id="issueDate"
+                        name="issueDate"
+                        onInput={(e) => {
+                            handleFormValues({
+                                issueDate: e.target.value
+                            })
+                        }}
+                        className='form-control'
+                        type="date"
+                        max={moment().format('YYYY-MM-DD')}
+                        placeholder="Date registration was issued"
+                        defaultValue={moment(setDefaultValueForFields("issueDate")).format('YYYY-MM-DD')} />
+                    {validationError.length > 0 ?
+                        _iForm.displayValidationError("issueDate") : null
+                    }
+                </div>
 
-                            <label htmlFor="medical-registration-file" data-required="1">Attach Insurance Card </label>
+                <div className="form-group mt-2">
+                    <label data-required="1">Expiration Date</label>
+                    <input id="expirationDate"
+                        name="issueDaexpirationDatete"
+                        onInput={(e) => {
+                            handleFormValues({
+                                expirationDate: e.target.value
+                            })
+                        }}
+                        min={moment().format('YYYY-MM-DD')}
+                        className='form-control'
+                        type="date"
+                        placeholder="Date registration will expire"
+                        defaultValue={moment(setDefaultValueForFields("expirationDate")).format('YYYY-MM-DD')} />
+                    {validationError.length > 0 ?
+                        _iForm.displayValidationError("expirationDate") : null
+                    }
+                </div>
+                
+                <div className="form-group">
+                    <label htmlFor="countryOfIssuance-registration" data-required="1">Country of Issuance</label>
+                    <select name="countryOfIssuance"
+                        onChange={(e) => {
+                            handleFormValues({ countryOfIssuance: countries.find(_c => _c._id === e.target.value) });
+                        }}
+                        defaultValue={setDefaultValueForFields("countryOfIssuance")._id}
+                        id="countryOfIssuance-registration"
+                        className="form-control"
+                        data-required="1"
+                        placeholder="Country" >
+                        <option value=""></option>
+                        {countries.map(c => {
+                            return <option key={c._id}
+                                value={c._id}>{c.name} </option>
+                        })}
+                    </select>
+                    {validationError.length > 0 ?
+                        _iForm.displayValidationError("countryOfIssuance") : null
+                    }
+                </div>
 
-                            <div id="medical-registration-file-container"
-                                name="medical_registration_files"
-                                className="mt-2 p-2 position-relative droppable-file-container entry-field"
-                                data-required="1"
-                                placeholder="Medical Registration">
+                <div className="form-group">
+                    <label data-required="1">State of Issuance </label>
+                    <input type="text"
+                        name="stateOfIssuance"
+                        onInput={(e) => {
+                            handleFormValues({
+                                stateOfIssuance: e.target.value
+                            })
+                        }}
+                        className="form-control"
+                        data-required="1"
+                        defaultValue={setDefaultValueForFields("stateOfIssuance")}
+                        placeholder="State of Issuance" />
+                    {validationError.length > 0 ?
+                        _iForm.displayValidationError("stateOfIssuance") : null
+                    }
+                </div>
 
-                                <div className="droppable-file-action-container">
-
-                                    <div className="small text-muted d-inline-block">Drag and drop or upload the file</div>
-
-                                    <div className="position-relative ml-2 upload-file-container d-inline-block">
-                                        <input type="file" id="medical-registration-file" className="form-control" multiple="multiple" />
-                                        <div className="btn-info p-1 rounded text-center input-overlay small">Upload File</div>
-                                    </div>
-
-                                </div>
-
-                                <div className="droppable-file-preview-container"></div>
-
-                            </div>
-
-                        </div>
-                        <div className="mt-2 text-center">
-                            <button className="btn btn-primary w-75" type="submit">Save Medical Registration</button>
-                        </div>
-                    </form>
-                </Modal> : null
-        }
-
-        {
-            showMedicalRegistraionFilesPreviewModal ?
-                <FilePreview files={userMedicalRegistrationFiles} onCloseHandler={() => { setMedicalRegistraionFilesPreviewModalFlag(false) }}></FilePreview> : null
-        }
-
-    </div>
-
-
+                <div className="mt-2 text-center">
+                    <button className="btn btn-primary w-75" type="submit">Save Medical Registration</button>
+                </div>
+            </form>
+        </Modal>
     )
 }
+
+
+
+// const uploadMedicalRegistration = async (files) => {
+
+//     //console.log(files);
+//     let fileData = new FormData();
+
+//     $.each(files, function (indx, file) {
+//         fileData.append(`medicalRegistrationFile-${indx}`, file);
+//     });
+
+//     fileData.append("linkedMongoId", AppLevelContext.userInfo._id);
+//     fileData.append("linkedDatabaseName", "accounts");
+//     fileData.append("linkedCollectionName", "users");
+
+//     return fetch('/file/uploadfiles', {
+//         "method": "PUT",
+//         body: fileData
+//     });
+// }

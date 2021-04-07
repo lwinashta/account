@@ -62,7 +62,7 @@ export const BirthDateForm = ({
                     onInput={(e)=>{
                         formValues.current.birthDate=e.target.value;
                     }}
-                    className='form-control entry-field'
+                    className='form-control'
                     type="date" 
                     placeholder="Select your birthdate"
                     autoComplete="off" 

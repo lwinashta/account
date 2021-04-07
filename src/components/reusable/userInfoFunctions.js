@@ -24,7 +24,7 @@ export const uploadUserProfileFiles = (files,userId) => {
     fileData.append("linked_collection_name", "users");
 
     return $.ajax({
-        "url": '/g/uploadfiles',
+        "url": '/file/uploadfiles',
         "processData": false,
         "contentType": false,
         "data": fileData,
@@ -45,7 +45,7 @@ export const deleteUserProfileFiles = (fileIds) => {
         }
 
         promises.push($.ajax({
-            "url": '/g/deletefile',
+            "url": '/file/deletefile',
             "processData": false,
             "contentType": "application/json; charset=utf-8",
             "data": JSON.stringify(_d),

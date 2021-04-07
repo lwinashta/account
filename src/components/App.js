@@ -11,6 +11,7 @@ import { AppMenu } from "./common/menu/appMenu";
 import { Profile } from "./profile/Profile";
 import { ManageAddresses } from './addresses/Addresses';
 import { ProviderQualification } from './providerQualification/ProviderQualification';
+import { PracticeManagement } from "./practiceManagement/PracticeManagement";
 
 import './common/panes/panes.css';
 
@@ -25,6 +26,7 @@ const App = () => {
     const [popup,setPopup]=useState({
         position:null,
         message:null,
+        messageType:null,
         show:false
     });
 
@@ -101,6 +103,7 @@ const App = () => {
                             <Route exact path="/" component={Profile} />
                             <Route exact path="/manage-addresses" component={ManageAddresses} />
                             <Route exact path="/manage-qualification" component={ProviderQualification} />
+                            <Route exact path="/practice-management" component={PracticeManagement} />
                         </Switch>:
                         <div>Loading</div>
                     }
@@ -116,6 +119,7 @@ const App = () => {
             {
                 popup.show?
                     <OnBottomCenter 
+                        messageType={popup.messageType}
                         onCloseHandler={()=>{removePopup()}}
                         message={popup.message} />:
                 null
