@@ -1,142 +1,134 @@
-import React, { useEffect, useState} from "react";
-import { formjs } from "@oi/utilities/lib/js/form";
+import React, { useEffect, useContext,useRef, useState} from "react";
+import { FieldEntryError } from "form-module/fieldEntryError";
 
+import { FormContext } from "./../formContext";
 
-export const PracticeSettingsEntry = ({ 
-    selectedPracticeInfo={}, 
-    setEntryData = null ,
-    onNextClick=null,
-    onBackClick=null,
-    onSubmission=null
+export const PracticeSettingsForm = ({
+    validateAddress=function(){}
 }) => {
 
-    let settingsFormRef=React.createRef();
-    const [settings, setSettings]=useState(Object.keys(selectedPracticeInfo).length>0 && 'settings' in selectedPracticeInfo?selectedPracticeInfo.settings:{})
+    let contextValues=useContext(FormContext);
 
-    useEffect(()=>{
+    let settings=useRef({
+        appointmentTimeGap:"15",
+        allowedBookingTypes:["video","inperson"]
+    });
 
-        let form=$(settingsFormRef.current);
+    const [validationErrors,setValidationErrors]=useState([]);
 
-        if(Object.keys(settings).length>0){
-            $(form).find('[name="appointment_time_slot_diff"]').val(settings.appointment_time_slot_diff);
-            
-            settings.appointment_allowed_booking_types.forEach(element => {
-                $(form).find('[name="appointment_allowed_booking_types"][value="'+element+'"]').prop('checked',true);
-            });
+    const handleFormValues=()=>{
+        contextValues.handleFormValues({
+            settings:settings.current
+        })
+    };
+
+    const handleOnBookingTypeChange=(e)=>{
+        if(e.target.checked){
+            settings.current.allowedBookingTypes.push(e.target.value);
+        }else{
+            settings.current.allowedBookingTypes=settings.current.allowedBookingTypes.filter(s=>s!==e.target.value);
         }
-        
-    },[]);
-
-    const getSettings = () => {
-        
-        let _formjs = new formjs();
-        try {
-
-            let form = $(settingsFormRef.current);
-            let validate = _formjs.validateForm(form);
-
-            if (validate > 0) throw new Error("validation error")
-
-            let formData = {};
-
-            $(form).find('.entry-field[name]').each(function () {
-                let fd = _formjs.getFieldData(this);
-                formData = Object.assign(formData, fd);
-            });
-
-            return formData;
-
-        } catch (error) {
-            if (error === "validation error") popup.onBottomCenterRequiredErrorMsg();
-            return null;
-        }
-
-    }
-
-    const handleOnNext = () => {
-
-        let data = getSettings();
-
-        if (data !== null) {
-            setEntryData({
-                settings: data
-            });
-
-            onNextClick();
-        }
-
+        handleFormValues();
     }
 
     const handleOnSubmission=()=>{
-        let data = getSettings();
-
-        if (data !== null) {
-            onSubmission({
-                settings: data
+        let _v=[];
+        
+        if(settings.current.appointmentTimeGap.length===0) _v.push({noAppointmentTimGap:true});
+        if(settings.current.allowedBookingTypes.length===0) _v.push({noBookingType:true});
+        
+        if(_v.length>0){
+            setValidationErrors(_v);
+        }else{
+            setValidationErrors([]);
+            contextValues.handleFormValues({
+                settings:settings.current
             });
+            validateAddress();//submit practice information 
         }
+    
     }
 
+
     return (
-        <div ref={settingsFormRef} className="p-2" >
-            <div className="h5 font-weight-bold text-capitalize">Practice Settings</div>
+        <div className="p-2" >
+
+            <div className="mb-3 font-weight-bold text-primary">Practice Settings:</div>
+
             <div className="form-group">
-                <label data-required="1">Appointment slots time gap</label>
-                <select className="form-control entry-field"
-                    name="appointment_time_slot_diff"
-                    data-required="1" placeholder="Appointment time gap" >
-                    <option value=""></option>
+                <label data-required="1">Time gap between appointements</label>
+                <div className="mt-2 text-muted">
+                    Select the time gap between your appointments.
+                    This settings will be used by the system to determine your availability and also will show the appointment slots
+                    spaned for the selected time gap.
+                </div>
+                <select 
+                    className="form-control"
+                    name="appointmentTimeGap" 
+                    onChange={(e)=>{
+                        settings.current.appointmentTimeGap=e.target.value
+                        handleFormValues();
+                    }}
+                    defaultValue={settings.current.appointmentTimeGap}
+                    placeholder="Appointment time gap" >
                     <option value="15">15 mins (default)</option>
                     <option value="30">30 mins</option>
                     <option value="45">45 mins</option>
                     <option value="60">60 mins</option>
                 </select>
-                <p className="mt-2 small text-muted">
-                    Select the time gap between your appointments.
-                    This settings will be used by the system to determine your availability and also will show the appointment slots
-                    spaned for the selected time gap.
-                </p>
+                {
+                    validationErrors.length>0 && validationErrors.filter(v=>v.noAppointmentTimGap).length>0?
+                        <FieldEntryError title="Please select the appointment time gap" prefix={null} />:
+                    null
+                }
             </div>
             <div className="form-group">
-                <label data-required="1">Appointment types allowed</label>
-                <div name="appointment_allowed_booking_types" className="checkbox-control-group entry-field" data-required="1">
-                    <div>
-                        <input name="appointment_allowed_booking_types" type="checkbox" value="inperson" id="appointment-type-inperson" />
-                        <label style={{fontSize:'small'}} className="small normal ml-2" htmlFor="appointment-type-inperson">In person consultation</label>
-                    </div>
-                    <div>
-                        <input name="appointment_allowed_booking_types" type="checkbox" value="video" id="appointment-type-video" />
-                        <label style={{fontSize:'small'}} className="small normal ml-2" htmlFor="appointment-type-video">Video consultation</label>
-                    </div>
-                </div>
-                <p className="mt-2 small text-muted">
+                <label data-required="1">Allowed appointment booking types</label>
+                <div className="mt-2 text-muted">
                     Select the appointment type you would like patients to book.
                     Uncheck the options that you dont want to allow patients to book.
-                </p>
+                </div>
+                <div name="allowedBookingTypes">
+                    <div className="d-flex flex-row align-items-baseline">
+                        <input type="checkbox" 
+                            value="inperson" 
+                            defaultChecked={settings.current.allowedBookingTypes.includes("inperson")}
+                            id="appointment-type-inperson" 
+                            onChange={(e)=>{
+                                handleOnBookingTypeChange(e);
+                            }} />
+                        <label className="normal ml-2" htmlFor="appointment-type-inperson">In person consultation</label>
+                    </div>
+                    <div className="d-flex flex-row align-items-baseline">
+                        <input type="checkbox" 
+                            value="video" 
+                            defaultChecked={settings.current.allowedBookingTypes.includes("video")}
+                            id="appointment-type-video" 
+                            onChange={(e)=>{
+                                handleOnBookingTypeChange(e);
+                            }} />
+                        <label className="normal ml-2" htmlFor="appointment-type-video">Video Call</label>
+                    </div>
+                </div>
+                {
+                    validationErrors.length>0 && validationErrors.filter(v=>v.noBookingType).length>0?
+                        <FieldEntryError title="Please select atleast one booking type" prefix={null} />:
+                    null
+                }
             </div>
 
-            {
-                onBackClick !== null && onNextClick !== null ?
-                    <div className="mt-2 d-flex justify-content-between">
-                        <div className="btn-sm btn-secondary pointer small"
-                            onClick={() => { onBackClick() }}>
-                            <i className="fas fa-chevron-left mr-2"></i>
-                            <span>Back</span>
-                        </div>
-                        <div className="btn-sm btn-info pointer small"
-                            onClick={() => { handleOnNext() }}>
-                            <span>Next</span>
-                            <i className="fas fa-chevron-right ml-2"></i>
-                        </div>
-                    </div> :
-                onSubmission !== null ?
-                        <div className="mt-2 text-center pt-2 border-top"onClick={()=>{handleOnSubmission()}}>
-                            <button className="btn btn-primary w-75" type="submit">Save Information</button>
-                        </div> :
-                null
-            }
-
-            
+            <div className="mt-2 d-flex justify-content-between">
+                <div className="btn btn-primary pointer" 
+                    onClick={()=>{contextValues.handleTabClick("availability","settings")}}>
+                        <i className="mr-2 fas fa-arrow-left"></i>
+                        <span>Previous</span>
+                </div>
+                <div className="btn btn-success pointer"
+                    onClick={() => { handleOnSubmission() }}>
+                    <i className="far fa-save mr-2"></i>
+                    <span>Save Practice Information</span>
+                </div>
+            </div>
 
         </div>
     )

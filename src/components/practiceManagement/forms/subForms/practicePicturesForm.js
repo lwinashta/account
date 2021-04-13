@@ -1,16 +1,28 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { FileUploadField } from "core/components/fields/web/fileUploadField/fileUploadField";
+
+import { FormContext } from "./../formContext";
 
 export const PracticePicturesForm = () => {
 
+    let contextValues=useContext(FormContext);
+
+    const handleFileUpload = (files) => {
+        contextValues.handleFormValues({
+            pictures:files
+        });
+    }
+
     return (
         <div>
-            <div className="mb-3 font-weight-bold text-primary">Practice Pictures:</div>
+            <div className="mb-3 font-weight-bold text-primary">Practice/Facility Pictures:</div>
             
             <div className="form-group">
                 <label >Upload Practice Pictures</label>
                 <div className="mt-2">
-                    <FileUploadField />
+                    <FileUploadField
+                        files={contextValues.formValues.pictures}
+                        onUpload={handleFileUpload} />
                 </div>
             </div>
 

@@ -9,6 +9,10 @@ export const PracticeManagement = () => {
     const [showPracticeEntryForm, setShowPracticeEntryFormFlag] = useState(false);
     const [showAffiliationEntryForm, setAffiliationEntryFormFlag]=useState(false);
 
+    const handleAfterPracticeSubmission=(practiceInfo)=>{
+            
+    }
+
     return (<div className="container-fluid mt-4">
         <div className="d-flex flex-row justify-content-between align-items-baseline">
             <h4>Practices:</h4>

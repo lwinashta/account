@@ -2,12 +2,19 @@ import React, { useContext, useEffect } from "react";
 
 const facilityTypes=require('@oi/utilities/lists/medicalFacilitiesTypes.json');
 import { SearchableMultiselectField } from "core/components/fields/web/multiselect/searchableMultiselectField";
+import { FileUploadField } from "core/components/fields/web/fileUploadField/fileUploadField";
 
 import { FormContext } from "./../formContext";
 
 export const GeneralPracticeInfoForm = () => {
 
     let contextValues=useContext(FormContext);
+
+    const handleFileUpload = (files) => {
+        contextValues.handleFormValues({
+            ownershipPictures:files
+        });
+    }
 
     return (
         <div>
@@ -49,6 +56,16 @@ export const GeneralPracticeInfoForm = () => {
                         contextValues.displayValidationError("facilityTypes"):
                         null
                 }
+            </div>
+
+            <div className="form-group">
+                <label data-required="1">Upload Proof of Ownership</label>
+                <div className="mt-2 text-muted">Upload images or documents that proves the onwership of the practice. This will help the verification process to move faster </div>
+                <div className="mt-2">
+                    <FileUploadField
+                        files={contextValues.formValues.pictures}
+                        onUpload={handleFileUpload} />
+                </div>
             </div>
 
             <div className="form-group">
