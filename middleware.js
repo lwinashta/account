@@ -45,7 +45,6 @@ module.exports = function (app) {
     app.use('/',async function(req,res,next){
         
         try {
-
             //check if cookie exists 
             if(req.headers.cookie.length===0) throw 'no_cookie_set';
 
@@ -53,7 +52,16 @@ module.exports = function (app) {
             let tokenFromCookie=_token.getTokenFromCookie(req);
 
             //Get user information from the token 
-            let userInfo=await _token.verifyToken(tokenFromCookie);//checks if user token is set
+            let userInfo={};
+
+            //check if app.local variable is set for the user verification 
+            //console.log(req.session.userTokenVerified);
+            if(req.session.userTokenVerified===undefined){
+                userInfo=await _token.verifyToken(tokenFromCookie);//checks if user token is set
+                
+                req.session.userTokenVerified=true;
+                req.session.userInfo=userInfo;
+            }
 
             next();
             

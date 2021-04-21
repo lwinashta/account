@@ -21,7 +21,8 @@ export const ManageAddresses = () => {
     useEffect(() => {
         fetch('/account/api/user/address/get?userMongoId.$_id=' + AppLevelContext.userInfo._id)
             .then(response => response.json())
-            .then(data => setUserAddresses(data));
+            .then(data => setUserAddresses(data))
+            .catch(err=>console.error(err));
     }, []);
 
     useEffect(() => {

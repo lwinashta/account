@@ -134,16 +134,26 @@ export const PracticeAddressForm = () => {
             </div>
 
             <div className="d-flex flex-row justify-content-between mt-4">
-                <div className="btn btn-primary pointer"
+                <div className="btn btn-secondary pointer"
                     onClick={() => { contextValues.handleTabClick("general","address") }}>
                     <i className="mr-2 fas fa-arrow-left"></i>
                     <span>Previous</span>
                 </div>
-                <div className="btn btn-primary pointer"
-                    onClick={() => { contextValues.handleTabClick("contacts","address") }}>
-                    <i className="mr-2 fas fa-arrow-right"></i>
-                    <span>Next</span>
+                <div className="flex-row d-flex">
+                    {
+                        contextValues.practiceToUpdate!==null?
+                        <div className="mr-2 btn btn-success pointer">
+                            Submit Information
+                        </div>:
+                        null
+                    }
+                    <div className="btn btn-primary pointer"
+                        onClick={() => { contextValues.handleTabClick("contacts","address") }}>
+                        <i className="mr-2 fas fa-arrow-right"></i>
+                        <span>Next</span>
+                    </div>
                 </div>
+                
             </div>
 
            

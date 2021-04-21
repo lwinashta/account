@@ -4,6 +4,7 @@ import { Modal } from "core/components/modal/web/modal";
 import { uploadFilesToServer } from "fileManagement-module/lib/handlers";
 import { form } from "form-module/form";
 const countries = require('@oi/utilities/lists/countries.json');
+import { constructAddress } from "@oi/utilities/lib/ui/utils";
 
 import { AppContext } from "../../AppContext";
 import { FormContext } from "./formContext";
@@ -18,8 +19,12 @@ import { PracticeContactForm } from "./subForms/practiceContactForm";
 import { PracticePicturesForm } from './subForms/practicePicturesForm';
 import { PracticeAvailabilityForm } from "./subForms/practiceAvailabilityForm";
 import { PracticeSettingsForm } from "./subForms/practiceSettingsEntry";
-import { ValidateAddress } from "./subForms/validateAddress";
+import { ValidateAddress } from "./subForms/validateAddressPopup";
 import { AddressVerification } from "./../../../utils/addressVerification";
+
+import * as handlers from './handlers';
+import { getFacilityProviderDataFromServer } from "../handlers"; 
+import { InReviewItems } from "../display/inReviewItems";
 
 export const PracticeEntryForm = ({ 
     afterSubmission = function(){},
@@ -27,15 +32,19 @@ export const PracticeEntryForm = ({
     practiceToUpdate=null,
 }) => {
     
-    const [selectedTabs, setTabs] = useState(["general"]);
-    const [currentTab, setCurrentTab] = useState("general");
+    const [selectedTabs, setTabs] = useState(practiceToUpdate!==null && (practiceToUpdate.verificationState==="in_review" || practiceToUpdate.verificationState==="approved")?
+                ["in_review","pictures","availability","settings"]:
+            practiceToUpdate!==null && practiceToUpdate.verificationState==="in_edit_mode"?
+                ["general","address","contacts","pictures","availability","settings"]:
+            ["general"]);
+    const [currentTab, setCurrentTab] = useState(practiceToUpdate!==null && practiceToUpdate.verificationState==="in_edit_mode"?"general":"in_review");
     const [validationErrors,setValidationErrors]=useState([]);
     const [validatedAddress, setValidatedAddress] = useState(null);
 
     let AppLevelContext=useContext(AppContext);
 
     let formValues = useRef(practiceToUpdate!==null?
-        Object.assign(_iForm.getInitialFormObject(),practiceToUpdate) : _iForm.getInitialFormObject());
+        Object.assign(_iForm.getInitialFormObject(),{...practiceToUpdate}) : _iForm.getInitialFormObject());
 
     const handleFormValues = (params) => {
         formValues.current = Object.assign(formValues.current, params);
@@ -46,6 +55,7 @@ export const PracticeEntryForm = ({
         return formValues.current[key];
     }
 
+    /*** Form Validation  */
     const validateEntriesOnCurrentTab=(tabName)=>{
         
         let fieldConfigs=_iForm.formConfig.filter(i=>i.tabName===tabName);
@@ -59,6 +69,12 @@ export const PracticeEntryForm = ({
         return _d;
     }
 
+    const displayValidationError=(fieldName)=>{
+        return _iForm.validationErrors.length > 0 ?
+            _iForm.displayValidationError(fieldName) : null
+    }
+
+    /** Handle Tab click */
     //currentTabName=Current tab user is on the screen
     //clickedTabName= tab name user wants to navigate to.
     const handleTabClick=(clickedTabName,currentTabName)=>{
@@ -89,10 +105,6 @@ export const PracticeEntryForm = ({
 
     }
 
-    const displayValidationError=(fieldName)=>{
-        return _iForm.validationErrors.length > 0 ?
-            _iForm.displayValidationError(fieldName) : null
-    }
 
     const setDefaultValueForFields = (fieldName) => {
         return (practiceToUpdate !== null
@@ -100,6 +112,36 @@ export const PracticeEntryForm = ({
             practiceToUpdate[fieldName] : null
     }
 
+    const handleSubmissionPreWorkflow = () => {
+
+        try {
+            //check if practice to be updated 
+
+            //If practice to be updated. 
+            //Check if Address has been changed 
+            if (practiceToUpdate !== null && constructAddress(practiceToUpdate) === constructAddress(formValues.current)) {
+                throw "address_not_updated";
+
+            //If practice need to be updated and address was updated then validate the address
+            //OR its new entry where practiceToUpdate is null
+            }else if((practiceToUpdate!==null 
+                    && constructAddress(practiceToUpdate) !== constructAddress(formValues.current)) 
+                    || practiceToUpdate===null){
+                validateAddress();//its async function but we are not waiting for response here
+
+            }
+
+        } catch (error) {
+            if(error==="address_not_updated"){
+                submitPracticeInformation();//submit the information to server
+            }
+        }
+
+    }
+
+    /** Verify the entered address with the address from google api
+     *  If it an update mode, check if address was updated. If not, no need to verify the address
+     */
     const validateAddress = async () => {
         
         try {
@@ -137,24 +179,26 @@ export const PracticeEntryForm = ({
                 setValidatedAddress(response);
 
             } else {
-                handleAddressVerification(response,true);//the address is total match
+                handleOnAddressVerification(response,true);//the address is total match
                 submitPracticeInformation();//submit the information to server
 
             }
 
         } catch (error) {
+
+            console.log(error);
             AppLevelContext.removeOnScreenLoader();
 
             if(error==="invalid_address"){
                 alert("Address you have entered is invalid. Please ");
                 handleTabClick("address","settings");
+
             }
-            console.log(error);
         }
 
     }
 
-    const handleAddressVerification=(validatedAddress, clickedRecommended)=>{
+    const handleOnAddressVerification=(validatedAddress, clickedRecommended)=>{
         
         if(!clickedRecommended){
             handleFormValues({
@@ -191,6 +235,69 @@ export const PracticeEntryForm = ({
      * 9. Stop Loader
      */
 
+    /**
+     * @noInputs
+     * @returns 
+     */
+    const deconstructData = () => {
+        let dataToSubmit = {};
+
+        if (practiceToUpdate !== null) {
+
+            //map all the values from the formconfig and remove all other dat
+            dataToSubmit = _iForm.formConfig.reduce((acc, ci) => {
+                acc[ci.name] = formValues.current[ci.name];
+                return acc;
+            }, {});
+
+            dataToSubmit._id=practiceToUpdate._id;
+
+        } else {
+            dataToSubmit = formValues.current;
+            dataToSubmit.verificationState = "in_edit_mode";
+            dataToSubmit["verificationStateTransitions.$object"] = [{
+                "fromState":null,
+                "toState":"in_edit_mode",
+                "transitionDate.$date":new Date()
+            }];
+        }
+
+        //decontruct the data 
+        //availability, pictures, ownerShipPictures, is attached to user 
+        let { availability, pictures, validatedAddress, ownershipPictures, ...practiceData } = dataToSubmit;
+
+        return { availability:availability, pictures:pictures, ownershipPictures:ownershipPictures, practiceData:practiceData };  
+    }
+
+    /**
+     * 
+     * @param {*} data 
+     * @param {*} facilityId 
+     * @returns 
+     */
+    const constructProviderData=(data,facilityId)=>{
+        //Save facility User
+        let providerData={};
+
+        if(practiceToUpdate!==null){
+            providerData.availability=data.availability;
+            providerData._id=practiceToUpdate.facilityProviderId;
+
+        }else{
+            providerData={
+                "availability":data.availability,
+                "facilityId.$_id":facilityId,
+                "userMongoId.$_id":AppLevelContext.userInfo._id,
+                "deleted.$boolean":false
+            };
+        }
+
+        return providerData;
+    }
+
+    /**
+     * Submit Practice Information
+     */
     const submitPracticeInformation = async() => {
         
         try {
@@ -209,53 +316,66 @@ export const PracticeEntryForm = ({
                     message:"Saving Practice Information",
                     show:true
                 });
-                
-                //decontruct the data 
-                //availability, pictures, ownerShipPictures, is attached to user 
-                let { availability, pictures, ownershipPictures, ...practiceData } = formValues.current;
-                
-                ///console.log(availability, pictures, ownershipPictures,practiceData);
 
-                //Save facility data
-                let facilityInfo=await saveMedicalFacilityInfo(practiceData);
+                let deconstructedData=deconstructData();
+
+                console.log(deconstructedData);
+                
+                //** Saving Facility Info */
+                let facilityInfo=await handlers.saveMedicalFacilityInfo(deconstructedData.practiceData);
                 if(!facilityInfo.ok) throw "error_in_saving_facilityinfo";
 
                 facilityInfo=await facilityInfo.json();
 
-                //Save facility User
-                let facilityProvider=await saveMedicalProvider({
-                    "availability":availability,
-                    "facilityId.$_id":facilityInfo._id,
-                    "userMongoId.$_id":AppLevelContext.userInfo._id,
-                    "deleted.$boolean":false
-                });
+                let facilityId=practiceToUpdate!==null?practiceToUpdate._id:facilityInfo._id;
 
+                 //** Saving Facility Provider Info */
+                let facilityProvider=await handlers.saveMedicalProvider(constructProviderData(deconstructedData,facilityId));
                 if(!facilityProvider.ok) throw "error_in_saving_facilityprovider";
 
                 facilityProvider=await facilityProvider.json();
 
+                //** Saving Facility Pictures */
                 //check if there are any new pictures 
-                let facilityPictures=pictures.filter(p=>!("_id" in p));
+                let facilityPictures=deconstructedData.pictures.filter(p=>!("_id" in p));
                 if(facilityPictures.length>0){
                     let uploadFacilityFiles = await uploadFilesToServer(facilityPictures,{
-                        linkedMongoId:facilityInfo._id,
+                        linkedMongoId:facilityId,
                         linkedDatabaseName: "accounts",
                         linkedCollectionName: "medicalFacilities",
                         fieldName:"medicalFacilityPictures"
                     });
                 }
 
-                let facilityOwnershipFiles=ownershipPictures.filter(p=>!("_id" in p));
+                //** Saving Facility Ownership Proof Pictures */
+                let facilityOwnershipFiles=deconstructedData.ownershipPictures.filter(p=>!("_id" in p));
                 if(facilityOwnershipFiles.length>0){
                     let uploadFacilityOwnershipFiles = await uploadFilesToServer(facilityOwnershipFiles,{
-                        linkedMongoId:facilityInfo._id,
+                        linkedMongoId:facilityId,
                         linkedDatabaseName: "accounts",
                         linkedCollectionName: "medicalFacilities",
                         fieldName:"medicalFacilityOwnership"
                     });
                 }
 
-                //Get the 
+                //** Get the faciltyProvider info from server
+                let info=await getFacilityProviderDataFromServer({
+                    "_id.$_id":practiceToUpdate!==null?practiceToUpdate.facilityProviderId:facilityProvider._id
+                });
+
+                let responseData=await info.json();
+
+                afterSubmission(responseData.pop());//send first element of the data
+                
+                AppLevelContext.removeOnScreenLoader();//removes the loader
+
+                AppLevelContext.setPopup({
+                    "show":true,
+                    "message":"Practice information saved",
+                    "messageType":"success"
+                });
+
+                onCloseHandler();//closes the form
                 
             }
         } catch (error) {
@@ -264,31 +384,6 @@ export const PracticeEntryForm = ({
         }
     }
 
-    const saveMedicalFacilityInfo=(data)=>{
-        let uri='/account/api/practice/medicalfacility/create';
-        if("_id" in data) uri='/account/api/practice/medicalfacility/update';
-
-        return fetch(uri,{
-            method:"POST",
-            body:JSON.stringify(data),
-            headers:{
-                "content-type": "application/json"
-            }
-        });
-    }
-
-    const saveMedicalProvider=(data)=>{
-        let uri='/account/api/practice/medicalprovider/create';
-        if("_id" in data) uri='/account/api/practice/medicalprovider/update';
-
-        return fetch(uri,{
-            method:"POST",
-            body:JSON.stringify(data),
-            headers:{
-                "content-type": "application/json"
-            }
-        });
-    }
 
     return (
         <FormContext.Provider value={
@@ -304,7 +399,8 @@ export const PracticeEntryForm = ({
                 validationErrors: validationErrors,
                 displayValidationError:displayValidationError,
                 setDefaultValueForFields:setDefaultValueForFields,
-                submitPracticeInformation:submitPracticeInformation
+                submitPracticeInformation:submitPracticeInformation,
+                handleSubmissionPreWorkflow:handleSubmissionPreWorkflow
             }
         }>
             
@@ -312,30 +408,39 @@ export const PracticeEntryForm = ({
                 onCloseHandler={()=>{onCloseHandler(false)}}
                 headerHeight={100}
                 header={<HeaderTabs
+                    practiceToUpdate={practiceToUpdate}
                     selectedTabs={selectedTabs}
                     currentTab={currentTab}
                     handleTabClick={handleTabClick} />}>
 
                 <div className="px-2 mt-2">
-                    <div style={currentTab === "general" ? null : {display:"none"} }>
-                        <GeneralPracticeInfoForm />
-                    </div>
-                    <div style={currentTab === "address" ? null : {display:"none"} }>
-                        <PracticeAddressForm />
-                    </div>
-                    <div style={{ display: currentTab === "contacts" ? null : "none" }}>
-                        <PracticeContactForm />
-                    </div>
-                    <div style={currentTab === "pictures" ? null : {display:"none"} }>
+                    {
+                        practiceToUpdate!==null && (practiceToUpdate.verificationState==="in_review" || practiceToUpdate.verificationState==="approved")?
+                        <div style={currentTab === "in_review" ? null : { display: "none" }}>
+                            <InReviewItems facilityInfo={practiceToUpdate} />
+                        </div>:
+                            <>
+                                <div style={currentTab === "general" ? null : { display: "none" }}>
+                                    <GeneralPracticeInfoForm />
+                                </div>
+                                <div style={currentTab === "address" ? null : { display: "none" }}>
+                                    <PracticeAddressForm />
+                                </div>
+                                <div style={{ display: currentTab === "contacts" ? null : "none" }}>
+                                    <PracticeContactForm />
+                                </div>
+                            </>
+                    }
+                    <div style={currentTab === "pictures" ? null : { display: "none" }}>
                         <PracticePicturesForm />
                     </div>
                     <div style={{ display: currentTab === "availability" ? null : "none" }}>
                         <PracticeAvailabilityForm />
                     </div>
                     <div style={{ display: currentTab === "settings" ? null : "none" }}>
-                        <PracticeSettingsForm 
-                            validateAddress={validateAddress} />
+                        <PracticeSettingsForm />
                     </div>
+                    
                 </div>
 
             </Modal>
@@ -345,7 +450,7 @@ export const PracticeEntryForm = ({
                     <ValidateAddress 
                         enteredAddress={formValues.current}
                         validatedAddress={validatedAddress} 
-                        onSubmission={handleAddressVerification}/>:
+                        onSubmission={handleOnAddressVerification}/>:
                     null
             }
             
@@ -355,41 +460,58 @@ export const PracticeEntryForm = ({
 }
 
 const HeaderTabs = ({
+    practiceToUpdate=null,
     handleTabClick,
     currentTab,
     selectedTabs
 }) => {
+
     return (<>
         <h4>Practice Entry</h4>
         <div className="px-3">
             <div className="form-tabs">
-                <div className="each-tab d-flex flex-row justify-content-center align-items-center">
-                    <div className="mr-2 each-tab-content"
-                        onClick={() => {
-                            if(selectedTabs.includes("general")) handleTabClick("general",currentTab);
-                        }}>
-                        <div className={`tab-icon ${selectedTabs.includes("general") ? "tab-icon-active" : ""}`} ><i className="fas fa-user-nurse"></i></div>
-                        <div className="tab-name">General</div>
-                    </div>
-                </div>
-                <div className="each-tab d-flex flex-row justify-content-center align-items-center">
-                    <div className={`h-line ${selectedTabs.includes("address") ? "h-line-active" : ""}`}></div>
-                    <div className="each-tab-content" onClick={() => {
-                        if(selectedTabs.includes("address")) handleTabClick("address",currentTab);
-                    }}>
-                        <div className={`tab-icon ${selectedTabs.includes("address") ? "tab-icon-active" : ""}`}><i className="far fa-address-card"></i></div>
-                        <div className="tab-name">Address</div>
-                    </div>
-                </div>
-                <div className="each-tab d-flex flex-row justify-content-center align-items-center">
-                    <div className={`h-line ${selectedTabs.includes("contacts") ? "h-line-active" : ""}`}></div>
-                    <div className="each-tab-content" onClick={() => {
-                        if(selectedTabs.includes("contacts")) handleTabClick("contacts",currentTab);
-                    }}>
-                        <div className={`tab-icon ${selectedTabs.includes("contacts") ? "tab-icon-active" : ""}`}><i className="fas fa-phone"></i></div>
-                        <div className="tab-name">Contact </div>
-                    </div>
-                </div>
+                {
+                    practiceToUpdate!==null && (practiceToUpdate.verificationState==="in_review" || practiceToUpdate.verificationState==="approved")?
+                        <div className="each-tab d-flex flex-row justify-content-center align-items-center">
+                            <div className="mr-2 each-tab-content"
+                                onClick={() => {
+                                    if(selectedTabs.includes("in_review")) handleTabClick("in_review",currentTab);
+                                }}>
+                                <div className={`tab-icon ${selectedTabs.includes("in_review") ? "tab-icon-active" : ""}`} ><i className="fas fa-glasses"></i></div>
+                                <div className="tab-name">In Review</div>
+                            </div>
+                        </div>:
+                        <>
+                            <div className="each-tab d-flex flex-row justify-content-center align-items-center">
+                                <div className="mr-2 each-tab-content"
+                                    onClick={() => {
+                                        if(selectedTabs.includes("general")) handleTabClick("general",currentTab);
+                                    }}>
+                                    <div className={`tab-icon ${selectedTabs.includes("general") ? "tab-icon-active" : ""}`} ><i className="fas fa-user-nurse"></i></div>
+                                    <div className="tab-name">General</div>
+                                </div>
+                            </div>
+                            <div className="each-tab d-flex flex-row justify-content-center align-items-center">
+                                <div className={`h-line ${selectedTabs.includes("address") ? "h-line-active" : ""}`}></div>
+                                <div className="each-tab-content" onClick={() => {
+                                    if(selectedTabs.includes("address")) handleTabClick("address",currentTab);
+                                }}>
+                                    <div className={`tab-icon ${selectedTabs.includes("address") ? "tab-icon-active" : ""}`}><i className="far fa-address-card"></i></div>
+                                    <div className="tab-name">Address</div>
+                                </div>
+                            </div>
+                            <div className="each-tab d-flex flex-row justify-content-center align-items-center">
+                                <div className={`h-line ${selectedTabs.includes("contacts") ? "h-line-active" : ""}`}></div>
+                                <div className="each-tab-content" onClick={() => {
+                                    if(selectedTabs.includes("contacts")) handleTabClick("contacts",currentTab);
+                                }}>
+                                    <div className={`tab-icon ${selectedTabs.includes("contacts") ? "tab-icon-active" : ""}`}><i className="fas fa-phone"></i></div>
+                                    <div className="tab-name">Contact </div>
+                                </div>
+                            </div>
+                        </>
+                }
+                
                 <div className="each-tab d-flex flex-row justify-content-center align-items-center">
                     <div className={`h-line ${selectedTabs.includes("pictures") ? "h-line-active" : ""}`}></div>
                     <div className="each-each-tab-content" onClick={() => {

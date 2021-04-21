@@ -3,16 +3,17 @@ import { FieldEntryError } from "form-module/fieldEntryError";
 
 import { FormContext } from "./../formContext";
 
-export const PracticeSettingsForm = ({
-    validateAddress=function(){}
-}) => {
+export const PracticeSettingsForm = () => {
 
     let contextValues=useContext(FormContext);
 
-    let settings=useRef({
-        appointmentTimeGap:"15",
-        allowedBookingTypes:["video","inperson"]
-    });
+    let settings=useRef(contextValues.practiceToUpdate!==null?
+        contextValues.practiceToUpdate.settings:
+        {
+            appointmentTimeGap:"15",
+            allowedBookingTypes:["video","inperson"]
+        }
+    );
 
     const [validationErrors,setValidationErrors]=useState([]);
 
@@ -44,11 +45,11 @@ export const PracticeSettingsForm = ({
             contextValues.handleFormValues({
                 settings:settings.current
             });
-            validateAddress();//submit practice information 
+            
+            contextValues.handleSubmissionPreWorkflow();//submit practice information 
         }
     
     }
-
 
     return (
         <div className="p-2" >
@@ -118,7 +119,7 @@ export const PracticeSettingsForm = ({
             </div>
 
             <div className="mt-2 d-flex justify-content-between">
-                <div className="btn btn-primary pointer" 
+                <div className="btn btn-secondary pointer" 
                     onClick={()=>{contextValues.handleTabClick("availability","settings")}}>
                         <i className="mr-2 fas fa-arrow-left"></i>
                         <span>Previous</span>

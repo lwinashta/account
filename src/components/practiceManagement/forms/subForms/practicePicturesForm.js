@@ -27,16 +27,26 @@ export const PracticePicturesForm = () => {
             </div>
 
             <div className="d-flex flex-row justify-content-between mt-4">
-                <div className="btn btn-primary pointer" 
-                    onClick={()=>{contextValues.handleTabClick("contact","pictures")}}>
+                <div className="btn btn-secondary pointer" 
+                    onClick={()=>{contextValues.handleTabClick(practiceToUpdate!==null && practiceToUpdate.verificatioonState!=="in_edit_mode"?"contacts":"in_review","pictures")}}>
                         <i className="mr-2 fas fa-arrow-left"></i>
                         <span>Previous</span>
-                    </div>
-                <div className="btn btn-primary pointer" 
-                    onClick={()=>{contextValues.handleTabClick("availability","pictures")}}>
-                        <i className="mr-2 fas fa-arrow-right"></i>
-                        <span>Next</span>
                 </div>
+                <div className="flex-row d-flex">
+                    {
+                        contextValues.practiceToUpdate!==null?
+                        <div className="mr-2 btn btn-success pointer">
+                            Submit Information
+                        </div>:
+                        null
+                    }
+                    <div className="btn btn-primary pointer" 
+                        onClick={()=>{contextValues.handleTabClick("availability","pictures")}}>
+                            <i className="mr-2 fas fa-arrow-right"></i>
+                            <span>Next</span>
+                    </div>
+                </div>
+                
             </div>
 
         </div>

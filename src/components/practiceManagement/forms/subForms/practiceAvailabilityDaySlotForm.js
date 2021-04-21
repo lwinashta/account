@@ -35,7 +35,7 @@ export const DaySlotForm=({
     handleOnEntry=function(){}
 })=>{
     
-    const [timeSlots,setTimeSlots]=useState([]);
+    const [timeSlots,setTimeSlots]=useState(daySlotInfo!==null?daySlotInfo.timeSlots:[]);
 
     const addTimeSlot=()=>{
         let _d = [...timeSlots];
@@ -93,6 +93,7 @@ export const DaySlotForm=({
                                     id={daySlotInfo.uuid+day.name}
                                     type="checkbox" 
                                     name="availabilityDay" 
+                                    defaultChecked={daySlotInfo.days.includes(day.name)?true:false}
                                     value={day.name} 
                                     onChange={(e)=>{
                                         handleOnDaySelection(e.target.value,e.target.checked);  

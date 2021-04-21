@@ -10,7 +10,7 @@ export const PracticeAvailabilityForm = () => {
 
     let contextValues=useContext(FormContext);
 
-    const [daySlots, setDaySlots] = useState([]);
+    const [daySlots, setDaySlots] = useState(contextValues.practiceToUpdate!==null?contextValues.practiceToUpdate.availability:[]);
     const [validationErrors,setValidationErrors]=useState([]);
 
     const addDaySlot=()=>{
@@ -136,16 +136,26 @@ export const PracticeAvailabilityForm = () => {
             </div>
 
             <div className="d-flex flex-row justify-content-between mt-4">
-                <div className="btn btn-primary pointer" 
+                <div className="btn btn-secondary pointer" 
                     onClick={()=>{handlePrevClick()}}>
                         <i className="mr-2 fas fa-arrow-left"></i>
                         <span>Previous</span>
                     </div>
-                <div className="btn btn-primary pointer" 
-                    onClick={()=>{handleNextClick()}}>
-                        <i className="mr-2 fas fa-arrow-right"></i>
-                        <span>Next</span>
+                <div className="flex-row d-flex">
+                    {
+                        contextValues.practiceToUpdate!==null?
+                        <div className="mr-2 btn btn-success pointer">
+                            Submit Information
+                        </div>:
+                        null
+                    }
+                    <div className="btn btn-primary pointer" 
+                        onClick={()=>{handleNextClick()}}>
+                            <i className="mr-2 fas fa-arrow-right"></i>
+                            <span>Next</span>
+                    </div>
                 </div>
+               
             </div>
 
         </div>);

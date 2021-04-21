@@ -9,7 +9,9 @@ export const PracticeContactForm = () => {
 
     let contextValues=useContext(FormContext);
 
-    const [contacts, setContacts] = useState([]);
+    const [contacts, setContacts] = useState(contextValues.practiceToUpdate!==null?
+            contextValues.practiceToUpdate.contacts:
+            []);
     const [validationErrors,setValidationErrors]=useState([]);
 
     const addNewContacts = () => {
@@ -149,15 +151,24 @@ export const PracticeContactForm = () => {
         </div>
 
         <div className="d-flex flex-row justify-content-between mt-4">
-                <div className="btn btn-primary pointer" 
+                <div className="btn btn-secondary pointer" 
                     onClick={()=>{handlePrevClick()}}>
                         <i className="mr-2 fas fa-arrow-left"></i>
                         <span>Previous</span>
+                </div>
+                <div className="flex-row d-flex">
+                    {
+                        contextValues.practiceToUpdate!==null?
+                        <div className="mr-2 btn btn-success pointer">
+                            Submit Information
+                        </div>:
+                        null
+                    }
+                    <div className="btn btn-primary pointer" 
+                        onClick={()=>{handleNextClick()}}>
+                            <i className="mr-2 fas fa-arrow-right"></i>
+                            <span>Next</span>
                     </div>
-                <div className="btn btn-primary pointer" 
-                    onClick={()=>{handleNextClick()}}>
-                        <i className="mr-2 fas fa-arrow-right"></i>
-                        <span>Next</span>
                 </div>
             </div>
     </div>);
@@ -173,6 +184,7 @@ const ContactEntryForm = ({
         <div className="form-group px-2" style={{flexGrow:1}}>
             <select name="contactType"
                 className="form-control" 
+                defaultValue={'contactType' in contactInfo?contactInfo.contactType:null}
                 onChange={(e)=>{
                     handleOnEntry(Object.assign(contactInfo,{
                         contactType:e.target.value
@@ -194,6 +206,7 @@ const ContactEntryForm = ({
         <div className="form-group px-2" style={{flexGrow:1}}>
             <input type="text" 
                 name="contactInfo"
+                defaultValue={'contactInfo' in contactInfo?contactInfo.contactInfo:null}
                 onInput={(e)=>{
                     handleOnEntry(Object.assign(contactInfo,{
                         contactInfo:e.target.value

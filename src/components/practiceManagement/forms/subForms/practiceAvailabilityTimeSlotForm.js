@@ -29,8 +29,8 @@ export const TimeSlotForm=({
     const [fromTimeOptions,setFromTimeOptions]=useState(TIMESLOTS);
     const [toTimeOptions,setToTimeOptions]=useState(TIMESLOTS);
 
-    const [fromTime,setFromTime]=useState(null);
-    const [toTime,setToTime]=useState(null);
+    const [fromTime,setFromTime]=useState(timeSlotInfo!==null && ('from' in timeSlotInfo)? timeSlotInfo.from:null);
+    const [toTime,setToTime]=useState(timeSlotInfo!==null && ('to' in timeSlotInfo)?timeSlotInfo.to:null);
 
     const handleOnChange=(val)=>{
         timeSlotInfo=Object.assign(timeSlotInfo,val);
@@ -39,6 +39,7 @@ export const TimeSlotForm=({
 
     //Effect triggers when user selected from time 
     useEffect(()=>{
+
         if(fromTime!==null && fromTime.length>0){
 
             let time=JSON.parse(fromTime);
@@ -73,6 +74,7 @@ export const TimeSlotForm=({
                 id={`availability=${timeSlotInfo.uuid}-from-options`}
                 className="form-control" 
                 data-required="1"
+                defaultValue={fromTime}
                 onChange={(e)=>{
                     handleOnChange({from:e.target.value});
                     setFromTime(e.target.value);
@@ -95,6 +97,7 @@ export const TimeSlotForm=({
                 id={`availability=${timeSlotInfo.uuid}-to-options`}
                 className="form-control ml-2"
                 disabled={fromTime !== null && fromTime.length > 0 ? null : "disabled"}
+                defaultValue={toTime}
                 onChange={(e) => {
                     handleOnChange({ to: e.target.value });
                     setToTime(e.target.value);

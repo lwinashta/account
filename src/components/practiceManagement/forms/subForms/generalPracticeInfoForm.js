@@ -30,9 +30,8 @@ export const GeneralPracticeInfoForm = () => {
                         })
                     }}
                     className="form-control"
-                    data-required="1"
                     defaultValue={contextValues.setDefaultValueForFields("name")}
-                    placeholder="Certification Name" />
+                    placeholder="Practice Name" />
                     {
                         contextValues.validationErrors.length>0?
                             contextValues.displayValidationError("name"):
@@ -49,6 +48,12 @@ export const GeneralPracticeInfoForm = () => {
                                 facilityTypes: items
                             })
                         }}
+                        dataToUpdate={contextValues.practiceToUpdate!==null 
+                            && ('facilityTypes' in contextValues.practiceToUpdate) 
+                            && contextValues.practiceToUpdate.facilityTypes.length>0? 
+                                
+                            contextValues.practiceToUpdate.facilityTypes:null
+                        }
                         selections={facilityTypes} />
                 </div>
                 {
@@ -63,7 +68,7 @@ export const GeneralPracticeInfoForm = () => {
                 <div className="mt-2 text-muted">Upload images or documents that proves the onwership of the practice. This will help the verification process to move faster </div>
                 <div className="mt-2">
                     <FileUploadField
-                        files={contextValues.formValues.pictures}
+                        files={contextValues.formValues.ownershipPictures}
                         onUpload={handleFileUpload} />
                 </div>
             </div>
@@ -94,6 +99,13 @@ export const GeneralPracticeInfoForm = () => {
             </div>
 
             <div className="d-flex flex-row justify-content-end">
+                {
+                    contextValues.practiceToUpdate!==null?
+                    <div className="mr-2 btn btn-success pointer">
+                        Submit Information
+                    </div>:
+                    null
+                }
                 <div className="btn btn-primary pointer" 
                     onClick={()=>{contextValues.handleTabClick("address","general")}}>
                         <i className="mr-2 fas fa-arrow-right"></i>
