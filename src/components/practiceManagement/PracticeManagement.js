@@ -44,6 +44,7 @@ export const PracticeManagement = () => {
     },[showPracticeEntryForm]);
 
     const handleEditPracticeInfo=(_id)=>{
+        
         let _d=[...userPractices];
         let data=_d.find(i=>i._id===_id);
 
@@ -76,20 +77,30 @@ export const PracticeManagement = () => {
 
     }
 
-    const handlePracticeFacilityInfoUpdate=(_id,data)=>{
-        console.log(data);
+    const handlePracticeFacilityInfoUpdate=(practiceId,data)=>{
+        //console.log(_id,data);
+        let {_id,...info}=data;
+        
         let _d=[...userPractices];
-        let indx=_d.findIndex(i=>i._id===_id);
+        let indx=_d.findIndex(i=>i._id===practiceId);
 
-        _d[indx].facilityInfo=Object.assign(_d[indx].facilityInfo,data);
-       
+        let fIndx=_d[indx].facilityInfo.findIndex(f=>f._id===_id);
+
+        _d[indx].facilityInfo[fIndx]=Object.assign(_d[indx].facilityInfo[fIndx],info);
+        
+        console.log(_d);
         setUserPractices(_d);
     }
 
     return (<div className="container-fluid mt-4">
         <div className="d-flex flex-row justify-content-between align-items-baseline">
             <h4>Practices:</h4>
-            <DropDown 
+            <div className="btn btn-primary pointer" 
+                onClick={()=>{setShowPracticeEntryFormFlag(true)}}>
+                <i className="fas fa-user-nurse"></i>
+                <span className="ml-2">Add New Practice</span>
+            </div>
+            {/* <DropDown 
                 defaultButton={<div onClick={()=>{setShowPracticeEntryFormFlag(true)}}>
                     <i className="mr-2 fas fa-user-nurse"></i>
                     <span>Add New Practice</span>
@@ -102,7 +113,7 @@ export const PracticeManagement = () => {
                     <i className="fas fa-clinic-medical"></i>
                     <span>Affliate to Practice</span>
                 </div>
-            </DropDown>
+            </DropDown> */}
         </div>
 
         <div className="mt-3">
@@ -123,20 +134,20 @@ export const PracticeManagement = () => {
                                                 facilityInfo={facility}/>
                                         </div>
 
-                                        <div className="px-2 border-bottom py-2">
+                                        <div className="p-2 border-bottom">
                                             <DisplayGeneralInfo facilityInfo={facility} />
                                         </div>
                                         
-                                        <div  className="px-2 border-bottom py-2">
+                                        <div  className="p-2 border-bottom">
                                             <DisplayAddress facilityInfo={facility}/>
                                         </div>
 
-                                        <div className="px-2 border-bottom py-2">
+                                        <div className="p-2 border-bottom">
                                             <div className="font-weight-bold">Contact</div>
                                             <DisplayPracticeContact contacts={facility.contacts} />
                                         </div>
 
-                                        <div className="px-2 border-bottom py-2">
+                                        <div className="p-2">
                                             <DisplayAvailability availability={practice.availability} />
                                         </div>
 
@@ -162,7 +173,7 @@ export const PracticeManagement = () => {
         {
             showPracticeEntryForm?
             <PracticeEntryForm 
-                practiceToUpdate={{...practiceToUpdate}} 
+                practiceToUpdate={practiceToUpdate!==null?{...practiceToUpdate}:null} 
                 afterSubmission={handleAfterPracticeSubmission}
                 onCloseHandler={setShowPracticeEntryFormFlag}/>:
             null

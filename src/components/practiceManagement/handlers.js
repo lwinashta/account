@@ -1,5 +1,3 @@
-import React from 'react';
-
 export const getFacilityProviderDataFromServer=async(query)=>{
     try {
         let url = new URL('/account/api/practice/medicalprovider/get',window.location.origin);
@@ -17,7 +15,7 @@ export const handleVerificationStateChange = (state,facilityInfo) => {
 
     let data = {
         _id: facilityInfo._id,
-        verificationState: currentState,
+        verificationState: state,
         $push: {
             "verificationStateTransitions.$object": {
                 "fromState": facilityInfo.verificationState,

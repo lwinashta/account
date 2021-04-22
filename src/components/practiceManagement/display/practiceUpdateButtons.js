@@ -1,33 +1,33 @@
-import React,{useState,useEffect, useContext} from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 
 import { OnScreenMessage } from "core/components/popups/web/popups";
 
 import { AppContext } from "../../AppContext";
 import { handleVerificationStateChange } from "./../handlers";
 
-export const PracticeUpdateButtons=({
-    facilityInfo=null,
-    practiceInfo=null,
-    handleOnEdit=function(){},
-    handlePracticeFacilityInfoUpdate=function(){}
-})=>{
+export const PracticeUpdateButtons = ({
+    facilityInfo = null,
+    practiceInfo = null,
+    handleOnEdit = function () { },
+    handlePracticeFacilityInfoUpdate = function () { }
+}) => {
 
-    let AppLevelContext=useContext(AppContext);
+    let AppLevelContext = useContext(AppContext);
 
-    const [confirmationMessage,setOnScreenMessagePop]=useState({
-        state:null,
-        show:false
+    const [showConfirmation, setShowConfirmation] = useState({
+        state: null,
+        show: false
     });
 
-    const showStateChangeConfirmation=(state)=>{
-        setOnScreenMessagePop({
-            show:true,
-            state:state
+    const showStateChangeConfirmation = (state) => {
+        setShowConfirmation({
+            show: true,
+            state: state
         });
     }
 
-    const handleStateChangeSubmission=(state)=>{
-        
+    const handleStateChangeSubmission = (state) => {
+
         AppLevelContext.setOnScreenLoader({
             message: "Updating state",
             show: true
@@ -36,9 +36,11 @@ export const PracticeUpdateButtons=({
         handleVerificationStateChange(state, facilityInfo)
             .then(response => response.json())
             .then(data => {
-                //update the state 
+
+                //update the state info
                 handlePracticeFacilityInfoUpdate(practiceInfo._id, {
-                    verificationState: "",
+                    _id: facilityInfo._id,
+                    verificationState: state,
                     verificationStateTransitions: facilityInfo.verificationStateTransitions.concat({
                         "fromState": facilityInfo.verificationState,
                         "toState": state,
@@ -57,35 +59,63 @@ export const PracticeUpdateButtons=({
             }).catch(err => console.log(err));
     }
 
-    return (<div className="d-flex flex-row align-items-center">
-        <div title="Edit Practice Information" 
-            onClick={()=>{handleOnEdit(practiceInfo._id)}}
-            className="icon-button ">
-            <i className="fas fa-pencil-alt"></i>
+    return (<>
+        <div className="d-flex flex-row align-items-center">
+            {
+                facilityInfo.verificationState === "in_edit_mode" ?
+                    <div className="pointer btn btn-sm btn-success small" onClick={() => showStateChangeConfirmation("in_review")}>Send for Approval</div> :
+                    facilityInfo.verificationState === "in_review" || facilityInfo.verificationState === "approved" ?
+                        <div className="pointer btn btn-sm btn-warning small" onClick={() => showStateChangeConfirmation("in_edit_mode")}>Request for Edit</div> :
+                        null
+            }
+            <div title="Edit Practice Information"
+                onClick={() => { handleOnEdit(practiceInfo._id) }}
+                className="icon-button ml-2">
+                <i className="fas fa-pencil-alt"></i>
+            </div>
+            
+            <div title="Delete practice"
+                className="icon-button text-danger">
+                <i className="far fa-trash-alt"></i>
+            </div>
         </div>
+
         {
-            facilityInfo.verificationState === "in_edit_mode" ?
-                <div className="ml-1 pointer btn btn-sm btn-primary small" onClick={()=>handleStateChange("in_review")}>Send for Approval</div> :
-            facilityInfo.verificationState === "in_review" || facilityInfo.verificationState === "approved"?
-                <div className="ml-1 pointer btn btn-sm btn-primary small" onClick={()=>handleStateChange("in_edit_mode")}>Request for Edit</div> :
-            null
-        }
-        {
-            confirmationMessage.show?
-            <OnScreenMessage>
-                {
-                    confirmationMessage.state!==null  && confirmationMessage.state==="in_review"?
-                        <div>Are you sure you would like to send the practice information for approval  </div>:
-                    confirmationMessage.state!==null  && confirmationMessage.state==="in_edit_mode"?
-                        <div>Are you sure you would like to request to edit your practice.
-                            <b>Please Note: </b> This will reset the current state of your practice verification 
+            showConfirmation.show ?
+                <OnScreenMessage>
+                    {
+                        showConfirmation.state !== null && showConfirmation.state === "in_review" ?
+                            <div>Are you sure you would like to send the practice information for approval  </div> :
+                            showConfirmation.state !== null && showConfirmation.state === "in_edit_mode" ?
+                                <div>Are you sure you would like to request for edit your practice.
+                        <div>
+                                        <b>Please Note: </b> This will reset the current state of your practice verification
                              and practice will not be visible in search results untill its re-approved.
-                             If there is any edit, please contact us directly to expedite your request.
-                        </div>:
-                    null
-                }
-            </OnScreenMessage>:
-            null
+                             Please contact us directly to expedite your request.
+                        </div>
+                                </div> :
+                                null
+                    }
+                    {
+                        showConfirmation.state !== null ?
+                            <div className="mt-2 d-flex flex-row justify-content-end">
+                                <div className="btn btn-sm btn-primary pointer"
+                                    onClick={() => {
+                                        handleStateChangeSubmission(showConfirmation.state);
+                                        setShowConfirmation(false);
+                                    }}>
+                                    {
+                                        showConfirmation.state === "in_review" ? "Send for approval" :
+                                            showConfirmation.state === "in_edit_mode" ? "Request to Edit" :
+                                                null
+                                    }
+                                </div>
+                                <div className="pointer ml-2 btn btn-sm btn-link" onClick={() => { setShowConfirmation(false) }}>Cancel</div>
+                            </div> :
+                            null
+                    }
+                </OnScreenMessage> :
+                null
         }
-    </div>)
+    </>)
 }

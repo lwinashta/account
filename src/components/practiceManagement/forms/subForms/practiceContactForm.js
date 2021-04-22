@@ -8,7 +8,7 @@ import { FieldEntryError } from "form-module/fieldEntryError";
 export const PracticeContactForm = () => {
 
     let contextValues=useContext(FormContext);
-
+    
     const [contacts, setContacts] = useState(contextValues.practiceToUpdate!==null?
             contextValues.practiceToUpdate.contacts:
             []);

@@ -1,6 +1,8 @@
 :root {
-    --left-pane-width: 220px;
-    --right-pane-left-pos:225px;
+    --left-desktop-pane-width: 220px;
+    --left-mobile-pane-width: 45px;
+    --right-pane-desktop-left-pos:225px;
+    --right-pane-mobile-left-pos:48px;
     --pane-top-pos:65px;
     --pane-bg-color:#4250b2;
 }
@@ -10,7 +12,6 @@
     left: 0px;
     top: var(--pane-top-pos);
     bottom: 0; 
-    width: var(--left-pane-width);
     background-color: white;
 }
 
@@ -21,7 +22,6 @@
 
 #app-right-pane-container{
     position: absolute;
-    left:var(--right-pane-left-pos);
     top: var(--pane-top-pos);
     bottom: 0;
     right: 0px;
@@ -32,11 +32,36 @@
 /* For Desktop view  */
 @media screen and (min-width: 768px) {
    
+    #app-left-pane-container{
+        width: var(--left-desktop-pane-width);
+    }
+
+    #app-left-pane-container .app-menu-item{
+        padding: 8px 16px;
+    }
+
+    #app-right-pane-container{
+        left:var(--right-pane-desktop-left-pos);
+    }
 }
 
 
 /* For Smaller Mobile less than 1441px */
 @media screen and (max-width: 768px) {
-    
+    #app-left-pane-container{
+        width: var(--left-mobile-pane-width);
+    }
+
+    #app-left-pane-container .app-menu-item{
+        padding: 14px;
+    }
+
+    #app-left-pane-container .app-menu-item .menu-text{
+        display: none;
+    }
+
+    #app-right-pane-container{
+        left:var(--right-pane-mobile-left-pos);
+    }
 }
 

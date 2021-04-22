@@ -45,7 +45,7 @@ export const InReviewItems=({
             {
                 facilityInfo.ownershipPictures.length>0?
                 facilityInfo.ownershipPictures.map(fr=>{
-                    <div className="mr-2 border"
+                    return <div className="mr-2 border"
                         style={{ width: "100px" }}
                         key={fr._id}>
                         <DisplayUploadedFileTile

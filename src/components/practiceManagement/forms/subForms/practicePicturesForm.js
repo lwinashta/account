@@ -28,7 +28,7 @@ export const PracticePicturesForm = () => {
 
             <div className="d-flex flex-row justify-content-between mt-4">
                 <div className="btn btn-secondary pointer" 
-                    onClick={()=>{contextValues.handleTabClick(practiceToUpdate!==null && practiceToUpdate.verificatioonState!=="in_edit_mode"?"contacts":"in_review","pictures")}}>
+                    onClick={()=>{contextValues.handleTabClick(contextValues.practiceToUpdate!==null && contextValues.practiceToUpdate.verificationState!=="in_edit_mode"?"in_review":"contacts","pictures")}}>
                         <i className="mr-2 fas fa-arrow-left"></i>
                         <span>Previous</span>
                 </div>

@@ -36,7 +36,7 @@ export const PracticeStateDescription = ({facilityInfo}) => {
                 <div className="py-2 border-bottom" >
                     Submitted for review on <b>{moment(transitionDate).format("DD MMM, YYYY hh:mm a")}</b> ({moment(transitionDate).fromNow()}).
                     Our compliance is reviewing the practice details. 
-                    It normally takes 3 business days to verify your request. 
+                    It normally takes 3 business days from day of submission to verify your request. 
                     We will notify you once practice information has ben verified & approved. 
                     Please contact us if the request needs to expedited.
                 </div> :
@@ -55,7 +55,7 @@ export const getVerificationStateTransition=(facilityInfo)=>{
     .sort((a,b)=>{
         let am=moment(a.transitionDate);
         let bm=moment(b.transitionDate);
-        return am.diff(bm)? 1:-1;
+        return am.diff(bm)? -1:1;
     });
 
     return transitions[0];

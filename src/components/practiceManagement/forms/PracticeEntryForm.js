@@ -31,13 +31,15 @@ export const PracticeEntryForm = ({
     onCloseHandler=function(){},
     practiceToUpdate=null,
 }) => {
-    
+
     const [selectedTabs, setTabs] = useState(practiceToUpdate!==null && (practiceToUpdate.verificationState==="in_review" || practiceToUpdate.verificationState==="approved")?
                 ["in_review","pictures","availability","settings"]:
             practiceToUpdate!==null && practiceToUpdate.verificationState==="in_edit_mode"?
                 ["general","address","contacts","pictures","availability","settings"]:
-            ["general"]);
-    const [currentTab, setCurrentTab] = useState(practiceToUpdate!==null && practiceToUpdate.verificationState==="in_edit_mode"?"general":"in_review");
+            practiceToUpdate===null?
+                ["general"]:
+            null);
+    const [currentTab, setCurrentTab] = useState(practiceToUpdate!==null && practiceToUpdate.verificationState!=="in_edit_mode"?"in_review":"general");
     const [validationErrors,setValidationErrors]=useState([]);
     const [validatedAddress, setValidatedAddress] = useState(null);
 
