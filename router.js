@@ -1,9 +1,4 @@
-const process = require("process");
 const express = require('express');
-
-const config = require("../efs/core/config/config.json");
-const efsPaths=config.efsPaths;
-const efsPath = efsPaths[process.platform];
 
 const accountRouter=express.Router();
 
