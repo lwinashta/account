@@ -13,7 +13,7 @@ const appointmentRouter=require('../efs/appointments/router');
 const accountManagementRoutes=require('../efs/accountManager/routes');
 const accountRouter=require('./router');
 const paymentRouter=require('../efs/payment/router');
-const reviewRouter=require('../efs/reviews/router');
+// const reviewRouter=require('../efs/reviews/router');
 const fileRouter=require('../efs/fileManagement/router');
 
 const config = require("../efs/core/config/config.json");
@@ -83,7 +83,7 @@ module.exports = function (app) {
     app.use('/pokitdot',pokitdotRouter);
     app.use('/appointments',appointmentRouter);
     app.use('/payment',paymentRouter);
-    app.use('/review',reviewRouter);
+    //app.use('/review',reviewRouter);
     app.use('/file',fileRouter);
     app.use('/account/api',accountManagementRoutes);
     app.use('/',accountRouter);
