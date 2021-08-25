@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 
 import { AppContext } from "../../../AppContext";
-import { GenderForm } from "./form";
+import { GenderForm } from "./form_gender";
 
 export const ManageGender = () => {
 

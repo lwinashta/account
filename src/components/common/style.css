@@ -1,0 +1,12 @@
+.field-container:hover{
+    background-color: whitesmoke;
+    cursor: pointer;
+}
+
+.field-name{
+    width: 100px;
+}
+
+.field-value{
+    flex-grow: 2;
+}

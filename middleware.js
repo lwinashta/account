@@ -21,7 +21,7 @@ const domains = config.domains;
 const efsPaths=config.efsPaths;
 
 const os = process.platform;
-const efsPath = efsPaths[os];
+const efs=path.resolve(__dirname,'../efs');
 
 module.exports = function (app) {
 
@@ -30,7 +30,7 @@ module.exports = function (app) {
 
     //** ASSIGN MIDDLEWARES */
     app.use('/src',express.static('src'));
-    app.use('/efs',express.static(efsPath));
+    app.use('/efs',express.static(efs));
     app.use('/node_modules',express.static('node_modules'));
 
     // const fsPath = `../efs/filesystem`;
@@ -75,7 +75,7 @@ module.exports = function (app) {
 
     app.locals.config=config;
 
-    const healthcareRoutes = require(efsPath + '/healthcare/routes')(app);
+    const healthcareRoutes = require(efs + '/healthcare/routes')(app);
 
     /** Routers */
     app.use('/google',googleRouter);

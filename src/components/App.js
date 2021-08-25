@@ -14,6 +14,7 @@ import { ProviderQualification } from './providerQualification/ProviderQualifica
 import { PracticeManagement } from "./practiceManagement/PracticeManagement";
 
 import './common/panes/panes.css';
+import './common/style.css';
 
 const App = () => {
 

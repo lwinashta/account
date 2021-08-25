@@ -1,0 +1,43 @@
+#update-user-profile-pic{
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    position: relative;
+    line-height:85px;
+    text-align: center;
+    background-color: dodgerblue;
+    color: white;
+}
+
+#update-user-profile-pic-file-input{
+    opacity: 0;
+    left: 0px;
+    display: inline-block;
+    z-index: 10;
+    cursor: pointer;
+    border-radius: 50%;
+    position: absolute;
+    width: 100px;
+    text-align: center;
+    margin: auto;
+    top: 0px;
+    z-index: 1;
+}
+
+#update-user-profile-pic-camera-icon-container{
+    top: 45%;
+    right: -10px;
+    position: absolute;
+    background-color: white;
+    height: 30px;
+    width: 30px;
+    text-align: center;
+    border-radius: 50%;
+}
+
+#update-user-profile-pic-camera-icon{
+    color: black;
+    position: absolute;
+    left: 5px;
+    top: 4px;
+}

@@ -36,7 +36,7 @@ export const ManageAboutMe = () => {
     return (
         <div>
             {
-                'aboutMe' in AppLevelContext.userInfo && AppLevelContext.userInfo.aboutMe.length > 0 ?
+                'aboutMe' in AppLevelContext.userInfo && AppLevelContext.userInfo.aboutMe &&  AppLevelContext.userInfo.aboutMe.length > 0 ?
                     <div className="d-flex flex-row justify-content-between">
                         <div>
                             <div ref={aboutMeContentContainer} className="line-clamp">{AppLevelContext.userInfo.aboutMe} </div>

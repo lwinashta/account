@@ -13,9 +13,7 @@ export const Profile = () => {
                 Object.keys(AppLevelContext.userInfo).length > 0 ?
                     <div className="row">
                         <div className="col-sm-12 col-md-6 col-lg-6 mb-3">
-                            <div className="tile bg-white">
-                                <Demographics />
-                            </div>
+                            <Demographics />
                         </div>
                         <div className="col-sm-12 col-md-6 col-lg-6"></div>
                     </div> :

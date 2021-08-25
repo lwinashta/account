@@ -1,5 +1,8 @@
 import React, { useContext, useRef } from 'react';
 
+import Form from "react-bootstrap/Form";
+import Modal from "react-bootstrap/Modal";
+
 import { Modal } from "core/components/modal/web/modal";
 
 import { AppContext } from "../../../AppContext";
@@ -9,7 +12,9 @@ export const AboutMeForm = ({
     onCloseHandler=function(){},
 }) => {
 
-    let AppLevelContext=useContext(AppContext);
+    let {userInfo,
+        updateUserContextInfo
+    }=useContext(AppContext);
 
     let formValues=useRef({
         aboutMe:null
@@ -24,7 +29,7 @@ export const AboutMeForm = ({
             fetch('/account/api/user/profile/update',{
                 method:"POST",
                 body:JSON.stringify({
-                    _id:AppLevelContext.userInfo._id,
+                    _id:userInfo._id,
                     aboutMe:formValues.current.aboutMe
                 }),
                 headers: {
@@ -34,7 +39,7 @@ export const AboutMeForm = ({
             .then(response=>response.json())
             .then(data=>{
                 
-                AppLevelContext.updateUserContextInfo({
+                updateUserContextInfo({
                     aboutMe:formValues.current.aboutMe
                 });
 
@@ -69,7 +74,7 @@ export const AboutMeForm = ({
                         className='form-control'
                         data-required="1" 
                         autoComplete="off" 
-                        defaultValue={'aboutMe' in AppLevelContext.userInfo!==null?AppLevelContext.userInfo.aboutMe:null} />
+                        defaultValue={'aboutMe' in userInfo!==null?userInfo.aboutMe:null} />
                 </div>
                 <div className="mt-2 text-center">
                     <button className="btn btn-primary w-75" type="submit">Save Information</button>
