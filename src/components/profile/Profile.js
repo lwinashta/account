@@ -1,7 +1,10 @@
 import React,{useContext} from 'react';
 
-import { Demographics } from "./demographics/demographics";
 import { AppContext } from "../AppContext";
+
+import { BasicInfo } from "./basicInfo/basicInfo";
+import { ContactInfo } from "./contactInfo/contactInfo";
+import { Addresses } from "./addresses/addresses";
 
 export const Profile = () => {
     
@@ -13,9 +16,15 @@ export const Profile = () => {
                 Object.keys(AppLevelContext.userInfo).length > 0 ?
                     <div className="row">
                         <div className="col-sm-12 col-md-6 col-lg-6 mb-3">
-                            <Demographics />
+                            
+                            <BasicInfo />
+
+                            <ContactInfo />
+                            
                         </div>
-                        <div className="col-sm-12 col-md-6 col-lg-6"></div>
+                        <div className="col-sm-12 col-md-6 col-lg-6">
+                            <Addresses />
+                        </div>
                     </div> :
                     null
             }

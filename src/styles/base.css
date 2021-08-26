@@ -1,31 +1,15 @@
 @import url("/efs/core/styles/core.css");
 @import url('/efs/core/images/fontawesome/css/all.css');
 
-/* summary page */
-#summary .profile-img{
-    width: 150px;
-    height: 150px;
-    margin: 0 auto;
-    position: relative;
+.field-container:hover{
+    background-color: whitesmoke;
+    cursor: pointer;
 }
 
-#summary .profile-img img{
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
+.field-name{
+    width: 100px;
 }
 
-#summary .jumbo-profile-initals{
-    width:100%;
-    height:100%;
-    border-radius: 50%;
-    background-color: #ffc107;
-    color: darkslategrey;
-    font-size: 3em;
-    text-align: center;
-    line-height: 150px;
-}
-
-.braintree-placeholder{
-    display: none;
+.field-value{
+    flex-grow: 2;
 }

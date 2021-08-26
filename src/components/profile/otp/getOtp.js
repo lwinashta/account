@@ -12,7 +12,7 @@ export const getOTP = async () => {
 
         let base64EncodedToken = btoa(tokenDataAsJson.token);
 
-        let otpResponse= await fetch('/account/api/user/getotp', {
+        let otpResponse= await fetch('/account/api/auth/otp/create', {
             method: "POST",
             headers: {
                 "content-type": "application/json",

@@ -5,7 +5,7 @@ import './appMenu.css';
 
 export const AppMenu = () => {
 
-    const AppLevelContext = useContext(AppContext);
+    const {userInfo} = useContext(AppContext);
 
     let location = useLocation();
     //console.log(location); 
@@ -17,32 +17,14 @@ export const AppMenu = () => {
                     <div className="menu-text">Profile</div>
                 </div>
             </Link>
-            <Link to="/manage-addresses">
-                <div className={`app-menu-item pointer border-bottom ${location.pathname==="/manage-addresses"?"current-app-menu-item":""}`} >
-                    <i className="far fa-address-card"></i>
-                    <div className="menu-text">Manage Addresses</div>
-                </div>
-            </Link>
           
-            <a href="/payment-management">
-                <div className={`app-menu-item pointer border-bottom ${location.pathname==="/payment-management"?"current-app-menu-item":""}`}>
-                    <i className="far fa-credit-card"></i>
-                    <div className="menu-text">Payment & Transactions</div>
-                </div>
-            </a>
-
-            <div className={`app-menu-item pointer border-bottom ${location.pathname==="/appointments"?"current-app-menu-item":""}`}>
-                <i className="far fa-calendar-check"></i>
-                <div className="menu-text">My Appointments</div>
-            </div>
-
             {
-                AppLevelContext.userInfo.isHealthcareProvider ?
+                (userInfo.userType==="healthcare_provider" || userInfo.userType==="patient") ?
                     <React.Fragment>
                         <Link to="/manage-qualification">
                             <div className={`app-menu-item pointer border-bottom ${location.pathname==="/manage-qualification"?"current-app-menu-item":""}`} >
                                 <i className="fas fa-university"></i>
-                                <div className="menu-text">Manage Qualification</div>
+                                <div className="menu-text">Provider Qualification</div>
                             </div>
                         </Link>
                         <a href="/practice-management">
@@ -61,6 +43,13 @@ export const AppMenu = () => {
                     </React.Fragment> :
                     null
             }
+
+            <div className={`app-menu-item pointer border-bottom ${location.pathname==="/appointments"?"current-app-menu-item":""}`}>
+                <i className="far fa-calendar-check"></i>
+                <div className="menu-text">My Appointments</div>
+            </div>
+
+
             <div className={`app-menu-item pointer border-bottom ${location.pathname==="/my-visits"?"current-app-menu-item":""}`}>
                 <i className="fas fa-glasses"></i>
                 <div className="menu-text">My Visits</div>
@@ -73,6 +62,14 @@ export const AppMenu = () => {
                 <i className="fas fa-prescription"></i>
                 <div className="menu-text">My Medications</div>
             </div>
+
+            <a href="/payment-management">
+                <div className={`app-menu-item pointer border-bottom ${location.pathname==="/payment-management"?"current-app-menu-item":""}`}>
+                    <i className="far fa-credit-card"></i>
+                    <div className="menu-text">Payment & Transactions</div>
+                </div>
+            </a>
+
             <div className={`app-menu-item pointer border-bottom ${location.pathname==="/security"?"current-app-menu-item":""}`}>
                 <i className="fas fa-user-shield"></i>
                 <div className="menu-text">Security</div>

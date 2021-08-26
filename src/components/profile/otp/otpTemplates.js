@@ -1,4 +1,4 @@
-export const EmailTemplate=(otp)=>{
+export const emailTemplate=(otp)=>{
     return `<div style="text-align:center">
         <h3 style="color:coral">Email Verification</h3>
         <p style="font-weight:bold">Please verify your email id by entering the One Time Password (OTP) stated in this email. 

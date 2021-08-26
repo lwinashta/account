@@ -1,0 +1,24 @@
+.eachAddressTile{
+    height:120px;
+    margin-top: 10px;
+    display:inline-block;
+    padding:10px;
+}
+
+.eachAddressTile .tile{
+    height:100%;
+}
+
+/* For Desktop view  */
+@media screen and (min-width: 768px) {
+    .eachAddressTile{
+        width:50%;
+    }
+}
+
+/* For Smaller Mobile less than 1441px */
+@media screen and (max-width: 768px) {
+    .eachAddressTile{
+        width:100%;
+    }
+}

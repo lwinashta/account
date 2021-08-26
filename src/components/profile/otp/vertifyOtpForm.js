@@ -1,111 +1,113 @@
-import React, { useState,useRef,useContext } from 'react';
-import { Modal } from "core/components/modal/web/modal";
-import {FieldEntryError} from 'form-module/fieldEntryError';
-import { AppContext } from "../../AppContext";
+import React, { useContext, useState } from 'react';
 
-const VerifyOTPForm = ({ 
-    onCloseHandler=function(){},
-    afterSuccessfullVerification=function(){},
-    verificationNumber=null,
-    contactInfo="",  
+import { Formik } from 'formik';
+import * as Yup from 'yup';//creates the validation schema 
+
+import Form from "react-bootstrap/Form";
+import Button from "react-bootstrap/Button";
+import Spinner from "react-bootstrap/Spinner";
+import Alert from 'react-bootstrap/Alert';
+
+
+const VerifyOtpValidationScheme = Yup.object().shape({
+    "otp": Yup.string().min(6, "OTP must have 6 characters").required("Please enter the firstname").nullable(true),
+});
+
+export const VerifyOTPForm = ({
+    verificationNumber,
+    handleOnClose,
+    afterVerification
 }) => {
-    
-    let AppLevelContext = useContext(AppContext);
 
-    const [validationError,setValidationError]=useState("");
-    
-    let formValues=useRef({
-        verificationCode:""
-    });
+    const [isError, setIsError]=useState(false);
 
-    const validateOTPValue=()=>{
-        if(formValues.current.verificationCode.length===0 ) {setValidationError("required");return false;};
-        if(formValues.current.verificationCode.length>0 
-            &&  formValues.current.verificationCode.length<6) {setValidationError("invalid");return false;};
+    const handleOTPVerification=async (values, formikBag)=>{
 
-        return true;
-    }
-
-    const handleSubmission=function(e){
-        
-        //get the related form 
-        e.preventDefault();
-
-        //check required field 
-        if (validateOTPValue() ) {
-
-            AppLevelContext.setOnScreenLoader({
-                "show":true,
-                "message":"Verifying code"
-            });
-
-            fetch('/account/api/user/verifyotp',{
+        try {
+            let response=await fetch('/account/api/auth/otp/verify',{
                 method:"POST",
                 body:JSON.stringify({
-                    otp:formValues.current.verificationCode,
+                    otp:values.otp,
                     verificationNumber:verificationNumber
                 }),
                 headers: {
                     "content-type": "application/json"
                 }
-            })
-            .then(response=>response.json())
-            .then(data=>{
-                console.log(data);
-                afterSuccessfullVerification(data);
-
-            }).catch(err => {
-                console.error(err);
-                
-                AppLevelContext.removeOnScreenLoader();
-
-                if (err.status === 401) {
-                    setValidationError("invalid");
-                } else {
-                    alert("Error while validating. Please try again");
-                }
-
             });
-            
+    
+            await response.json();
+
+            afterVerification();
+
+        } catch (error) {
+            formikBag.setSubmitting(false);
+            setIsError(true);
+            console.log(error);
         }
+        
     }
 
     return (
-        <Modal 
-            onCloseHandler={() => { onCloseHandler(false) }} 
-            header={<h2>Verification Code</h2>}>
-            <form id="verify-otp-form" onSubmit={(e) => { handleSubmission(e) }}>
-                <div className="form-group">
-                    <label htmlFor="phone-number" data-required="1">Verification Code </label>
-                    <div className="text-muted font-weight-bold mb-2">
-                        Please enter the verification code sent to <b>{contactInfo}</b>.
-                    </div>
-                    <input type="text" name="otp"
-                        id="otp"
-                        onInput={(e)=>{formValues.current.verificationCode=e.target.value}}
-                        className="form-control"
-                        data-required="1" 
-                        placeholder="Verification Code" />
-                    {
-                        validationError==="required"?
-                            <FieldEntryError 
-                                title=" Verification code" 
-                                prefix="is required" />:
-                        validationError==="invalid"?
-                            <FieldEntryError 
-                                title=" Verification code" 
-                                prefix="is in valid" />:
-                        null
-                    }
-                </div>
-                <div className="mt-2 text-center">
-                    <button className="btn btn-info w-75">Verify</button>
-                </div>
-            </form>
-        </Modal>
-        
-    );
+        <Formik
+            validationSchema={VerifyOtpValidationScheme}
+            onSubmit={(values,formikBag) => { handleOTPVerification(values, formikBag) }}
+            initialValues={{
+                "otp": ""
+            }}>
+            {
+                ({
+                    handleChange,
+                    handleBlur,
+                    handleSubmit,
+                    isSubmitting,
+                    errors,
+                    values
+                }) => {
+                    return <Form noValidate onSubmit={(e) => {
+                        e.preventDefault();
+                        handleSubmit();
+                    }}>
+                        {
+                            isError ?
+                                <Alert variant="danger" className="my-2">
+                                    <Alert.Heading>Error</Alert.Heading>
+                                    <p>
+                                        There is an error Verifying yout OTP. Please check your otp and try again or contact us
+                                    </p>
+                                </Alert> :
+                                null
+                        }
 
+                        <Form.Group>
+                            <Form.Label>OTP (One Time Password)</Form.Label>
+                            <Form.Control
+                                type="text"
+                                name="otp"
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                isInvalid={!!errors.otp}
+                                defaultValue={values.otp}
+                            />
+                            <Form.Control.Feedback type="invalid">
+                                {errors.otp}
+                            </Form.Control.Feedback>
+                        </Form.Group>
+
+                        <div className="py-2 d-flex flex-row justify-content-end">
+                            <Button variant="primary" type="submit" className="d-flex flex-row align-contents-center" disabled={isSubmitting}>
+                                {
+                                    isSubmitting ?
+                                        <div className="mr-2"><Spinner variant="default" size="sm" animation="border"></Spinner></div> :
+                                        null
+                                }
+                                <div>Verify OTP & Save</div>
+                            </Button>
+                            <Button variant="light" className="ml-2" onClick={() => { handleOnClose(false) }}>Close</Button>
+                        </div>
+
+                    </Form>
+                }
+            }
+        </Formik>
+    )
 }
-
-export default VerifyOTPForm;

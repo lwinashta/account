@@ -9,12 +9,10 @@ import { AppContext } from "./AppContext";
 import { AppMenu } from "./common/menu/appMenu";
 
 import { Profile } from "./profile/Profile";
-import { ManageAddresses } from './addresses/Addresses';
-import { ProviderQualification } from './providerQualification/ProviderQualification';
-import { PracticeManagement } from "./practiceManagement/PracticeManagement";
+import { ProviderQualification } from './providerQualifications/providerQualification';
 
-import './common/panes/panes.css';
-import './common/style.css';
+import '../styles/panes.css';
+import '../styles/base.css';
 
 const App = () => {
 
@@ -103,9 +101,7 @@ const App = () => {
                         Object.keys(userInfo).length>0?
                         <Switch>
                             <Route exact path="/" component={Profile} />
-                            <Route exact path="/manage-addresses" component={ManageAddresses} />
-                            <Route exact path="/manage-qualification" component={ProviderQualification} />
-                            <Route exact path="/practice-management" component={PracticeManagement} />
+                            <Route exact path="/provider-qualification" component={ProviderQualification} />
                         </Switch>:
                         <div>Loading</div>
                     }
