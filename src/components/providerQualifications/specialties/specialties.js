@@ -14,9 +14,8 @@ export const Specialties = () => {
         <AppContext.Consumer>
             {
                 ({ userInfo }) => {
-                    return <div className="d-flex flex-row align-items-center" 
-                            onClick={() => setShowForm(true)}>
-                        <div className="field-name font-weight-bold">Specialties</div>
+                    return <div className="d-flex flex-row align-items-top px-3">
+                        <div className="field-name-lg font-weight-bold">Specialties</div>
                         <div className="field-value">
                             {
                                 userInfo.specialties && userInfo.specialties.length>0?
@@ -34,7 +33,13 @@ export const Specialties = () => {
                             }
                         </div>
                         
-                        <div><span className="material-icons">chevron_right</span></div>
+                        <div>
+                            <div title="Edit Name" className="icon-button"
+                                onClick={() => setShowForm(true)}>
+                                <i className="fas fa-pencil-alt"></i>
+                            </div>
+                        </div>
+
                     </div>
                 }
             }

@@ -15,8 +15,7 @@ export const PhoneNumber = () => {
         <AppContext.Consumer>
             {
                 ({ userInfo }) => {
-                    return <div className="d-flex flex-row align-items-center"
-                        onClick={() => setShowForm(true)}>
+                    return <div className="d-flex flex-row align-items-center">
                         <div className="field-name font-weight-bold">Phone</div>
                         <div className="field-value">
                             {userInfo.contactNumber ? 
@@ -24,7 +23,12 @@ export const PhoneNumber = () => {
                                 <div className="small text-muted">Click to update the phone number</div>
                             }
                         </div>
-                        <div><span className="material-icons">chevron_right</span></div>
+                        <div>
+                            <div title="Edit Name" className="icon-button"
+                                onClick={() => setShowForm(true)}>
+                                <i className="fas fa-pencil-alt"></i>
+                            </div>
+                        </div>
                     </div>
                 }
             }

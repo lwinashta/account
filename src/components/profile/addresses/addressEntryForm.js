@@ -30,18 +30,37 @@ export const AddressEntryForm = ({
 
     let { userInfo } = useContext(AppContext);
 
+    const markOtherAddressesNonDefault=async (_id)=>{
+        
+        //If the address is set to default then mark all other addresses as non-default 
+        await fetch("/account/api/user/address/updatemultiple", {
+            method: "POST",
+            body:JSON.stringify({
+                query:{ 
+                    "userMongoId":userInfo._id,
+                    "_id":_id
+                },
+                values:{
+                    "isDefault.$boolean":false
+                }
+            }),
+            headers: {
+                "content-type": "application/json"
+            }
+        });
+    }
 
     const handleAddressSubmission = async (values) => {
-
+        console.log(values);
         try {
 
             //Insert necessary values in the data 
             // let { isDefault, ...data } = formValues.current;
             // data["isDefault.$boolean"] = isDefault ? isDefault : false;
 
-            let data={...values};
+            let {isDefault,...data}={...values};
 
-            data["userMongoId.$_id"] = userInfo._id;
+            data["isDefault.$boolean"]=isDefault;
 
             let uri = "/account/api/user/address/create";
 
@@ -49,6 +68,7 @@ export const AddressEntryForm = ({
                 uri = "/account/api/user/address/update";
                 
             } else {
+                data["userMongoId.$_id"] = userInfo._id;
                 data["deleted.$boolean"] = false;
             }
 
@@ -56,7 +76,10 @@ export const AddressEntryForm = ({
 
             let addressInfo = await fetch(uri, {
                 method: "POST",
-                body: JSON.stringify(data),
+                body: addressToUpdate!==null?JSON.stringify({
+                    query:{ "_id":addressToUpdate._id },
+                    values:data
+                }):JSON.stringify(data),
                 headers: {
                     "content-type": "application/json"
                 }
@@ -64,6 +87,10 @@ export const AddressEntryForm = ({
 
             let addressJson = await addressInfo.json();
             console.log(addressJson);
+            
+            //Mark all othere xecpt the current address as non default
+            if(isDefault) await markOtherAddressesNonDefault(addressToUpdate!==null?addressToUpdate._id:addressJson._id);
+
             handleAfterSubmission(addressJson);
 
         } catch (error) {
@@ -90,7 +117,8 @@ export const AddressEntryForm = ({
                         "city": addressToUpdate ? addressToUpdate.city : "",
                         "zipCode": addressToUpdate?addressToUpdate.zipCode:"",
                         "state": addressToUpdate?addressToUpdate.state:"",
-                        "country":addressToUpdate?addressToUpdate.country:""
+                        "country":addressToUpdate?addressToUpdate.country:"",
+                        "isDefault":addressToUpdate?addressToUpdate.isDefault:"",
                     }}>
                 {
                     ({
@@ -207,6 +235,19 @@ export const AddressEntryForm = ({
                                 <Form.Control.Feedback type="invalid">
                                     {errors.country}
                                 </Form.Control.Feedback>
+                            </Form.Group>
+
+                            <Form.Group>
+                                <Form.Check 
+                                    type="switch"
+                                    id="set-as-default"
+                                    name="isDefault"
+                                    onChange={(e)=>{
+                                        setFieldValue("isDefault",e.target.checked)
+                                    }}
+                                    defaultChecked={values.isDefault}
+                                    label="Mark as Default Address"
+                                />
                             </Form.Group>
 
                             <div className="py-2 d-flex flex-row justify-content-end">

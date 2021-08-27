@@ -1,31 +1,37 @@
-import React,{useContext} from 'react';
+import React, { useContext } from 'react';
+
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 
 import { AppContext } from "../AppContext";
 
 import { BasicInfo } from "./basicInfo/basicInfo";
 import { ContactInfo } from "./contactInfo/contactInfo";
 import { Addresses } from "./addresses/addresses";
+import {Insurances} from "./insurance/insurances"
 
 export const Profile = () => {
-    
+
     let AppLevelContext = useContext(AppContext);
 
     return (
         <div className="container-fluid mt-2">
             {
                 Object.keys(AppLevelContext.userInfo).length > 0 ?
-                    <div className="row">
-                        <div className="col-sm-12 col-md-6 col-lg-6 mb-3">
-                            
+                    <Row>
+
+                        <Col>
                             <BasicInfo />
 
                             <ContactInfo />
-                            
-                        </div>
-                        <div className="col-sm-12 col-md-6 col-lg-6">
+
                             <Addresses />
-                        </div>
-                    </div> :
+                        </Col>
+
+                        <Col>
+                            <Insurances />
+                        </Col>
+                    </Row> :
                     null
             }
         </div>

@@ -3,13 +3,17 @@
 
 .field-container:hover{
     background-color: whitesmoke;
-    cursor: pointer;
 }
 
 .field-name{
     width: 100px;
 }
 
+.field-name-lg{
+    width: 150px;
+}
+
 .field-value{
+    margin-left:10px ;
     flex-grow: 2;
 }

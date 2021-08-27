@@ -1,11 +1,11 @@
 import React, { useState, useContext, useEffect } from 'react';
 
+import {OnScreenMessage} from 'core/components/popups/web/popups'
+
 import { AppContext } from '../../AppContext';
 import { AddressEntryForm } from './addressEntryForm';
 
 const countries = require('@oi/utilities/lists/countries.json');
-
-import './address.css';
 
 export const Addresses = () => {
 
@@ -21,7 +21,12 @@ export const Addresses = () => {
     const [addressToDelete, setAddressToDelete] = useState(null);
 
     useEffect(() => {
-        fetch('/account/api/user/address/get?userMongoId.$_id=' + userInfo._id)
+        
+        let uri = new URL(window.location.origin + "/account/api/user/address/get");
+        uri.searchParams.set("userMongoId.$_id", userInfo._id);
+        uri.searchParams.set("deleted.$boolean", false);
+
+        fetch(uri)
             .then(response => response.json())
             .then(data => setUserAddresses(data))
             .catch(err => console.error(err));
@@ -48,8 +53,8 @@ export const Addresses = () => {
         fetch('/account/api/user/address/update', {
             method: "POST",
             body: JSON.stringify({
-                _id: addressToDelete._id,
-                "deleted.$boolean": true
+                query:{_id: addressToDelete._id},
+                values:{"deleted.$boolean": true}
             }),
             headers: {
                 "content-type": "application/json"
@@ -76,7 +81,14 @@ export const Addresses = () => {
         let indx = _d.findIndex(addr => addr._id === data._id);
 
         if (indx > -1) {
+
             _d[indx] = data;
+
+            //check if the data isDefault is true. If yes, set all other addresses as not default
+            if(data.isDefault) _d.map(d=>{
+                if(d._id!==data._id) return Object.assign(d,{isDefault:false});
+            })
+
         } else {
             _d.push(data);
         }
@@ -100,7 +112,7 @@ export const Addresses = () => {
                             return <div key={address._id} className="p-1 border-bottom">
                                 <div className="p-2 d-flex flex-row justify-content-between">
                                     <div>
-                                        <div><b>{address.streetAddress1} {address.isDefault ? <span className="text-success">(default)</span> : ""}</b></div>
+                                        <div><b>{address.streetAddress1} {address.isDefault ? <span className="text-success">(Default)</span> : ""}</b></div>
                                         <div className="small text-muted d-flex flex-row">
                                             {
                                                 address.streetAddress2 ?
@@ -111,7 +123,7 @@ export const Addresses = () => {
                                             <div>{address.city}, </div>
                                             <div>{address.zipCode}, </div>
                                             <div>{address.state}, </div>
-                                            <div>{countries.find(c => c._id === address.country._id).name}, </div>
+                                            <div>{countries.find(c => c._id === address.country._id).name}</div>
                                         </div>
                                     </div>
 
@@ -153,6 +165,19 @@ export const Addresses = () => {
                     handleOnClose={setShowAddressEntryForm}
                     handleAfterSubmission={handleAfterSubmission}/>:
                 null
+            }
+
+            {
+                showDeleteConfirmationMessage ?
+                    <OnScreenMessage>
+                        <div className="font-weight-bold">Remove Address</div>
+                        <div className="mt-2">Are your sure to remove the selected address from your profile </div>
+                        <div className="d-flex flex-row mt-2 justify-content-end">
+                            <div className="btn btn-sm btn-link mr-2 pointer" onClick={() => { setShowDeleteConfirmationMessage(false) }}>Cancel</div>
+                            <div className="btn btn-sm btn-primary pointer" onClick={() => { handleAddressDeletion() }}> Remove</div>
+                        </div>
+                    </OnScreenMessage> :
+                    null
             }
 
         </div>)

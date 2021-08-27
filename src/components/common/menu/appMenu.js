@@ -21,7 +21,7 @@ export const AppMenu = () => {
             {
                 (userInfo.userType==="healthcare_provider" || userInfo.userType==="patient") ?
                     <React.Fragment>
-                        <Link to="/manage-qualification">
+                        <Link to="/provider-qualification">
                             <div className={`app-menu-item pointer border-bottom ${location.pathname==="/manage-qualification"?"current-app-menu-item":""}`} >
                                 <i className="fas fa-university"></i>
                                 <div className="menu-text">Provider Qualification</div>

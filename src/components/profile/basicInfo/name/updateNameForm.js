@@ -100,7 +100,7 @@ export const UpdateNameForm = ({
                                             type="text"
                                             name="lastName"
                                             onChange={handleChange}
-                                            handleBlur={handleBlur}
+                                            onBlur={handleBlur}
                                             isInvalid={!!errors.lastName}
                                             defaultValue={values.lastName}
                                         />
