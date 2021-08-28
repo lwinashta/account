@@ -1,5 +1,5 @@
 import React,{ useEffect, useState } from 'react';
-import { BrowserRouter as Router,Switch,Route } from "react-router-dom";
+import { BrowserRouter as Router, Switch,Route } from "react-router-dom";
 
 import { GlobalHeader } from "core/components/globalHeader/globalHeader";
 import { OnBottomCenter, ScreenLoader,removeLoader } from "core/components/popups/web/popups";
@@ -10,6 +10,8 @@ import { AppMenu } from "./common/menu/appMenu";
 
 import { Profile } from "./profile/Profile";
 import { ProviderQualification } from './providerQualifications/providerQualification';
+import {PracticeManagement} from './practiceManagement/practiceManagement';
+import { PracticeEntry } from './practiceManagement/practiceEntry/practiceEntry';
 
 import '../styles/panes.css';
 import '../styles/base.css';
@@ -102,6 +104,8 @@ const App = () => {
                         <Switch>
                             <Route exact path="/" component={Profile} />
                             <Route exact path="/provider-qualification" component={ProviderQualification} />
+                            <Route exact path="/practice-management" component={PracticeManagement} />
+                            <Route path="/practice-management/practice/:practiceId" component={PracticeEntry} />
                         </Switch>:
                         <div>Loading</div>
                     }

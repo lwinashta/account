@@ -45,6 +45,7 @@ export const MedicalDegreeEntryForm = ({
 
             if (medicalDegreeToUpdate === null) {
                 data.uuid = uuidv4();
+                data["deleted"]=false;
                 body["$push"] = {
                     medicalDegrees: data
                 }

@@ -7,13 +7,17 @@
 
 .field-name{
     width: 100px;
+    white-space: nowrap;
+
 }
 
 .field-name-lg{
-    width: 150px;
+    min-width: 145px;
+    width: 145px;
+    white-space: nowrap;
 }
 
 .field-value{
-    margin-left:10px ;
+    margin-left:15px ;
     flex-grow: 2;
 }

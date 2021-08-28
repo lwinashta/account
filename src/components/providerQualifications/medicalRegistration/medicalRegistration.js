@@ -7,7 +7,9 @@ import { AppContext } from "../../AppContext";
 
 import { UpdateMedicalRegistrationForm } from "./updateMedicalRegistrationForm";
 
-export const MedicalRegistration = () => {
+export const MedicalRegistration = ({
+    isDisabled=false
+}) => {
 
     const [showForm, setShowForm] = useState(false);
 
@@ -42,7 +44,10 @@ export const MedicalRegistration = () => {
             {
                 ({ userInfo }) => {
                     return <div className="d-flex flex-row align-items-top px-3">
-                        <div className="field-name-lg font-weight-bold">Medical Registration</div>
+                        <div className="field-name-lg">
+                            <b>Medical Registration</b>
+                            <div className="text-danger small">Required*</div>
+                        </div>
                         <div className="field-value">
                             {
                                 userInfo.medicalRegistration ?
@@ -74,10 +79,13 @@ export const MedicalRegistration = () => {
                         </div>
 
                         <div>
-                            <div title="Edit Name" className="icon-button"
+                            <button 
+                                title="Edit Name" 
+                                className="icon-button"
+                                disabled={isDisabled}
                                 onClick={() => setShowForm(true)}>
                                 <i className="fas fa-pencil-alt"></i>
-                            </div>
+                            </button>
                         </div>
 
                     </div>
