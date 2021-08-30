@@ -68,7 +68,7 @@ module.exports = function (app) {
         } catch (error) {
             //console.log(error);
             let param=encodeURIComponent(`${req.headers.host}${req.path}`);
-            res.redirect(`${req.protocol}://${domains[config.host][config.env].web}/login?goto=${app.locals.domainPath}`);
+            res.redirect(`${req.protocol}://${domains[config.host].web}/login?goto=${app.locals.domainPath}`);
         }
         
     });

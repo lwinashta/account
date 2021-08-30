@@ -105,7 +105,7 @@ const App = () => {
                             <Route exact path="/" component={Profile} />
                             <Route exact path="/provider-qualification" component={ProviderQualification} />
                             <Route exact path="/practice-management" component={PracticeManagement} />
-                            <Route path="/practice-management/practice/:practiceId" component={PracticeEntry} />
+                            <Route path="/practice-management/practice/:practiceId/:providerId" component={PracticeEntry} />
                         </Switch>:
                         <div>Loading</div>
                     }

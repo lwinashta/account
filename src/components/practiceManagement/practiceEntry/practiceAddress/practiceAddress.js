@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 
-import { AppContext } from "../../../AppContext";
+import { DisplayAddress } from "core/components/infoDisplay/address/displayAddress";
+
+import { PracticeContext } from '../practiceContext';
 import { PracticeAddressEntry } from './practiceAddressEntry';
 
 export const PracticeAddress = ({
@@ -10,7 +12,7 @@ export const PracticeAddress = ({
     const [showForm, setShowForm] = useState(false);
 
     return (<>
-        <AppContext.Consumer>
+        <PracticeContext.Consumer>
             {
                 ({ practiceInfo }) => {
                     return <div className="d-flex flex-row align-items-top px-3">
@@ -19,6 +21,11 @@ export const PracticeAddress = ({
                             <div className="text-danger small">Required*</div>
                         </div>
                         <div className="field-value">
+                            {
+                                practiceInfo.address && Object.keys(practiceInfo.address).length>0?
+                                <DisplayAddress address={practiceInfo.address}/>:
+                                null
+                            }
                             
                         </div>
                         
@@ -35,7 +42,7 @@ export const PracticeAddress = ({
                     </div>
                 }
             }
-        </AppContext.Consumer>
+        </PracticeContext.Consumer>
         {
             showForm ?
                 <PracticeAddressEntry 

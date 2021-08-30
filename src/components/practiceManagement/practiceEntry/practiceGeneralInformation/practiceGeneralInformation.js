@@ -25,7 +25,7 @@ export const PracticeGeneralInformation = ({
                                     {
                                         practiceInfo.facilityType && practiceInfo.facilityType.length > 0 ?
                                             practiceInfo.facilityType.map((t, indx) => {
-                                                return <span className="">{t} {indx < practiceInfo.facilityType.length-1 ? ", " : ""}</span>
+                                                return <span key={t} className="">{t} {indx < practiceInfo.facilityType.length-1 ? ", " : ""}</span>
                                             }) :
                                             null
                                     }

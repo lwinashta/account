@@ -197,7 +197,7 @@ export const Certificates = ({ isDisabled = false }) => {
         {
             showDeleteConfirmationMessage ?
                 <OnScreenMessage>
-                    <div className="font-weight-bold">Remove Insurance</div>
+                    <div className="font-weight-bold">Remove Certificate</div>
                     <div className="mt-2">Are your sure to remove the selected Certificate  from your profile </div>
                     <div className="d-flex flex-row mt-2 justify-content-end">
                         <div className="btn btn-sm btn-link mr-2 pointer" onClick={() => { setShowDeleteConfirmationMessage(false) }}>Cancel</div>
