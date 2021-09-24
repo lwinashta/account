@@ -6,7 +6,7 @@ import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
-import { getTimeSlots } from './handlers';
+import { getTimeSlots } from 'account-manager-module/lib/practiceManagement/handlers';
 
 const moment = require('moment');
 

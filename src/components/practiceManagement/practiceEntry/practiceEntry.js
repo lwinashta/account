@@ -20,7 +20,8 @@ import {
     Redirect
 } from "react-router-dom";
 
-import { getPracticeInfo, getPracticeProviders } from '../handlers';
+import { getPracticeInfo, getPracticeProviders } from 'account-manager-module/lib/practiceManagement/handlers';
+import { WorkflowButtons } from './workflowButtons/workflowButtons';
 
 export const PracticeEntry = () => {
 
@@ -88,8 +89,14 @@ export const PracticeEntry = () => {
                         practiceInfo: practiceInfo,
                         practiceProviderInfo:practiceProviderInfo,
                         resetPracticeInfo:resetPracticeInfo,
-                        resetPracticeProviderInfo:resetPracticeProviderInfo
+                        resetPracticeProviderInfo:resetPracticeProviderInfo, 
+                        isDisabled:practiceInfo.verificationState!=="pending" && practiceProviderInfo.verificationState !== "pending"
                     }}>
+
+                        <div className="py-2 border-top">
+                            <WorkflowButtons />
+                        </div>
+
                         <div className="py-2 border-top field-container">
                             <PracticeGeneralInformation />
                         </div>

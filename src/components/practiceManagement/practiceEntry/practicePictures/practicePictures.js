@@ -6,9 +6,7 @@ import { DisplayFilePreviewModal } from "core/components/infoDisplay/files/web/d
 import { PracticeContext } from '../practiceContext';
 import { PracticePicturesEntry } from './practicePicturesEntry';
 
-export const PracticePictures = ({
-    isDisabled = false
-}) => {
+export const PracticePictures = () => {
 
     const [showPracticePicturesEntryForm, setShowPracticePicturesEntryForm] = useState(false);
 
@@ -41,7 +39,7 @@ export const PracticePictures = ({
     return (<>
         <PracticeContext.Consumer>
             {
-                ({ practiceInfo }) => {
+                ({ practiceInfo, isDisabled }) => {
                     return <div className="d-flex flex-row align-items-top px-3">
                         <div className="field-name-lg">
                             <b>Pictures</b>

@@ -5,16 +5,14 @@ import { DisplayAddress } from "core/components/infoDisplay/address/displayAddre
 import { PracticeContext } from '../practiceContext';
 import { PracticeAddressEntry } from './practiceAddressEntry';
 
-export const PracticeAddress = ({
-    isDisabled=false
-}) => {
+export const PracticeAddress = () => {
 
     const [showForm, setShowForm] = useState(false);
 
     return (<>
         <PracticeContext.Consumer>
             {
-                ({ practiceInfo }) => {
+                ({ practiceInfo, isDisabled }) => {
                     return <div className="d-flex flex-row align-items-top px-3">
                         <div className="field-name-lg">
                             <b>Address</b>

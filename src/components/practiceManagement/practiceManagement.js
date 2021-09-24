@@ -13,7 +13,7 @@ import { DisplayAddress } from "core/components/infoDisplay/address/displayAddre
 
 import { AppContext } from '../AppContext';
 
-import { getPracticeProviders, getPracticeInfo } from "./handlers";
+import { getPracticeProviders, getPracticeInfo } from "'account-manager-module/lib/practiceManagement/handlers'";
 
 export const PracticeManagement = () => {
 
@@ -59,7 +59,7 @@ export const PracticeManagement = () => {
                 "address": {},
                 "contactInformation": [],
                 "settings": {},
-                "verificationState": "new",//new --> pending --> in review --> approved
+                "verificationState": "pending",//new --> pending --> in review --> approved
                 "deleted.$boolean": false,
             }),
             headers: {
@@ -79,7 +79,7 @@ export const PracticeManagement = () => {
                 "facilityId.$_id": practiceCreationData._id,
                 "availability": [],
                 "settings": {},
-                "verificationState": "new",//new --> pending --> in review --> approved
+                "verificationState": "approved",//new --> pending --> in review --> approved
                 "deleted.$boolean": false,
                 "affiliation.$boolean": false
             }),
@@ -116,10 +116,15 @@ export const PracticeManagement = () => {
                             userPractices.map((practice, indx) => {
                                 return <div key={practice._id} className="my-2  bg-white p-2 rounded">
                                     <Link to={`${url}/practice/${practice._id}/${practice.providerId}`}>
-                                        <div className={`p-2 d-flex flex-row align-items-center ${indx < userPractices.length - 1 ? "border-bottom" : ""}`} >
+                                        <div className={`p-2 d-flex flex-row align-items-center`} >
                                             <div className="mr-2"></div>
                                             <div style={{ flexGrow: 2 }}>
-                                                <b>{practice.name} <Badge pill bg="primary">{practice.verificationState}</Badge></b>
+                                                <b>{
+                                                    practice.name.length>0?
+                                                    practice.name:
+                                                    "<Unknown>"
+                                                }</b> 
+                                                <Badge pill variant="primary" className="ml-2">{practice.verificationState}</Badge>
                                                 {
                                                     practice.address && Object.keys(practice.address).length > 0 ?
                                                         <div className="text-muted mt-2"><DisplayAddress address={practice.address} /></div> :

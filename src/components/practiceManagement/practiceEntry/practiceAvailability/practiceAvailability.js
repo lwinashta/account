@@ -7,9 +7,7 @@ import { PracticeAvailabilityEntry } from './practiceAvailabilityEntry';
 
 const moment = require('moment')
 
-export const PracticeAvailability = ({
-    isDisabled = false
-}) => {
+export const PracticeAvailability = () => {
 
     const [showAvailabilityEntryForm, setShowAvailabilityEntryForm] = useState(false);
 
@@ -17,7 +15,6 @@ export const PracticeAvailability = ({
 
     const [showDeleteConfirmationMessage, setShowDeleteConfirmationMessage] = useState(false);
     const [availabilityToDelete, setAvailabilityToDelete] = useState(null);
-
 
     useEffect(() => {
         if (availabilityToUpdate !== null) setShowAvailabilityEntryForm(true);
@@ -38,7 +35,7 @@ export const PracticeAvailability = ({
     return (<>
         <PracticeContext.Consumer>
             {
-                ({ practiceProviderInfo }) => {
+                ({ practiceProviderInfo, isDisabled }) => {
                     return <div className="d-flex flex-row align-items-top px-3">
                         <div className="field-name-lg">
                             <b>Availability</b>

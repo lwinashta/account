@@ -70,10 +70,11 @@ export const PracticeContactInformation = ({ isDisabled = false }) => {
     return (<>
         <PracticeContext.Consumer>
             {
-                ({ practiceInfo }) => {
+                ({ practiceInfo, isDisabled }) => {
                     return <div className="d-flex flex-row align-items-top px-3">
                         <div className="field-name-lg">
                             <b>Contact</b>
+                            <div className="text-danger small">Required*</div>
                         </div>
                         <div className="field-value">
                             {

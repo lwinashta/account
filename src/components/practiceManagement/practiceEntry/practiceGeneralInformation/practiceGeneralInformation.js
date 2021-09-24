@@ -1,18 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import { PracticeContext } from '../practiceContext';
 import { PracticeGeneralInformationEntry } from './practiceGeneralInformationEntry';
 
-export const PracticeGeneralInformation = ({
-    isDisabled = false
-}) => {
+export const PracticeGeneralInformation = () => {
 
     const [showForm, setShowForm] = useState(false);
 
     return (<>
         <PracticeContext.Consumer>
             {
-                ({ practiceInfo }) => {
+                ({ practiceInfo, isDisabled }) => {
                     return <div className="d-flex flex-row align-items-top px-3">
                         <div className="field-name-lg">
                             <b>General</b>
